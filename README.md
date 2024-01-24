@@ -1,0 +1,1 @@
+# as4-connect-business-api-adapter
