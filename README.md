@@ -14,6 +14,10 @@ This will produce a single, self-contained executable that can be run.
 ## How to run
 You require a certificate for each market partner you want to use AS4 Connect for. These are the keys to access your market partner data on our cloud system and are issued by Schleupen SE. More information regarding AS4 Connect and its API can be found [on the Developer Campus website](https://developer-campus.de/tracks/integration/as4-connect-api/) (requires free registration).
 
+
+Currently tested platforms:
+* Windows (requires .NET 8 Runtime)
+
 The basic configuration of the Adapter is handled through the use of an `appsettings.json` files.
 
 ```
