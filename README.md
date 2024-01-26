@@ -9,8 +9,8 @@ The AS4 Connect Business API Adapter can be used as a jumpstart to achieve this 
 
 ## How to develop
 In order to develop and test an adapter, a fakeserver implementation of the WebAPI is available. Certificates for testing authentication will be provided by Schleupen SE.
-![image](https://github.com/schleupen/as4-connect-business-api-adapter/assets/68913205/412fbe08-ba2e-402d-9111-ca95457fd726)
 
+![image](https://github.com/schleupen/as4-connect-business-api-adapter/assets/68913205/412fbe08-ba2e-402d-9111-ca95457fd726)
 
 ## How to compile
 You can use the following command to build the solution (you need Microsoft .NET 8 SDK):
