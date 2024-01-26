@@ -1,9 +1,9 @@
 # AS4 Connect Business API Adapter
 
 ## Context
-Schleupen AS4 Connect is a cloud based and managed solution for AS4 communication in the german energy market. ERP systems can be connected with an adapter to the WebAPI of Schleupen AS4 Connect. 
+Schleupen AS4 Connect is a cloud based and managed solution for AS4 communication in the german energy market. ERP systems can be connected to the WebAPI of Schleupen AS4 Connect using adapters.
 
-This adapter can connect to Schleupen AS4 Connect. It sends and receives EDIFACT messages by using a folders on the filesystem. In order to authenticate, certificates issued by Schleupen and mutual TLS are needed.
+The AS4 Connect Business API Adapter can be used to achieve this connection to Schleupen AS4 Connect. It sends and receives EDIFACT messages by using folders on the filesystem. In order to authenticate, certificates issued by Schleupen and mutual TLS are needed.
 ![image](https://github.com/schleupen/as4-connect-business-api-adapter/assets/68913205/fb3df40b-9094-4ea3-9850-9c54de70c607)
 
 ## How to develop
