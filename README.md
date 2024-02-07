@@ -62,7 +62,7 @@ The basic configuration of the Adapter is handled through the use of an `appsett
 | DeliveryMessageLimitCount | The maxmimum number of messages to send in one iteration. |
 | ReceivingRetryCount | The maximum number of retries to perform per iteration for each message when receiving messages. |
 | ReceivingMessageLimitCount | The maximum number of messages to receive in one iteration. The default is 0 and means there is no limit. |
-| Marketpartners | An array with the market partners for which the Adapter should handle incoming and outgoing messages. For each of these you required a valid certificate. |
+| Marketpartners | An array with the identification numbers of your own market partners for which the Adapter should handle incoming and outgoing messages. For each of these you required a valid certificate. |
 | CertificateStoreLocation | The location of the certificate store to use. [Microsoft Documentation](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storelocation?view=net-8.0)    |
 | CertificateStoreName | The name of the certificate store to use. [Microsoft Documentation](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storename?view=net-8.0) |
 
