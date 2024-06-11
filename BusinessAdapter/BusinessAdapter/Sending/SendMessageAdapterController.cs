@@ -15,14 +15,13 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 	public sealed class SendMessageAdapterController : ISendMessageAdapterController
 	{
-		private const string TooManyRequestsMessage = "A 429 TooManyRequests status code was encountered while sending the EDIFACT messages which caused the sending to end before all messages could be sent.";
-
 		private readonly IAs4BusinessApiClientFactory businessApiClientFactory;
 		private readonly IConfigurationAccess configuration;
 		private readonly IEdifactDirectoryResolver edifactDirectoryResolver;
 		private readonly ILogger<SendMessageAdapterController> logger;
 
-		public SendMessageAdapterController(IAs4BusinessApiClientFactory businessApiClientFactory,
+		public SendMessageAdapterController(
+			IAs4BusinessApiClientFactory businessApiClientFactory,
 			IConfigurationAccess configuration,
 			IEdifactDirectoryResolver edifactDirectoryResolver,
 			ILogger<SendMessageAdapterController> logger)
@@ -170,7 +169,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 			if (hasTooManyRequestsError)
 			{
-				statusMessage += TooManyRequestsMessage;
+				statusMessage += "A 429 TooManyRequests status code was encountered while sending the EDIFACT messages which caused the sending to end before all messages could be sent.";
 			}
 
 			return statusMessage;

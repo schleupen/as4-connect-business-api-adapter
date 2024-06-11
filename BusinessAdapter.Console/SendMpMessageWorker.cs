@@ -9,20 +9,22 @@ namespace Schleupen.AS4.BusinessAdapter
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Sending;
 
-	public sealed class SendMessageWorker : BackgroundService
+	public sealed class SendMpMessageWorker : BackgroundService
 	{
-		private readonly ILogger<SendMessageWorker> logger;
-		private readonly ISendMessageAdapterController sendController;
+		private readonly ILogger<SendMpMessageWorker> logger;
+		private readonly ISendMessageAdapterControllerFactory sendControllerFactory;
 
-		public SendMessageWorker(ILogger<SendMessageWorker> logger, ISendMessageAdapterController sendController)
+		public SendMpMessageWorker(ILogger<SendMpMessageWorker> logger, ISendMessageAdapterControllerFactory sendControllerFactory)
 		{
 			this.logger = logger;
-			this.sendController = sendController;
+			this.sendControllerFactory = sendControllerFactory;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+
+			ISendMessageAdapterController sendController = sendControllerFactory.GetSendController(ControllerType.MP);
 
 			while (!stoppingToken.IsCancellationRequested)
 			{
