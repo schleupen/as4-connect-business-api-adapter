@@ -71,12 +71,12 @@ namespace Schleupen.AS4.BusinessAdapter.Parsing
 				catch (InvalidOperationException ex)
 				{
 
-					string message = ex.Message + $" Segmentnr. {segmentNumber}, Segment: '{segment}'.";
+					string message = ex.Message + $" Segmentno. {segmentNumber}, Segment: '{segment}'.";
 					throw new InvalidOperationException(message, ex);
 				}
 			}
 
-			throw new InvalidOperationException($"Es wurde kein Parser für das Segment '{identifier}', Segmentnummer '{segmentNumber}' gefunden.", null);
+            throw new InvalidOperationException($"No parser was found for the segment '{identifier}', segment number '{segmentNumber}'.", null);
 		}
 
 		private void TryParseUna()
@@ -121,15 +121,15 @@ namespace Schleupen.AS4.BusinessAdapter.Parsing
 
 				if (actualChar == '\r' || actualChar == '\n')
 				{
-					// nichts tun, Zeichen wird überlesen
+					// nothing to do
 				}
 				else if (lastReadChar == configuration.SegmentSeparator[^1] && char.IsWhiteSpace(actualChar))
 				{
-					// nichts tun, Zeichen wird überlesen
+					// nothing to do
 				}
 				else if (segmentBuilder.Length == 0 && char.IsWhiteSpace(actualChar))
 				{
-					// nichts tun, Zeichen wird überlesen
+					// nothing to do
 				}
 				else
 				{

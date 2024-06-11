@@ -33,7 +33,7 @@ namespace Schleupen.AS4.BusinessAdapter.Parsing
 					return Encoding.GetEncoding("iso-8859-7");
 			}
 
-			throw new InvalidOperationException($"Die Syntaxkennung {syntaxKennung} wird nicht unterstützt.");
+            throw new InvalidOperationException($"The syntax identifier {syntaxKennung} is not supported.");
 		}
 	}
 }

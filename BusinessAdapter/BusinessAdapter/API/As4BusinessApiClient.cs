@@ -1,7 +1,7 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-// ApiClient und Contracts mit NSwag generieren.
-// Benötigte Settings sind in edi.as4.Gateways.Contracts.BusinessApi.snwag zu finden.
+// Generate ApiClient and Contracts with NSwag.
+// Required settings can be found in edi.as4.Gateways.Contracts.BusinessApi.snwag.
 
 namespace Schleupen.AS4.BusinessAdapter.API
 {
@@ -221,7 +221,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 
 		private static HttpClientHandler InitializeHttpClientHandler(IAs4Certificate as4Certificate)
 		{
-#pragma warning disable CA5398 // Hartcodierte SslProtocols-Werte vermeiden
+#pragma warning disable CA5398 // Avoid hardcoding SslProtocols values
 			HttpClientHandler httpClientHandler = new HttpClientHandler
 												{
 													DefaultProxyCredentials = null,
@@ -238,7 +238,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 													//ClientCertificates = { clientMarketpartner.Certificate.AsX509Certificate() },
 													CheckCertificateRevocationList = false
 												};
-#pragma warning restore CA5398 // Hartcodierte SslProtocols-Werte vermeiden
+#pragma warning restore CA5398 // Avoid hardcoding SslProtocols values
 
 			httpClientHandler.ClientCertificates.Add(as4Certificate.AsX509Certificate());
 
