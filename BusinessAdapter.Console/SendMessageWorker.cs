@@ -22,13 +22,10 @@ namespace Schleupen.AS4.BusinessAdapter
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
-
 			while (!stoppingToken.IsCancellationRequested)
 			{
 				try
 				{
-					logger.LogDebug("Calling send controller");
 					await sendController.SendAvailableMessagesAsync(stoppingToken);
 				}
 				catch (CatastrophicException ex)
