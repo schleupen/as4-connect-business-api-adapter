@@ -30,7 +30,6 @@ namespace Schleupen.AS4.BusinessAdapter
 			{
 				try
 				{
-					logger.LogDebug("Calling send controller");
 					await sendController.SendAvailableMessagesAsync(stoppingToken);
 				}
 				catch (CatastrophicException ex)

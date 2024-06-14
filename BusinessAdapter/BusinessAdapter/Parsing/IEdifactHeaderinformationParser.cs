@@ -1,26 +1,24 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.Parsing
+namespace Schleupen.AS4.BusinessAdapter.Parsing;
+
+using System;
+
+public interface IEdifactHeaderinformationParser
 {
-	using System;
-	using System.IO;
+	string? GetDataformatname();
 
-	public interface IEdifactHeaderinformationParser
-	{
-		void Parse(Stream stream);
+	DateTimeOffset GetErstellungszeitpunkt();
 
-		string? GetDataformatname();
+	string? GetAbsenderCodenummer();
 
-		DateTimeOffset GetErstellungszeitpunkt();
+	string? GetEmpfaengerCodenummer();
 
-		string? GetAbsenderCodenummer();
+	CodeVergebendeStelle GetReceiverIdentificationNumberType();
 
-		string? GetEmpfaengerCodenummer();
+	string? GetDocumentnumber();
 
-		CodeVergebendeStelle GetReceiverIdentificationNumberType();
+	string? GetApplicationReference();
 
-		string? GetDocumentnumber();
-
-		string? GetApplicationReference();
-	}
+	void Parse(Stream stream);
 }

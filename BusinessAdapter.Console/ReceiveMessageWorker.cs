@@ -22,12 +22,8 @@ namespace Schleupen.AS4.BusinessAdapter
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			logger.LogInformation("Environment: {Environment}", Environment.OSVersion.Platform);
-
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				logger.LogDebug("Calling receive controller");
-
 				try
 				{
 					await receiveController.ReceiveAvailableMessagesAsync(stoppingToken);
