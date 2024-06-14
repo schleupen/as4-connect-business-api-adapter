@@ -6,6 +6,8 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 	using Moq;
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
+	using Schleupen.AS4.BusinessAdapter.MP;
+	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 	internal sealed partial class ReceiveMessageAdapterControllerTest
 	{

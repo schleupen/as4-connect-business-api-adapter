@@ -4,6 +4,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 {
 	using System.Net;
 	using NUnit.Framework;
+	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.Receiving;
 
 	[TestFixture]

@@ -3,6 +3,7 @@
 namespace Schleupen.AS4.BusinessAdapter.Sending
 {
 	using NUnit.Framework;
+	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 	[TestFixture]
 	internal sealed partial class OutboxMessageTest

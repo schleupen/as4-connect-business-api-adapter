@@ -9,6 +9,8 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 	using Moq;
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
+	using Schleupen.AS4.BusinessAdapter.MP;
+	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 	internal sealed partial class SendMessageAdapterControllerTest
 	{

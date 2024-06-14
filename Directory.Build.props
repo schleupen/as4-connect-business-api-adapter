@@ -1,6 +1,5 @@
 <Project>
 	<PropertyGroup>
-		<PublicKey></PublicKey>
 		<Company>Schleupen SE</Company>
 		<Product>Schleupen.AS4.BusinessAdapter</Product>
 		<CurrentYear>$([System.DateTime]::Now.Year)</CurrentYear>

@@ -6,7 +6,6 @@ namespace Schleupen.AS4.BusinessAdapter
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.Extensions.Logging;
 	using Schleupen.AS4.BusinessAdapter.API;
-	using Schleupen.AS4.BusinessAdapter.Receiving;
 	using System;
 
 	public sealed class ReceiveMessageWorker : BackgroundService

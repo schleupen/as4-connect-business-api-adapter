@@ -3,6 +3,7 @@
 namespace Schleupen.AS4.BusinessAdapter.Receiving
 {
 	using NUnit.Framework;
+	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 	[TestFixture]
 	internal sealed partial class As4MessageTest

@@ -3,7 +3,7 @@
 namespace Schleupen.AS4.BusinessAdapter
 {
 	using Microsoft.Extensions.DependencyInjection;
-	using Schleupen.AS4.BusinessAdapter.Sending;
+	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 	public class SendMessageAdapterControllerFactory : ISendMessageAdapterControllerFactory
 	{

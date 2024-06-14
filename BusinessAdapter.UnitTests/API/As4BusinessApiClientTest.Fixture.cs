@@ -10,6 +10,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using Moq;
 	using NUnit.Framework;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
+	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.Receiving;
 
 	internal sealed partial class As4BusinessApiClientTest
