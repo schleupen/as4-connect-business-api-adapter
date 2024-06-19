@@ -3,6 +3,7 @@
 namespace Schleupen.AS4.BusinessAdapter.API
 {
 	using NUnit.Framework;
+	using Schleupen.AS4.BusinessAdapter.MP.API;
 
 	[TestFixture]
 	internal sealed partial class As4BusinessApiClientFactoryTest : IDisposable

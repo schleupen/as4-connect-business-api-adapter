@@ -5,14 +5,14 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using NUnit.Framework;
 
 	[TestFixture]
-	internal sealed class PartyinfoTest
+	internal sealed class PartyInfoTest
 	{
 		[Test]
 		public void Ctor_ShouldSetReceiver()
 		{
 			ReceivingParty receiver = new ReceivingParty("Identifier", "Type");
 
-			Partyinfo testObject = new Partyinfo(null, receiver);
+			PartyInfo testObject = new PartyInfo(null, receiver);
 
 			Assert.That(testObject.Receiver, Is.EqualTo(receiver));
 		}
@@ -22,7 +22,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		{
 			SendingParty sender = new SendingParty("Identifier");
 
-			Partyinfo testObject = new Partyinfo(sender, null);
+			PartyInfo testObject = new PartyInfo(sender, null);
 
 			Assert.That(testObject.Sender, Is.EqualTo(sender));
 		}

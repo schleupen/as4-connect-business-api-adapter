@@ -11,5 +11,5 @@ public interface IEdifactDirectoryResolver
 
 	void DeleteFile(string edifactFilePath);
 
-	string StoreEdifactFileTo(InboxMessage message, string receiveDirectoryPath);
+	string StoreEdifactFileTo(InboxMpMessage mpMessage, string receiveDirectoryPath);
 }

@@ -15,7 +15,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			MessageResponse<bool> testObject = new MessageResponse<bool>(false, true);
 			
 			Assert.That(testObject.WasSuccessful, Is.False);
-			Assert.That(testObject.Payload, Is.True);
+			Assert.That(testObject.Message, Is.True);
 			Assert.That(testObject.ApiException, Is.Null);
 			Assert.That(testObject.ResponseStatusCode, Is.Null);
 		}
@@ -26,7 +26,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			MessageResponse<bool> testObject = new MessageResponse<bool>(true, false, HttpStatusCode.BadGateway, new ApiException("message", (int)HttpStatusCode.BadGateway, "response", new Dictionary<string, IEnumerable<string>>(), null));
 
 			Assert.That(testObject.ApiException!.Message, Is.EqualTo("message\n\nStatus: 502\nResponse: \nresponse"));
-			Assert.That(testObject.Payload, Is.False);
+			Assert.That(testObject.Message, Is.False);
 			Assert.That(testObject.ResponseStatusCode, Is.EqualTo(HttpStatusCode.BadGateway));
 			Assert.That(testObject.WasSuccessful, Is.True);
 		}

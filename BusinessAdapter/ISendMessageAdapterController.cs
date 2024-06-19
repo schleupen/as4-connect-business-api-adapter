@@ -8,9 +8,4 @@ namespace Schleupen.AS4.BusinessAdapter
 	{
 		Task SendAvailableMessagesAsync(CancellationToken cancellationToken);
 	}
-
-	public interface ISendMessageAdapterControllerFactory
-	{
-		ISendMessageAdapterController GetSendController(ControllerType controllerType);
-	}
 }

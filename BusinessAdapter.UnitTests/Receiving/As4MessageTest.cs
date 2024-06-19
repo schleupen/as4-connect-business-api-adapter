@@ -6,14 +6,14 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 	[TestFixture]
-	internal sealed partial class As4MessageTest
+	internal sealed partial class MpMessageTest
 	{
 		private readonly Fixture fixture = new();
 
 		[Test]
 		public void Ctor_ShouldInitializeProperties()
 		{
-			As4Message testObject = fixture.CreateTestObject();
+			MpMessage testObject = fixture.CreateTestObject();
 
 			fixture.ValidateProperties(testObject);
 		}

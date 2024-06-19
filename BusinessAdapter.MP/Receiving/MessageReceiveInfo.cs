@@ -9,10 +9,10 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	/// </summary>
 	public sealed class MessageReceiveInfo
 	{
-		private readonly As4Message[] availableMessages;
-		private readonly HashSet<InboxMessage> confirmableMessages = [];
+		private readonly MpMessage[] availableMessages;
+		private readonly HashSet<InboxMpMessage> confirmableMessages = [];
 
-		public MessageReceiveInfo(As4Message[] availableMessages)
+		public MessageReceiveInfo(MpMessage[] availableMessages)
 		{
 			this.availableMessages = availableMessages;
 		}
@@ -20,7 +20,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		/// <summary>
 		/// Contains the successfully processed messages.
 		/// </summary>
-		public IReadOnlyCollection<InboxMessage> ConfirmableMessages => confirmableMessages;
+		public IReadOnlyCollection<InboxMpMessage> ConfirmableMessages => confirmableMessages;
 
 		/// <summary>
 		/// Saves the information if too many calls occured. This is not set by the API.
@@ -30,7 +30,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		/// <summary>
 		/// Returns the available messages.
 		/// </summary>
-		public As4Message[] GetAvailableMessages()
+		public MpMessage[] GetAvailableMessages()
 		{
 			return availableMessages;
 		}
@@ -38,10 +38,10 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		/// <summary>
 		/// Adds a message to the list of successfully processed messages.
 		/// </summary>
-		/// <param name="message"></param>
-		public void AddReceivedEdifactMessage(InboxMessage message)
+		/// <param name="mpMessage"></param>
+		public void AddReceivedEdifactMessage(InboxMpMessage mpMessage)
 		{
-			confirmableMessages.Add(message);
+			confirmableMessages.Add(mpMessage);
 		}
 	}
 }

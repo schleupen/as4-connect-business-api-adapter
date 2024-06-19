@@ -6,5 +6,5 @@ using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 public interface IEdifactFileNameExtractor
 {
-	string ExtractFilename(InboxMessage message);
+	string ExtractFilename(InboxMpMessage mpMessage);
 }

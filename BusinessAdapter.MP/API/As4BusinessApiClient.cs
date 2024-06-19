@@ -3,7 +3,7 @@
 // Generate ApiClient and Contracts with NSwag.
 // Required settings can be found in edi.as4.Gateways.Contracts.BusinessApi.snwag.
 
-namespace Schleupen.AS4.BusinessAdapter.API
+namespace Schleupen.AS4.BusinessAdapter.MP.API
 {
 	using System;
 	using System.Collections.Generic;
@@ -18,6 +18,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using System.Threading.Tasks;
 	using BusinessApi;
 	using Microsoft.Extensions.Logging;
+	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
@@ -88,7 +89,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			IClientWrapper client = clientWrapperFactory.Create(as4BusinessApiEndpoint, httpClient);
 			QueryInboxMessagesResponseDto clientResponse = await client.V1MpMessagesInboxAsync(limit);
 
-			List<As4Message> messages = new List<As4Message>();
+			List<MpMessage> messages = new List<MpMessage>();
 
 			foreach (InboundMPMessageDto? message in clientResponse.Messages)
 			{
@@ -99,11 +100,11 @@ namespace Schleupen.AS4.BusinessAdapter.API
 						throw new ArgumentException($"The message with the identification {message.MessageId} has no party info.");
 					}
 
-					messages.Add(new As4Message(
+					messages.Add(new MpMessage(
 						message.Created_at,
 						message.BdewDocumentDate,
 						message.MessageId.ToString(),
-						new Partyinfo(new SendingParty(message.PartyInfo.Sender.Id), new ReceivingParty(message.PartyInfo.Receiver.Id, message.PartyInfo.Receiver.Type.ToString()))));
+						new PartyInfo(new SendingParty(message.PartyInfo.Sender.Id), new ReceivingParty(message.PartyInfo.Receiver.Id, message.PartyInfo.Receiver.Type.ToString()))));
 				}
 				catch (Exception e)
 				{
@@ -114,12 +115,12 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			return new MessageReceiveInfo(messages.ToArray());
 		}
 
-		public async Task<MessageResponse<InboxMessage>> ReceiveMessageAsync(As4Message as4Message)
+		public async Task<MessageResponse<InboxMpMessage>> ReceiveMessageAsync(MpMessage mpMessage)
 		{
 			IClientWrapper client = clientWrapperFactory.Create(as4BusinessApiEndpoint, httpClient);
 			try
 			{
-				FileResponse clientResponse = await client.V1MpMessagesInboxPayloadAsync(Guid.Parse(as4Message.MessageId));
+				FileResponse clientResponse = await client.V1MpMessagesInboxPayloadAsync(Guid.Parse(mpMessage.MessageId));
 
 				using (MemoryStream ms = new MemoryStream())
 				{
@@ -133,14 +134,14 @@ namespace Schleupen.AS4.BusinessAdapter.API
 						{
 							string edifactString = await decompressedReader.ReadToEndAsync();
 
-							return new MessageResponse<InboxMessage>(
+							return new MessageResponse<InboxMpMessage>(
 								true,
-								new InboxMessage(
-									as4Message.MessageId,
-									as4Message.CreatedAt,
-									as4Message.BdewDocumentDate,
-									as4Message.PartyInfo.Sender!,
-									as4Message.PartyInfo.Receiver!,
+								new InboxMpMessage(
+									mpMessage.MessageId,
+									mpMessage.CreatedAt,
+									mpMessage.BdewDocumentDate,
+									mpMessage.PartyInfo.Sender!,
+									mpMessage.PartyInfo.Receiver!,
 									edifactString,
 									zippedContent));
 						}
@@ -149,12 +150,12 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			}
 			catch (ApiException ex)
 			{
-				return new MessageResponse<InboxMessage>(true,
-					new InboxMessage(as4Message.MessageId,
-						as4Message.CreatedAt,
-						as4Message.BdewDocumentDate,
-						as4Message.PartyInfo.Sender!,
-						as4Message.PartyInfo.Receiver!,
+				return new MessageResponse<InboxMpMessage>(true,
+					new InboxMpMessage(mpMessage.MessageId,
+						mpMessage.CreatedAt,
+						mpMessage.BdewDocumentDate,
+						mpMessage.PartyInfo.Sender!,
+						mpMessage.PartyInfo.Receiver!,
 						null,
 						null)
 					,
@@ -163,18 +164,18 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			}
 		}
 
-		public async Task<MessageResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMessage message)
+		public async Task<MessageResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMpMessage mpMessage)
 		{
-			string tokenString = jwtHelper.CreateSignedToken(message);
+			string tokenString = jwtHelper.CreateSignedToken(mpMessage);
 			IClientWrapper client = clientWrapperFactory.Create(as4BusinessApiEndpoint, httpClient);
 			try
 			{
-				if (message.MessageId == null)
+				if (mpMessage.MessageId == null)
 				{
 					throw new InvalidOperationException("The message does not have a MessageId.");
 				}
 
-				await client.V1MpMessagesInboxAcknowledgementAsync(Guid.Parse(message.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
+				await client.V1MpMessagesInboxAcknowledgementAsync(Guid.Parse(mpMessage.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
 
 				return new MessageResponse<bool>(true, true);
 			}

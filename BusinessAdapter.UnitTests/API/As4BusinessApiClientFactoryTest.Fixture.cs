@@ -7,6 +7,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using Moq;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
+	using Schleupen.AS4.BusinessAdapter.MP.API;
 
 	internal sealed partial class As4BusinessApiClientFactoryTest
 	{

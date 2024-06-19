@@ -37,13 +37,13 @@ public sealed class EdifactDirectoryResolver : IEdifactDirectoryResolver
 		File.Delete(edifactFilePath);
 	}
 
-	public string StoreEdifactFileTo(InboxMessage message, string receiveDirectoryPath)
+	public string StoreEdifactFileTo(InboxMpMessage mpMessage, string receiveDirectoryPath)
 	{
-		string fileName = fileNameExtractor.ExtractFilename(message);
+		string fileName = fileNameExtractor.ExtractFilename(mpMessage);
 		string messagePath = Path.Combine(receiveDirectoryPath, fileName);
 		using (StreamWriter edifactStream = new StreamWriter(File.Open(messagePath, FileMode.Create), EdifactFileParser.DefaultEncoding))
 		{
-			edifactStream.Write(message.EdifactContent);
+			edifactStream.Write(mpMessage.EdifactContent);
 		}
 
 		return messagePath;

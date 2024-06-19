@@ -1,12 +1,11 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter
+namespace Schleupen.AS4.BusinessAdapter.Configuration
 {
 	using System.Security.Cryptography.X509Certificates;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Schleupen.AS4.BusinessAdapter.API;
-	using Schleupen.AS4.BusinessAdapter.Configuration;
 
 	public sealed class ConfigurationAccess : IConfigurationAccess
 	{

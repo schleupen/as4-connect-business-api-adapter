@@ -6,7 +6,7 @@ namespace Schleupen.AS4.BusinessAdapter
 	using System.Threading;
 	using System.Threading.Tasks;
 
-	internal static class TaskExtensions
+	public static class TaskExtensions
 	{
 		/// <summary>
 		/// Allows the configuration of a cancellation for a task.

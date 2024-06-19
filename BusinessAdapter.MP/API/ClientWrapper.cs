@@ -1,14 +1,21 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.API
+namespace Schleupen.AS4.BusinessAdapter.MP.API
 {
 	using BusinessApi;
 
 	/// <summary>
 	/// Wrapper for the business API client.
 	/// </summary>
-	public interface IClientWrapper
+	internal sealed class ClientWrapper : IClientWrapper
 	{
+		private readonly Client client;
+
+		public ClientWrapper(Client client)
+		{
+			this.client = client;
+		}
+
 		/// <summary>
 		/// Adds a message to the outbox.
 		/// </summary>
@@ -21,21 +28,30 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		/// <param name="messageId">The identification of the message.</param>
 		/// <param name="senderMessageId">The sender identification number of the message.</param>
 		/// <returns></returns>
-		Task V1MpMessagesOutboxPostAsync(string receiverId, PartyIdTypeDto? receiverIdType, FileParameter payload, string bdewDocumentType, string bdewDocumentNo, string bdewDocumentDate, Guid messageId, string? senderMessageId);
+		public Task V1MpMessagesOutboxPostAsync(string receiverId, PartyIdTypeDto? receiverIdType, FileParameter payload, string bdewDocumentType, string bdewDocumentNo, string bdewDocumentDate, Guid messageId, string? senderMessageId)
+		{
+			return client.V1MpMessagesOutboxPostAsync(receiverId, receiverIdType, payload, bdewDocumentType, bdewDocumentNo, bdewDocumentDate, messageId, senderMessageId);
+		}
 
 		/// <summary>
 		/// Queries messages in the inbox up to the given limit.
 		/// </summary>
 		/// <param name="limit">The message limit.</param>
 		/// <returns>The messages in the inbox.</returns>
-		Task<QueryInboxMessagesResponseDto> V1MpMessagesInboxAsync(int limit);
+		public Task<QueryInboxMessagesResponseDto> V1MpMessagesInboxAsync(int limit)
+		{
+			return client.V1MpMessagesInboxAsync(limit);
+		}
 
 		/// <summary>
 		/// Queries the payload of the message with the given identifier.
 		/// </summary>
 		/// <param name="messageId">Identifier of the message.</param>
 		/// <returns>The payload of the message.</returns>
-		Task<FileResponse> V1MpMessagesInboxPayloadAsync(Guid messageId);
+		public Task<FileResponse> V1MpMessagesInboxPayloadAsync(Guid messageId)
+		{
+			return client.V1MpMessagesInboxPayloadAsync(messageId);
+		}
 
 		/// <summary>
 		/// Acknowledges the message with the given identifier.
@@ -43,6 +59,9 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		/// <param name="messageId">The identifier of the message.</param>
 		/// <param name="messageAcknowledgedRequestDto">The request for the acknowledgment.</param>
 		/// <returns></returns>
-		Task V1MpMessagesInboxAcknowledgementAsync(Guid messageId, MessageAcknowledgedRequestDto messageAcknowledgedRequestDto);
+		public Task V1MpMessagesInboxAcknowledgementAsync(Guid messageId, MessageAcknowledgedRequestDto messageAcknowledgedRequestDto)
+		{
+			return client.V1MpMessagesInboxAcknowledgementAsync(messageId, messageAcknowledgedRequestDto);
+		}
 	}
 }

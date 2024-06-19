@@ -6,22 +6,22 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
-	internal sealed partial class As4MessageTest
+	internal sealed partial class MpMessageTest
 	{
 		private sealed class Fixture
 		{
 			private const string MessageId = "7BBD15F0-BACC-4F0E-981E-4FC767E07570";
 
-			public As4Message CreateTestObject()
+			public MpMessage CreateTestObject()
 			{
 				DateTimeOffset createdAt = new DateTimeOffset(new DateTime(2024, 01, 24, 11, 22, 43), TimeSpan.FromHours(1));
 				string bdewDocumentDate = "DocumentDate";
-				Partyinfo partyinfo = new(new SendingParty("Sender"), new ReceivingParty("Receiver", "BDEW"));
+				PartyInfo partyInfo = new(new SendingParty("Sender"), new ReceivingParty("Receiver", "BDEW"));
 
-				return new As4Message(createdAt, bdewDocumentDate, MessageId, partyinfo);
+				return new MpMessage(createdAt, bdewDocumentDate, MessageId, partyInfo);
 			}
 
-			public void ValidateProperties(As4Message testObject)
+			public void ValidateProperties(MpMessage testObject)
 			{
 				Assert.That(testObject.BdewDocumentDate, Is.EqualTo("DocumentDate"));
 				Assert.That(testObject.CreatedAt, Is.EqualTo(new DateTimeOffset(new DateTime(2024, 01, 24, 11, 22, 43), TimeSpan.FromHours(1))));

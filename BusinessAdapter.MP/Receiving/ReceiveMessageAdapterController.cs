@@ -13,6 +13,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
+	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Parsing;
 
 	public sealed class ReceiveMessageAdapterController : IReceiveMessageAdapterController
@@ -46,7 +47,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 			{
 				throw new CatastrophicException("The receive directory is not configured.");
 			}
-			
+
 			IReadOnlyCollection<string> ownMarketpartners = configuration.ReadOwnMarketpartners();
 			if (ownMarketpartners.Count == 0)
 			{
@@ -156,13 +157,13 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		{
 			int configuredLimit = adapterConfiguration.ReceivingMessageLimitCount <= 0 ? int.MaxValue : adapterConfiguration.ReceivingMessageLimitCount;
 			int messageLimit = Math.Min(receiveContext.Key.GetAvailableMessages().Length, configuredLimit);
-			As4Message[] availableMessages = receiveContext.Key.GetAvailableMessages();
+			MpMessage[] availableMessages = receiveContext.Key.GetAvailableMessages();
 
 			return await Policy.Handle<Exception>()
 				.WaitAndRetryAsync(adapterConfiguration.ReceivingRetryCount, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
 				.ExecuteAndCaptureAsync(async () =>
 				{
-					List<As4Message> messagesForRetry = new List<As4Message>();
+					List<MpMessage> messagesForRetry = new List<MpMessage>();
 					List<Exception> exceptions = new List<Exception>();
 					for (int i = 0; i < messageLimit; i++)
 					{
@@ -171,7 +172,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 
 						try
 						{
-							MessageResponse<InboxMessage> result = await receiveContext.Value.ReceiveMessageAsync(availableMessages[i]);
+							MessageResponse<InboxMpMessage> result = await receiveContext.Value.ReceiveMessageAsync(availableMessages[i]);
 							if (!result.WasSuccessful)
 							{
 								if (HandleTooManyRequestError(result.ResponseStatusCode!.Value))
@@ -191,7 +192,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 								string fileName;
 								try
 								{
-									fileName = edifactDirectoryResolver.StoreEdifactFileTo(result.Payload, receiveDirectoryPath);
+									fileName = edifactDirectoryResolver.StoreEdifactFileTo(result.Message, receiveDirectoryPath);
 								}
 								catch (EdifactParsingException ex)
 								{
@@ -199,7 +200,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 									continue;
 								}
 
-								MessageResponse<bool> ackResponse = await receiveContext.Value.AcknowledgeReceivedMessageAsync(result.Payload);
+								MessageResponse<bool> ackResponse = await receiveContext.Value.AcknowledgeReceivedMessageAsync(result.Message);
 								if (!ackResponse.WasSuccessful)
 								{
 									edifactDirectoryResolver.DeleteFile(fileName);
@@ -216,7 +217,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 									}
 								}
 
-								receiveContext.Key.AddReceivedEdifactMessage(result.Payload);
+								receiveContext.Key.AddReceivedEdifactMessage(result.Message);
 							}
 						}
 						catch (Exception ex)

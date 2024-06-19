@@ -8,6 +8,7 @@ using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.Certificates;
 using Schleupen.AS4.BusinessAdapter.Configuration;
 using Schleupen.AS4.BusinessAdapter.MP;
+using Schleupen.AS4.BusinessAdapter.MP.API;
 using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
@@ -21,12 +22,12 @@ public class HostConfigurator
 			.AddTransient<IJwtHelper, JwtHelper>()
 			.AddTransient<IMarketpartnerCertificateProvider, MarketpartnerCertificateProvider>()
 			.AddSingleton<IConfigurationAccess, ConfigurationAccess>()
-			.AddTransient<IAs4BusinessApiClientFactory, As4BusinessApiClientFactory>()
 			.AddTransient<ISendMessageAdapterControllerFactory, SendMessageAdapterControllerFactory>()
-			.AddTransient<IClientWrapperFactory, ClientWrapperFactory>()
 			.AddTransient<ICertificateStoreFactory, CertificateStoreFactory>()
 			.AddTransient<IFileSystemWrapper, FileSystemWrapper>()
 				// MP
+			.AddTransient<IAs4BusinessApiClientFactory, As4BusinessApiClientFactory>()
+			.AddTransient<IClientWrapperFactory, ClientWrapperFactory>()
 			.AddHostedService<SendMpMessageWorker>()
 			.AddHostedService<ReceiveMessageWorker>()
 			.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>()

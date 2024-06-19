@@ -11,14 +11,14 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	/// <typeparam name="T"></typeparam>
 	public class MessageResponse<T>
 	{
-		public MessageResponse(bool wasSuccessful, T payload)
+		public MessageResponse(bool wasSuccessful, T message)
 		{
 			WasSuccessful = wasSuccessful;
-			Payload = payload;
+			Message = message;
 		}
 
-		public MessageResponse(bool wasSuccessful, T payload, HttpStatusCode responseStatusCode, Exception apiException)
-			: this(wasSuccessful, payload)
+		public MessageResponse(bool wasSuccessful, T message, HttpStatusCode responseStatusCode, Exception apiException)
+			: this(wasSuccessful, message)
 		{
 			ResponseStatusCode = responseStatusCode;
 			ApiException = apiException;
@@ -30,9 +30,9 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		public bool WasSuccessful { get; }
 
 		/// <summary>
-		/// The payload provided by the result of the call.
+		/// The message provided by the result of the call.
 		/// </summary>
-		public T Payload { get; }
+		public T Message { get; }
 
 		/// <summary>
 		/// The HTTP response code of the result.

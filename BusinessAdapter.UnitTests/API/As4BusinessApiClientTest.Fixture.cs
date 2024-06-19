@@ -10,6 +10,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using Moq;
 	using NUnit.Framework;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
+	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.Receiving;
 
@@ -61,7 +62,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			{
 				Assert.That(receiveInfo.GetAvailableMessages().Length, Is.EqualTo(1));
 
-				As4Message message = receiveInfo.GetAvailableMessages()[0];
+				MpMessage message = receiveInfo.GetAvailableMessages()[0];
 				Assert.That(message.BdewDocumentDate, Is.EqualTo("2024-01-15 15:55:42 +01:00"));
 				Assert.That(message.CreatedAt, Is.EqualTo(new DateTimeOffset(new DateTime(2024, 01, 17, 16, 00, 00), TimeSpan.FromHours(1))));
 				Assert.That(message.MessageId.ToUpper(CultureInfo.InvariantCulture), Is.EqualTo(MessageId.ToUpper(CultureInfo.InvariantCulture)));
@@ -139,14 +140,14 @@ namespace Schleupen.AS4.BusinessAdapter.API
 					.Returns(certificateMock.Object);
 			}
 
-			public InboxMessage PrepareAcknowledgeReceivedMessage()
+			public InboxMpMessage PrepareAcknowledgeReceivedMessage()
 			{
 				SetupMarketpartnerCertificateProvider();
 				SetupClientWrapperFactory();
 				SetupCertificate();
 
 				jwtHelperMock
-					.Setup(x => x.CreateSignedToken(It.Is<InboxMessage>(message => message.MessageId == MessageId)))
+					.Setup(x => x.CreateSignedToken(It.Is<InboxMpMessage>(message => message.MessageId == MessageId)))
 					.Returns("SignedToken");
 
 				clientWrapperMock
@@ -156,9 +157,9 @@ namespace Schleupen.AS4.BusinessAdapter.API
 				return CreateInboxMessage();
 			}
 
-			private InboxMessage CreateInboxMessage()
+			private InboxMpMessage CreateInboxMessage()
 			{
-				return new InboxMessage(
+				return new InboxMpMessage(
 					MessageId,
 					new DateTimeOffset(new DateTime(2024, 01, 18, 09, 28, 00), TimeSpan.FromHours(1)),
 					"DocumentDate",
@@ -168,14 +169,14 @@ namespace Schleupen.AS4.BusinessAdapter.API
 					null);
 			}
 
-			public InboxMessage PrepareAcknowledgeReceivedMessageFailed()
+			public InboxMpMessage PrepareAcknowledgeReceivedMessageFailed()
 			{
 				SetupMarketpartnerCertificateProvider();
 				SetupCertificate();
 				SetupClientWrapperFactory();
 
 				jwtHelperMock
-					.Setup(x => x.CreateSignedToken(It.Is<InboxMessage>(message => message.MessageId == MessageId)))
+					.Setup(x => x.CreateSignedToken(It.Is<InboxMpMessage>(message => message.MessageId == MessageId)))
 					.Returns("SignedToken");
 
 				clientWrapperMock

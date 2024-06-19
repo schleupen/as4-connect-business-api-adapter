@@ -8,14 +8,14 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	/// <summary>
 	/// Incoming AS4 message with metadata and EDIFACT payload
 	/// </summary>
-	public sealed class As4Message
+	public sealed class MpMessage
 	{
-		public As4Message(DateTimeOffset createdAt, string bdewDocumentDate, string messageId, Partyinfo partyinfo)
+		public MpMessage(DateTimeOffset createdAt, string bdewDocumentDate, string messageId, PartyInfo partyInfo)
 		{
 			CreatedAt = createdAt;
 			BdewDocumentDate = bdewDocumentDate;
 			MessageId = messageId;
-			PartyInfo = partyinfo;
+			PartyInfo = partyInfo;
 		}
 
 		/// <summary>
@@ -36,6 +36,6 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		/// <summary>
 		/// Contains information about the sending and receiving party of the message.
 		/// </summary>
-		public Partyinfo PartyInfo { get; }
+		public PartyInfo PartyInfo { get; }
 	}
 }

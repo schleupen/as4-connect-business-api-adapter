@@ -11,6 +11,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 	using Polly;
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
+	using Schleupen.AS4.BusinessAdapter.MP.API;
 
 	public sealed class SendMessageAdapterController : ISendMessageAdapterController
 	{

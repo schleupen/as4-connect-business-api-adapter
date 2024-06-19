@@ -9,9 +9,9 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	/// <summary>
 	/// Incoming AS4 message with metadata and EDIFACT payload.
 	/// </summary>
-	public class InboxMessage
+	public class InboxMpMessage : IInboxMessage
 	{
-		public InboxMessage(string messageId, DateTimeOffset createdAt, string bdewDocumentDate, SendingParty sender, ReceivingParty receiver, string? edifactContent, byte[]? zippedContent)
+		public InboxMpMessage(string messageId, DateTimeOffset createdAt, string bdewDocumentDate, SendingParty sender, ReceivingParty receiver, string? edifactContent, byte[]? zippedContent)
 		{
 			MessageId = messageId;
 			CreatedAt = createdAt;
@@ -57,7 +57,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		/// </summary>
 		private byte[]? ZippedContent { get; }
 
-		internal string? ContentHashSha256
+		public string? ContentHashSha256
 		{
 			get
 			{
@@ -74,7 +74,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 
 		public override bool Equals(object? obj)
 		{
-			return obj is InboxMessage other && !string.IsNullOrEmpty(other.MessageId) && other.MessageId.Equals(MessageId, StringComparison.OrdinalIgnoreCase);
+			return obj is InboxMpMessage other && !string.IsNullOrEmpty(other.MessageId) && other.MessageId.Equals(MessageId, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public override int GetHashCode()

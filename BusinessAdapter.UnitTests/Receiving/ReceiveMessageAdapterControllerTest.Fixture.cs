@@ -7,6 +7,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 	using Schleupen.AS4.BusinessAdapter.MP;
+	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 	internal sealed partial class ReceiveMessageAdapterControllerTest
@@ -55,36 +56,36 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 					.Returns(CreateMessageReceiveInfo());
 
 				businessApiClientMock
-					.Setup(x => x.ReceiveMessageAsync(It.Is<As4Message>(message => message.MessageId == "1")))
-					.Returns(Task.FromResult(new MessageResponse<InboxMessage>(true, CreateInboxMessage("1"))));
+					.Setup(x => x.ReceiveMessageAsync(It.Is<MpMessage>(message => message.MessageId == "1")))
+					.Returns(Task.FromResult(new MessageResponse<InboxMpMessage>(true, CreateInboxMessage("1"))));
 
 				businessApiClientMock
-					.Setup(x => x.ReceiveMessageAsync(It.Is<As4Message>(message => message.MessageId == "2")))
-					.Returns(Task.FromResult(new MessageResponse<InboxMessage>(true, CreateInboxMessage("2"))));
+					.Setup(x => x.ReceiveMessageAsync(It.Is<MpMessage>(message => message.MessageId == "2")))
+					.Returns(Task.FromResult(new MessageResponse<InboxMpMessage>(true, CreateInboxMessage("2"))));
 
 				businessApiClientMock
 					.Setup(x => x.Dispose());
 
 				edifactDirectoryResolverMock
-					.Setup(x => x.StoreEdifactFileTo(It.Is<InboxMessage>(message => message.MessageId == "1"), @"C:\Temp"))
+					.Setup(x => x.StoreEdifactFileTo(It.Is<InboxMpMessage>(message => message.MessageId == "1"), @"C:\Temp"))
 					.Returns(@"C:\Temp\test1.edi");
 
 				edifactDirectoryResolverMock
-					.Setup(x => x.StoreEdifactFileTo(It.Is<InboxMessage>(message => message.MessageId == "2"), @"C:\Temp"))
+					.Setup(x => x.StoreEdifactFileTo(It.Is<InboxMpMessage>(message => message.MessageId == "2"), @"C:\Temp"))
 					.Returns(@"C:\Temp\test2.edi");
 
 				businessApiClientMock
-					.Setup(x => x.AcknowledgeReceivedMessageAsync(It.Is<InboxMessage>(message => message.MessageId == "1")))
+					.Setup(x => x.AcknowledgeReceivedMessageAsync(It.Is<InboxMpMessage>(message => message.MessageId == "1")))
 					.Returns(Task.FromResult(new MessageResponse<bool>(true, true)));
 
 				businessApiClientMock
-					.Setup(x => x.AcknowledgeReceivedMessageAsync(It.Is<InboxMessage>(message => message.MessageId == "2")))
+					.Setup(x => x.AcknowledgeReceivedMessageAsync(It.Is<InboxMpMessage>(message => message.MessageId == "2")))
 					.Returns(Task.FromResult(new MessageResponse<bool>(true, true)));
 			}
 
-			private InboxMessage CreateInboxMessage(string messageId)
+			private InboxMpMessage CreateInboxMessage(string messageId)
 			{
-				return new InboxMessage(
+				return new InboxMpMessage(
 					messageId,
 					DateTimeOffset.Now,
 					"DocumentDate",
@@ -103,10 +104,10 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 				]));
 			}
 
-			private As4Message CreateAvailableMessage(string messageId)
+			private MpMessage CreateAvailableMessage(string messageId)
 			{
-				Partyinfo partyinfo = new Partyinfo(new SendingParty("Sender"), new ReceivingParty("Receiver", "BDEW"));
-				return new As4Message(DateTimeOffset.Now, $"DocumentDate{messageId}", messageId, partyinfo);
+				PartyInfo partyInfo = new PartyInfo(new SendingParty("Sender"), new ReceivingParty("Receiver", "BDEW"));
+				return new MpMessage(DateTimeOffset.Now, $"DocumentDate{messageId}", messageId, partyInfo);
 			}
 
 			private void SetupBusinessApiClientFactory(string expectedMarketpartnerId)

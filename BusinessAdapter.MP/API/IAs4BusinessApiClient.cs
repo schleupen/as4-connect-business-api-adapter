@@ -1,9 +1,10 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.API
+namespace Schleupen.AS4.BusinessAdapter.MP.API
 {
 	using System;
 	using System.Threading.Tasks;
+	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
@@ -28,15 +29,15 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		/// <summary>
 		/// Queries EDIFACT files for the given AS4 message..
 		/// </summary>
-		/// <param name="as4Message">The Metadata of the message.</param>
+		/// <param name="mpMessage">The Metadata of the message.</param>
 		/// <returns>The EDIFACT file.</returns>
-		Task<MessageResponse<InboxMessage>> ReceiveMessageAsync(As4Message as4Message);
+		Task<MessageResponse<InboxMpMessage>> ReceiveMessageAsync(MpMessage mpMessage);
 
 		/// <summary>
 		/// Confirms that a message was successfully received.
 		/// </summary>
-		/// <param name="message">The received message that should be acknowledged.</param>
+		/// <param name="mpMessage">The received message that should be acknowledged.</param>
 		/// <returns>Whether the acknowledgement was successful.</returns>
-		Task<MessageResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMessage message);
+		Task<MessageResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMpMessage mpMessage);
 	}
 }

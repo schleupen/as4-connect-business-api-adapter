@@ -2,8 +2,6 @@
 
 namespace Schleupen.AS4.BusinessAdapter.API
 {
-	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
-
 	/// <summary>
 	/// Helper for the creation of JWT.
 	/// </summary>
@@ -14,6 +12,6 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <returns>The signed token for the given message.</returns>
-		string CreateSignedToken(InboxMessage message);
+		string CreateSignedToken(IInboxMessage message);
 	}
 }
