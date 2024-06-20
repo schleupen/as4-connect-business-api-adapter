@@ -13,19 +13,17 @@ internal sealed partial class SendMessageWorkerTest
 	{
 		private readonly MockRepository mockRepository = new(MockBehavior.Strict);
 		private readonly Mock<ILogger<SendMessageWorker>> loggerMock;
-		private readonly Mock<ISendMessageAdapterController> receiveControllerMock;
-		private readonly Mock<ISendMessageAdapterControllerFactory> receiveControllerFactoryMock;
+		private readonly Mock<ISendMessageAdapterController> sendMessageAdapterControllerMock;
 
 		public Fixture()
 		{
 			loggerMock = mockRepository.Create<ILogger<SendMessageWorker>>();
-			receiveControllerMock = mockRepository.Create<ISendMessageAdapterController>();
-			receiveControllerFactoryMock = mockRepository.Create<ISendMessageAdapterControllerFactory>();
+			sendMessageAdapterControllerMock = mockRepository.Create<ISendMessageAdapterController>();
 		}
 
 		public SendMessageWorker CreateTestObject()
 		{
-			return new SendMessageWorker(loggerMock.Object, receiveControllerFactoryMock.Object);
+			return new SendMessageWorker(loggerMock.Object, sendMessageAdapterControllerMock.Object);
 		}
 
 		public void Dispose()
@@ -35,37 +33,25 @@ internal sealed partial class SendMessageWorkerTest
 
 		public void PrepareStart()
 		{
-			receiveControllerMock
+			sendMessageAdapterControllerMock
 				.Setup(x => x.SendAvailableMessagesAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult(0));
-
-			receiveControllerFactoryMock
-				.Setup(f => f.GetSendController(ControllerType.MP))
-				.Returns(receiveControllerMock.Object);
 		}
 
 		public void PrepareStartWithError()
 		{
-			receiveControllerMock
+			sendMessageAdapterControllerMock
 				.Setup(x => x.SendAvailableMessagesAsync(It.IsAny<CancellationToken>()))
 				.Throws(() => new InvalidOperationException("Expected Exception during test."));
 
-			receiveControllerFactoryMock
-				.Setup(f => f.GetSendController(ControllerType.MP))
-				.Returns(receiveControllerMock.Object);
-						
 			SetupLogger(LogLevel.Error, "Error while sending messages", e => e.Message == "Expected Exception during test.");
 		}
 
 		public void PrepareStartWithCatastrophicError()
 		{
-			receiveControllerMock
+			sendMessageAdapterControllerMock
 				.Setup(x => x.SendAvailableMessagesAsync(It.IsAny<CancellationToken>()))
 				.Throws(() => new CatastrophicException("Expected Catastrophic Exception during test."));
-
-			receiveControllerFactoryMock
-				.Setup(f => f.GetSendController(ControllerType.MP))
-				.Returns(receiveControllerMock.Object);
 
 			SetupLogger(LogLevel.Error, "Catastrophic exception while sending", e => e.Message == "Expected Catastrophic Exception during test.");
 		}
@@ -85,8 +71,7 @@ internal sealed partial class SendMessageWorkerTest
 
 		public void VerifyControllerWasCalled()
 		{
-			receiveControllerMock
-				.Verify(x => x.SendAvailableMessagesAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+			sendMessageAdapterControllerMock.Verify(x => x.SendAvailableMessagesAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce());
 		}
 	}
 }

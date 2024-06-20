@@ -22,7 +22,6 @@ public class HostConfigurator
 			.AddTransient<IJwtHelper, JwtHelper>()
 			.AddTransient<IMarketpartnerCertificateProvider, MarketpartnerCertificateProvider>()
 			.AddSingleton<IConfigurationAccess, ConfigurationAccess>()
-			.AddTransient<ISendMessageAdapterControllerFactory, SendMessageAdapterControllerFactory>()
 			.AddTransient<ICertificateStoreFactory, CertificateStoreFactory>()
 			.AddTransient<IFileSystemWrapper, FileSystemWrapper>()
 				// MP
