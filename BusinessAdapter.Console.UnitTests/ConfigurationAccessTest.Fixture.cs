@@ -6,7 +6,7 @@ using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Schleupen.AS4.BusinessAdapter.MP.Configuration;
+using Schleupen.AS4.BusinessAdapter.Configuration;
 
 internal sealed partial class ConfigurationAccessTest
 {

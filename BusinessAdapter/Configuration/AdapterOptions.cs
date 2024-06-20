@@ -1,14 +1,18 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.MP.Configuration
+namespace Schleupen.AS4.BusinessAdapter.Configuration
 {
 	public class AdapterOptions
 	{
-		public const string Adapter = "Adapter";
+		public const string SectionName = "Adapter";
 
 		public string SendDirectory { get; set; } = string.Empty;
 
 		public string ReceiveDirectory { get; set; } = string.Empty;
+
+		public string CertificateStoreName { get; set; } = "My";
+
+		public string CertificateStoreLocation { get; set; } = "CurrentUser";
 
 		public string As4ConnectEndpoint { get; set; } = string.Empty;
 
@@ -23,9 +27,5 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Configuration
 #pragma warning disable CA1819 // Eigenschaften dürfen keine Arrays zurückgeben
 		public string[]? Marketpartners { get; set; }
 #pragma warning restore CA1819 // Eigenschaften dürfen keine Arrays zurückgeben
-
-		public string CertificateStoreName { get; set; } = "My";
-
-		public string CertificateStoreLocation { get; set; } = "CurrentUser";
 	}
 }

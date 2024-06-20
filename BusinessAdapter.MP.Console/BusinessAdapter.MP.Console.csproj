@@ -18,4 +18,9 @@
 	  <ProjectReference Include="..\BusinessAdapter.MP\BusinessAdapter.MP.csproj" />
 	  <ProjectReference Include="..\BusinessAdapter\BusinessAdapter.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <None Update="appsettings.Development.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 </Project>

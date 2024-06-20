@@ -8,7 +8,6 @@ using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.Certificates;
 using Schleupen.AS4.BusinessAdapter.Configuration;
 using Schleupen.AS4.BusinessAdapter.MP.API;
-using Schleupen.AS4.BusinessAdapter.MP.Configuration;
 using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
@@ -34,10 +33,8 @@ public class HostConfigurator
 			.AddTransient<IEdifactDirectoryResolver, EdifactDirectoryResolver>()
 			.AddTransient<IEdifactFileNameExtractor, EdifactFileNameExtractor>()
 			.AddTransient<IEdifactFileParser, EdifactFileParser>()
-				// FP
-				// ...
 
-			.Configure<AdapterOptions>(builder.Configuration.GetSection(AdapterOptions.Adapter));
+			.Configure<AdapterOptions>(builder.Configuration.GetSection(AdapterOptions.SectionName));
 
 		IHost host = builder.Build();
 		return host;
