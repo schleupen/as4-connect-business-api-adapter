@@ -5,26 +5,27 @@ namespace Schleupen.AS4.BusinessAdapter;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Schleupen.AS4.BusinessAdapter.API;
+using Schleupen.AS4.BusinessAdapter.MP;
 
 internal sealed partial class SendMessageWorkerTest
 {
 	private sealed class Fixture : IDisposable
 	{
 		private readonly MockRepository mockRepository = new(MockBehavior.Strict);
-		private readonly Mock<ILogger<SendMpMessageWorker>> loggerMock;
+		private readonly Mock<ILogger<SendMessageWorker>> loggerMock;
 		private readonly Mock<ISendMessageAdapterController> receiveControllerMock;
 		private readonly Mock<ISendMessageAdapterControllerFactory> receiveControllerFactoryMock;
 
 		public Fixture()
 		{
-			loggerMock = mockRepository.Create<ILogger<SendMpMessageWorker>>();
+			loggerMock = mockRepository.Create<ILogger<SendMessageWorker>>();
 			receiveControllerMock = mockRepository.Create<ISendMessageAdapterController>();
 			receiveControllerFactoryMock = mockRepository.Create<ISendMessageAdapterControllerFactory>();
 		}
 
-		public SendMpMessageWorker CreateTestObject()
+		public SendMessageWorker CreateTestObject()
 		{
-			return new SendMpMessageWorker(loggerMock.Object, receiveControllerFactoryMock.Object);
+			return new SendMessageWorker(loggerMock.Object, receiveControllerFactoryMock.Object);
 		}
 
 		public void Dispose()

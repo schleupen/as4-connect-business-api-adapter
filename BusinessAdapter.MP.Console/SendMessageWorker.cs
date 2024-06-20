@@ -1,6 +1,6 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter
+namespace Schleupen.AS4.BusinessAdapter.MP
 {
 	using System;
 	using System.Threading.Tasks;
@@ -8,22 +8,12 @@ namespace Schleupen.AS4.BusinessAdapter
 	using Microsoft.Extensions.Logging;
 	using Schleupen.AS4.BusinessAdapter.API;
 
-	public sealed class SendFpMessageWorker : BackgroundService
+	public sealed class SendMessageWorker(ILogger<SendMessageWorker> logger, ISendMessageAdapterControllerFactory sendControllerFactory)
+		: BackgroundService
 	{
-		private readonly ILogger<SendFpMessageWorker> logger;
-		private readonly ISendMessageAdapterControllerFactory sendControllerFactory;
-
-		public SendFpMessageWorker(ILogger<SendFpMessageWorker> logger, ISendMessageAdapterControllerFactory sendControllerFactory)
-		{
-			this.logger = logger;
-			this.sendControllerFactory = sendControllerFactory;
-		}
-
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
-
-			ISendMessageAdapterController sendController = sendControllerFactory.GetSendController(ControllerType.FP);
+			ISendMessageAdapterController sendController = sendControllerFactory.GetSendController(ControllerType.MP);
 
 			while (!stoppingToken.IsCancellationRequested)
 			{

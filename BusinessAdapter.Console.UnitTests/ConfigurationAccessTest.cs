@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using NUnit.Framework;
 using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.Configuration;
+using Schleupen.AS4.BusinessAdapter.MP.Configuration;
 
 internal sealed partial class ConfigurationAccessTest : IDisposable
 {

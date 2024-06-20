@@ -1,6 +1,6 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.Configuration
+namespace Schleupen.AS4.BusinessAdapter.MP.Configuration
 {
 	public class AdapterOptions
 	{

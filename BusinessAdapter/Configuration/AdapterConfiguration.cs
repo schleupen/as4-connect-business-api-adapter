@@ -2,23 +2,13 @@
 
 namespace Schleupen.AS4.BusinessAdapter.Configuration
 {
-	public class AdapterConfiguration
+	public class AdapterConfiguration(int deliveryRetryCount, int deliveryMessageLimitCount, int receivingRetryCount, int receivingMessageLimitCount)
 	{
-		private int deliveryMessageLimitCount;
+		public int DeliveryRetryCount { get; } = deliveryRetryCount;
 
-		public AdapterConfiguration(int deliveryRetryCount, int deliveryMessageLimitCount, int receivingRetryCount, int receivingMessageLimitCount)
-		{
-			DeliveryRetryCount = deliveryRetryCount;
-			this.deliveryMessageLimitCount = deliveryMessageLimitCount;
-			ReceivingRetryCount = receivingRetryCount;
-			ReceivingMessageLimitCount = receivingMessageLimitCount;
-		}
+		public int ReceivingRetryCount { get; } = receivingRetryCount;
 
-		public int DeliveryRetryCount { get; }
-
-		public int ReceivingRetryCount { get; }
-
-		public int ReceivingMessageLimitCount { get; }
+		public int ReceivingMessageLimitCount { get; } = receivingMessageLimitCount;
 
 		public int DeliveryMessageLimitCount
 		{

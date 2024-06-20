@@ -1,13 +1,9 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter
+namespace Schleupen.AS4.BusinessAdapter.MP
 {
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Hosting;
-	using Microsoft.Extensions.DependencyInjection;
-	using Schleupen.AS4.BusinessAdapter.API;
-	using Schleupen.AS4.BusinessAdapter.Configuration;
-	using Schleupen.AS4.BusinessAdapter.Certificates;
 
 	public static class Program
 	{

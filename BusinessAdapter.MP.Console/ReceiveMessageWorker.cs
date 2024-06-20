@@ -1,24 +1,15 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter
+namespace Schleupen.AS4.BusinessAdapter.MP
 {
-
+	using System;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.Extensions.Logging;
 	using Schleupen.AS4.BusinessAdapter.API;
-	using System;
 
-	public sealed class ReceiveMessageWorker : BackgroundService
+	public sealed class ReceiveMessageWorker(ILogger<ReceiveMessageWorker> logger, IReceiveMessageAdapterController receiveController)
+		: BackgroundService
 	{
-		private readonly ILogger<ReceiveMessageWorker> logger;
-		private readonly IReceiveMessageAdapterController receiveController;
-
-		public ReceiveMessageWorker(ILogger<ReceiveMessageWorker> logger, IReceiveMessageAdapterController receiveController)
-		{
-			this.logger = logger;
-			this.receiveController = receiveController;
-		}
-
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)

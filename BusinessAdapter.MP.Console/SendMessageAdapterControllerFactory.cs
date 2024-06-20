@@ -1,19 +1,12 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter
+namespace Schleupen.AS4.BusinessAdapter.MP
 {
 	using Microsoft.Extensions.DependencyInjection;
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
-	public class SendMessageAdapterControllerFactory : ISendMessageAdapterControllerFactory
+	public class SendMessageAdapterControllerFactory(IServiceProvider services) : ISendMessageAdapterControllerFactory
 	{
-		private readonly IServiceProvider services;
-
-		public SendMessageAdapterControllerFactory(IServiceProvider services)
-		{
-			this.services = services;
-		}
-
 		public ISendMessageAdapterController GetSendController(ControllerType controllerType)
 		{
 			return controllerType switch

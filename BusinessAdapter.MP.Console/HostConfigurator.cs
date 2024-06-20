@@ -1,14 +1,14 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter;
+namespace Schleupen.AS4.BusinessAdapter.MP;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.Certificates;
 using Schleupen.AS4.BusinessAdapter.Configuration;
-using Schleupen.AS4.BusinessAdapter.MP;
 using Schleupen.AS4.BusinessAdapter.MP.API;
+using Schleupen.AS4.BusinessAdapter.MP.Configuration;
 using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
@@ -28,7 +28,7 @@ public class HostConfigurator
 				// MP
 			.AddTransient<IAs4BusinessApiClientFactory, As4BusinessApiClientFactory>()
 			.AddTransient<IClientWrapperFactory, ClientWrapperFactory>()
-			.AddHostedService<SendMpMessageWorker>()
+			.AddHostedService<SendMessageWorker>()
 			.AddHostedService<ReceiveMessageWorker>()
 			.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>()
 			.AddTransient<ISendMessageAdapterController, SendMessageAdapterController>()

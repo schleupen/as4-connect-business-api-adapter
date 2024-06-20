@@ -4,6 +4,7 @@ namespace Schleupen.AS4.BusinessAdapter;
 
 using NUnit.Framework;
 using Schleupen.AS4.BusinessAdapter.API;
+using Schleupen.AS4.BusinessAdapter.MP;
 
 [TestFixture]
 internal sealed partial class SendMessageWorkerTest : IDisposable
@@ -27,7 +28,7 @@ internal sealed partial class SendMessageWorkerTest : IDisposable
 	public async Task StartAsync_ShouldCallController()
 	{
 		fixture!.PrepareStart();
-		using SendMpMessageWorker testObject = fixture!.CreateTestObject();
+		using SendMessageWorker testObject = fixture!.CreateTestObject();
 		using CancellationTokenSource cancellationTokenSource = new(TimeSpan.FromSeconds(520));
 
 		Task task =  testObject.StartAsync(cancellationTokenSource.Token);
@@ -40,7 +41,7 @@ internal sealed partial class SendMessageWorkerTest : IDisposable
 	public async Task StartAsync_WithErrorInController_ShouldLogError()
 	{
 		fixture!.PrepareStartWithError();
-		using SendMpMessageWorker testObject = fixture!.CreateTestObject();
+		using SendMessageWorker testObject = fixture!.CreateTestObject();
 		using CancellationTokenSource cancellationTokenSource = new(TimeSpan.FromSeconds(10));
 
 		await testObject.StartAsync(cancellationTokenSource.Token);
@@ -52,7 +53,7 @@ internal sealed partial class SendMessageWorkerTest : IDisposable
 	public async Task StartAsync_WithCatastrophicErrorInController_ShouldLogErrorAndCrash()
 	{
 		fixture!.PrepareStartWithCatastrophicError();
-		using SendMpMessageWorker testObject = fixture!.CreateTestObject();
+		using SendMessageWorker testObject = fixture!.CreateTestObject();
 		using CancellationTokenSource cancellationTokenSource = new(TimeSpan.FromSeconds(10));
 
 		// ReSharper disable once AccessToDisposedClosure

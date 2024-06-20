@@ -3,6 +3,7 @@
 namespace Schleupen.AS4.BusinessAdapter;
 
 using NUnit.Framework;
+using Schleupen.AS4.BusinessAdapter.MP;
 
 [TestFixture]
 internal sealed partial class HostConfiguratorTest
