@@ -34,8 +34,6 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 
 		public async Task SendAvailableMessagesAsync(CancellationToken cancellationToken)
 		{
-			AdapterConfiguration adapterConfiguration = configuration.ReadAdapterConfigurationValue();
-
 			string sendDirectoryPath = configuration.ReadSendDirectory();
 			if (string.IsNullOrEmpty(sendDirectoryPath))
 			{
@@ -47,7 +45,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 			Dictionary<string, IAs4BusinessApiClient> as4BusinessApiClients = new Dictionary<string, IAs4BusinessApiClient>();
 			int successfulMessageCount = 0;
 			int failedMessageCount = 0;
-			int configuredDeliveryLimit = adapterConfiguration.DeliveryMessageLimitCount;
+			int configuredDeliveryLimit = configuration.DeliveryMessageLimitCount;
 			int deliveryLimit = Math.Min(edifactFiles.Count, configuredDeliveryLimit);
 			int initialEdifactFileCount = edifactFiles.Count;
 			bool hasTooManyRequestsError = false;
@@ -55,7 +53,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 			try
 			{
 				PolicyResult policyResult = await Policy.Handle<Exception>()
-				.WaitAndRetryAsync(adapterConfiguration.DeliveryRetryCount, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while sending messages"); })
+				.WaitAndRetryAsync(configuration.DeliveryRetryCount, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while sending messages"); })
 				.ExecuteAndCaptureAsync(
 					async () =>
 					{

@@ -40,8 +40,6 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		{
 			logger.LogDebug("Receiving of available messages starting.");
 
-			AdapterConfiguration adapterConfiguration = configuration.ReadAdapterConfigurationValue();
-
 			string receiveDirectoryPath = configuration.ReadReceiveDirectory();
 			if (string.IsNullOrEmpty(receiveDirectoryPath))
 			{
@@ -67,7 +65,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 					try
 					{
 						IAs4BusinessApiClient client = businessApiClientFactory.CreateAs4BusinessApiClient(receiverIdentificationNumber);
-						int messageLimit = adapterConfiguration.ReceivingMessageLimitCount <= 0 ? 1000 : adapterConfiguration.ReceivingMessageLimitCount;
+						int messageLimit = configuration.ReceivingMessageLimitCount <= 0 ? 1000 : configuration.ReceivingMessageLimitCount;
 						MessageReceiveInfo receiveInfo = await client.QueryAvailableMessagesAsync(messageLimit);
 						as4BusinessApiClients.Add(receiveInfo, client);
 					}
@@ -92,7 +90,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 
 				foreach (KeyValuePair<MessageReceiveInfo, IAs4BusinessApiClient> as4BusinessApiClient in as4BusinessApiClients)
 				{
-					PolicyResult policyResult = await ReceiveMessagesAsync(adapterConfiguration, receiveDirectoryPath, as4BusinessApiClient, allAvailableMessageCount, successfulMessageCount, failedMessageCount, cancellationToken);
+					PolicyResult policyResult = await ReceiveMessagesAsync(receiveDirectoryPath, as4BusinessApiClient, allAvailableMessageCount, successfulMessageCount, failedMessageCount, cancellationToken);
 					successfulMessageCount += as4BusinessApiClient.Key.ConfirmableMessages.Count;
 					failedMessageCount += as4BusinessApiClient.Key.GetAvailableMessages().Length - as4BusinessApiClient.Key.ConfirmableMessages.Count;
 					if (policyResult.FinalException != null)
@@ -147,20 +145,19 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 			return statusMessage;
 		}
 
-		private async Task<PolicyResult> ReceiveMessagesAsync(AdapterConfiguration adapterConfiguration,
-			string receiveDirectoryPath,
+		private async Task<PolicyResult> ReceiveMessagesAsync(string receiveDirectoryPath,
 			KeyValuePair<MessageReceiveInfo, IAs4BusinessApiClient> receiveContext,
 			long allAvailableMessageCount,
 			int successfulMessageCountBase,
 			int failedMessageCountBase,
 			CancellationToken cancellationToken)
 		{
-			int configuredLimit = adapterConfiguration.ReceivingMessageLimitCount <= 0 ? int.MaxValue : adapterConfiguration.ReceivingMessageLimitCount;
+			int configuredLimit = configuration.ReceivingMessageLimitCount <= 0 ? int.MaxValue : configuration.ReceivingMessageLimitCount;
 			int messageLimit = Math.Min(receiveContext.Key.GetAvailableMessages().Length, configuredLimit);
 			MpMessage[] availableMessages = receiveContext.Key.GetAvailableMessages();
 
 			return await Policy.Handle<Exception>()
-				.WaitAndRetryAsync(adapterConfiguration.ReceivingRetryCount, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
+				.WaitAndRetryAsync(configuration.ReceivingRetryCount, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
 				.ExecuteAndCaptureAsync(async () =>
 				{
 					List<MpMessage> messagesForRetry = new List<MpMessage>();

@@ -114,7 +114,7 @@ internal sealed partial class ConfigurationAccessTest : IDisposable
 	}
 
 	[Test]
-	public void ReadAdapterConfigurationValue_ShouldReturnAdapterConfiguration()
+	public void ConfigurationValue_ShouldBeExtractedFromOptions()
 	{
 		fixture!.PrepareAdapterOptions(x =>
 		{
@@ -123,13 +123,12 @@ internal sealed partial class ConfigurationAccessTest : IDisposable
 			x.ReceivingMessageLimitCount = 3;
 			x.ReceivingRetryCount = 4;
 		});
+		
 		ConfigurationAccess testObject = fixture!.CreateTestObject();
 
-		AdapterConfiguration adapterConfiguration = testObject.ReadAdapterConfigurationValue();
-
-		Assert.That(adapterConfiguration.DeliveryMessageLimitCount, Is.EqualTo(1));
-		Assert.That(adapterConfiguration.DeliveryRetryCount, Is.EqualTo(2));
-		Assert.That(adapterConfiguration.ReceivingMessageLimitCount, Is.EqualTo(3));
-		Assert.That(adapterConfiguration.ReceivingRetryCount, Is.EqualTo(4));
+		Assert.That(testObject.DeliveryMessageLimitCount, Is.EqualTo(1));
+		Assert.That(testObject.DeliveryRetryCount, Is.EqualTo(2));
+		Assert.That(testObject.ReceivingMessageLimitCount, Is.EqualTo(3));
+		Assert.That(testObject.ReceivingRetryCount, Is.EqualTo(4));
 	}
 }

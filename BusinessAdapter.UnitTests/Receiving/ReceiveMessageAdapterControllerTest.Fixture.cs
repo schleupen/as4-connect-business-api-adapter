@@ -133,9 +133,8 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 
 			private void SetupAdapterConfiguration(int messageLimit = 100)
 			{
-				configurationAccessMock
-					.Setup(x => x.ReadAdapterConfigurationValue())
-					.Returns(new AdapterConfiguration(0, 0, 1, messageLimit));
+				configurationAccessMock.Setup(x => x.ReceivingMessageLimitCount).Returns(messageLimit);
+				configurationAccessMock.Setup(x => x.ReceivingRetryCount).Returns(0);
 			}
 		}
 	}

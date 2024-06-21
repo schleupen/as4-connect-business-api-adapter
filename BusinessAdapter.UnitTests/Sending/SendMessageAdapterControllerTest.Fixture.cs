@@ -55,7 +55,6 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 			public void SendAvailableMessagesAsyncWithoutSendDirectory()
 			{
-				SetupAdapterConfiguration();
 				configurationMock
 					.Setup(x => x.ReadSendDirectory())
 					.Returns(string.Empty);
@@ -63,9 +62,8 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 			private void SetupAdapterConfiguration(int sendLimit = 100)
 			{
-				configurationMock
-					.Setup(x => x.ReadAdapterConfigurationValue())
-					.Returns(new AdapterConfiguration(1, sendLimit, 1, 100));
+				configurationMock.Setup(x => x.DeliveryMessageLimitCount).Returns(sendLimit);
+				configurationMock.Setup(x => x.DeliveryRetryCount).Returns(0);
 			}
 
 			public void SendAvailableMessagesAsyncWithoutEdifactFiles()

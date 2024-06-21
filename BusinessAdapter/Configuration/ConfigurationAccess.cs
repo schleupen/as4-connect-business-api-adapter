@@ -24,15 +24,6 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration
 			return $"Marketpartners: {marketpartnerSummary}\n\tSend directory: {adapterOptions.SendDirectory}\n\tReceive directory: {adapterOptions.ReceiveDirectory}";
 		}
 
-		public AdapterConfiguration ReadAdapterConfigurationValue()
-		{
-			return new AdapterConfiguration(
-				receivingMessageLimitCount: adapterOptions.ReceivingMessageLimitCount,
-				deliveryMessageLimitCount: adapterOptions.DeliveryMessageLimitCount,
-				deliveryRetryCount: adapterOptions.DeliveryRetryCount,
-				receivingRetryCount: adapterOptions.ReceivingRetryCount);
-		}
-
 		public string ReadReceiveDirectory()
 		{
 			return adapterOptions.ReceiveDirectory;
@@ -84,5 +75,13 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration
 
 			return certificateStoreLocation;
 		}
+
+		public int ReceivingRetryCount => this.adapterOptions.ReceivingRetryCount;
+
+		public int ReceivingMessageLimitCount => this.adapterOptions.ReceivingMessageLimitCount;
+
+		public int DeliveryRetryCount => this.adapterOptions.DeliveryRetryCount;
+
+		public int DeliveryMessageLimitCount => this.adapterOptions.DeliveryMessageLimitCount;
 	}
 }

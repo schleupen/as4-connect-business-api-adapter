@@ -6,8 +6,6 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration
 
 	public interface IConfigurationAccess
 	{
-		AdapterConfiguration ReadAdapterConfigurationValue();
-
 		StoreLocation GetCertificateStoreLocation();
 
 		StoreName GetCertificateStoreName();
@@ -19,5 +17,13 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration
 		string ReadSendDirectory();
 
 		IReadOnlyCollection<string> ReadOwnMarketpartners();
+
+		int ReceivingRetryCount { get; }
+
+		int ReceivingMessageLimitCount { get; }
+
+		int DeliveryRetryCount { get; }
+
+		int DeliveryMessageLimitCount { get; }
 	}
 }
