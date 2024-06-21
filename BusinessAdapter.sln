@@ -14,11 +14,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Pr
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		README.md = README.md
+		Jenkinsfile = Jenkinsfile
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.MP", "BusinessAdapter.MP\BusinessAdapter.MP.csproj", "{84E1D288-B3E3-4401-9D7B-972C185ED4EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.MP.Console", "BusinessAdapter.MP.Console\BusinessAdapter.MP.Console.csproj", "{B1F41B2C-7660-4E11-90ED-7048215175A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.FP", "BusinessAdapter.FP\BusinessAdapter.FP.csproj", "{B6F05492-D3BB-459B-9978-EDEF0874F197}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.FP.Console", "BusinessAdapter.FP.Console\BusinessAdapter.FP.Console.csproj", "{169FDCB6-7F01-49A7-8406-1F7B57C360A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.FP.UnitTests", "BusinessAdapter.FP.UnitTests\BusinessAdapter.FP.UnitTests.csproj", "{A6508745-0576-46F4-BB86-5CEEC1EBB305}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +53,18 @@ Global
 		{B1F41B2C-7660-4E11-90ED-7048215175A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1F41B2C-7660-4E11-90ED-7048215175A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1F41B2C-7660-4E11-90ED-7048215175A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6F05492-D3BB-459B-9978-EDEF0874F197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6F05492-D3BB-459B-9978-EDEF0874F197}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6F05492-D3BB-459B-9978-EDEF0874F197}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6F05492-D3BB-459B-9978-EDEF0874F197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{169FDCB6-7F01-49A7-8406-1F7B57C360A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{169FDCB6-7F01-49A7-8406-1F7B57C360A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{169FDCB6-7F01-49A7-8406-1F7B57C360A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{169FDCB6-7F01-49A7-8406-1F7B57C360A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6508745-0576-46F4-BB86-5CEEC1EBB305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6508745-0576-46F4-BB86-5CEEC1EBB305}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6508745-0576-46F4-BB86-5CEEC1EBB305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6508745-0576-46F4-BB86-5CEEC1EBB305}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

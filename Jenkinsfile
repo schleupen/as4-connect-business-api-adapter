@@ -51,6 +51,7 @@ pipeline
                     {
                         sh 'dotnet test ./BusinessAdapter.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.UnitTests.junit.xml\' -e HOME=/tmp'
                         sh 'dotnet test ./BusinessAdapter.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.Console.UnitTests.junit.xml\' -e HOME=/tmp'
+                        sh 'dotnet test ./BusinessAdapter.FP.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.UnitTests.junit.xml\' -e HOME=/tmp'
                     }
                     
                 }
