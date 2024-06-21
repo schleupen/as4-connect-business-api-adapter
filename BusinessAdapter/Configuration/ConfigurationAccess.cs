@@ -9,50 +9,50 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration
 
 	public sealed class ConfigurationAccess : IConfigurationAccess
 	{
-		private readonly IOptions<AdapterOptions> adapterOptions;
+		private readonly AdapterOptions adapterOptions;
 
 		public ConfigurationAccess(IOptions<AdapterOptions> adapterOptions, ILogger<ConfigurationAccess> logger)
 		{
-			this.adapterOptions = adapterOptions;
+			this.adapterOptions = adapterOptions.Value;
 
 			logger.LogInformation("Current configuration: {ConfigurationSummary}", BuildConfigurationSummary());
 		}
 
 		private string BuildConfigurationSummary()
 		{
-			string marketpartnerSummary = adapterOptions.Value.Marketpartners != null && adapterOptions.Value.Marketpartners.Length > 0 ? string.Join(", ", adapterOptions.Value.Marketpartners) : "None";
-			return $"Marketpartners: {marketpartnerSummary}\n\tSend directory: {adapterOptions.Value.SendDirectory}\n\tReceive directory: {adapterOptions.Value.ReceiveDirectory}";
+			string marketpartnerSummary = adapterOptions.Marketpartners != null && adapterOptions.Marketpartners.Length > 0 ? string.Join(", ", adapterOptions.Marketpartners) : "None";
+			return $"Marketpartners: {marketpartnerSummary}\n\tSend directory: {adapterOptions.SendDirectory}\n\tReceive directory: {adapterOptions.ReceiveDirectory}";
 		}
 
 		public AdapterConfiguration ReadAdapterConfigurationValue()
 		{
 			return new AdapterConfiguration(
-				receivingMessageLimitCount: adapterOptions.Value.ReceivingMessageLimitCount,
-				deliveryMessageLimitCount: adapterOptions.Value.DeliveryMessageLimitCount,
-				deliveryRetryCount: adapterOptions.Value.DeliveryRetryCount,
-				receivingRetryCount: adapterOptions.Value.ReceivingRetryCount);
+				receivingMessageLimitCount: adapterOptions.ReceivingMessageLimitCount,
+				deliveryMessageLimitCount: adapterOptions.DeliveryMessageLimitCount,
+				deliveryRetryCount: adapterOptions.DeliveryRetryCount,
+				receivingRetryCount: adapterOptions.ReceivingRetryCount);
 		}
 
 		public string ReadReceiveDirectory()
 		{
-			return adapterOptions.Value.ReceiveDirectory;
+			return adapterOptions.ReceiveDirectory;
 		}
 
 		public string ResolveBusinessApiEndpoint()
 		{
-			return adapterOptions.Value.As4ConnectEndpoint;
+			return adapterOptions.As4ConnectEndpoint;
 		}
 
 		public string ReadSendDirectory()
 		{
-			return adapterOptions.Value.SendDirectory;
+			return adapterOptions.SendDirectory;
 		}
 
 		public IReadOnlyCollection<string> ReadOwnMarketpartners()
 		{
 			var marketpartners = new List<string>();
 
-			var marketpartnersFromConfiguration = adapterOptions.Value.Marketpartners ?? Array.Empty<string>();
+			var marketpartnersFromConfiguration = adapterOptions.Marketpartners ?? Array.Empty<string>();
 			foreach (string marketpartnerFromConfiguration in marketpartnersFromConfiguration)
 			{
 				marketpartners.Add(marketpartnerFromConfiguration);
@@ -63,7 +63,7 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration
 
 		public StoreName GetCertificateStoreName()
 		{
-			var certificateStoreNameString = adapterOptions.Value.CertificateStoreName;
+			var certificateStoreNameString = adapterOptions.CertificateStoreName;
 
 			if (!Enum.TryParse(certificateStoreNameString, true, out StoreName certificateStoreName))
 			{
@@ -75,7 +75,7 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration
 
 		public StoreLocation GetCertificateStoreLocation()
 		{
-			var certificateStoreLocationString = adapterOptions.Value.CertificateStoreLocation;
+			var certificateStoreLocationString = adapterOptions.CertificateStoreLocation;
 
 			if (!Enum.TryParse(certificateStoreLocationString, true, out StoreLocation certificateStoreLocation))
 			{
