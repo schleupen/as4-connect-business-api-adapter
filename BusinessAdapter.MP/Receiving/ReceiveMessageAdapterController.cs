@@ -9,6 +9,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	using System.Threading.Tasks;
 	using BusinessApi;
 	using Microsoft.Extensions.Logging;
+	using Microsoft.Extensions.Options;
 	using Polly;
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
@@ -20,6 +21,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	{
 		private const string TooManyRequestsMessage = "A 429 TooManyRequests status code was encountered while receiving the EDIFACT messages which caused the receiving to end before all messages could be received.";
 
+		private readonly ReceiveOptions receiveOptions;
 		private readonly IAs4BusinessApiClientFactory businessApiClientFactory;
 		private readonly IConfigurationAccess configuration;
 		private readonly IEdifactDirectoryResolver edifactDirectoryResolver;
@@ -28,19 +30,21 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		public ReceiveMessageAdapterController(IAs4BusinessApiClientFactory businessApiClientFactory,
 			IConfigurationAccess configuration,
 			IEdifactDirectoryResolver edifactDirectoryResolver,
+			IOptions<ReceiveOptions> receiveOptions,
 			ILogger<ReceiveMessageAdapterController> logger)
 		{
 			this.businessApiClientFactory = businessApiClientFactory;
 			this.configuration = configuration;
 			this.edifactDirectoryResolver = edifactDirectoryResolver;
 			this.logger = logger;
+			this.receiveOptions = receiveOptions.Value;
 		}
 
 		public async Task ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
 		{
 			logger.LogDebug("Receiving of available messages starting.");
 
-			string receiveDirectoryPath = configuration.ReadReceiveDirectory();
+			string receiveDirectoryPath = receiveOptions.ReceiveDirectory;
 			if (string.IsNullOrEmpty(receiveDirectoryPath))
 			{
 				throw new CatastrophicException("The receive directory is not configured.");
@@ -65,7 +69,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 					try
 					{
 						IAs4BusinessApiClient client = businessApiClientFactory.CreateAs4BusinessApiClient(receiverIdentificationNumber);
-						int messageLimit = configuration.ReceivingMessageLimitCount <= 0 ? 1000 : configuration.ReceivingMessageLimitCount;
+						int messageLimit = receiveOptions.MessageLimitCount <= 0 ? 1000 : receiveOptions.MessageLimitCount;
 						MessageReceiveInfo receiveInfo = await client.QueryAvailableMessagesAsync(messageLimit);
 						as4BusinessApiClients.Add(receiveInfo, client);
 					}
@@ -152,12 +156,12 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 			int failedMessageCountBase,
 			CancellationToken cancellationToken)
 		{
-			int configuredLimit = configuration.ReceivingMessageLimitCount <= 0 ? int.MaxValue : configuration.ReceivingMessageLimitCount;
+			int configuredLimit = this.receiveOptions.MessageLimitCount <= 0 ? int.MaxValue : this.receiveOptions.MessageLimitCount;
 			int messageLimit = Math.Min(receiveContext.Key.GetAvailableMessages().Length, configuredLimit);
 			MpMessage[] availableMessages = receiveContext.Key.GetAvailableMessages();
 
 			return await Policy.Handle<Exception>()
-				.WaitAndRetryAsync(configuration.ReceivingRetryCount, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
+				.WaitAndRetryAsync(receiveOptions.RetryCount, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
 				.ExecuteAndCaptureAsync(async () =>
 				{
 					List<MpMessage> messagesForRetry = new List<MpMessage>();

@@ -8,6 +8,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 	using System.Linq;
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
+	using Microsoft.Extensions.Options;
 	using Polly;
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
@@ -15,37 +16,36 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 
 	public sealed class SendMessageAdapterController : ISendMessageAdapterController
 	{
-		private readonly IAs4BusinessApiClientFactory businessApiClientFactory;
-		private readonly IConfigurationAccess configuration;
-		private readonly IEdifactDirectoryResolver edifactDirectoryResolver;
-		private readonly ILogger<SendMessageAdapterController> logger;
+		private readonly IAs4BusinessApiClientFactory businessApiClientFactory1;
+		private readonly IEdifactDirectoryResolver edifactDirectoryResolver1;
+		private readonly IOptions<SendOptions> sendOptions1;
+		private readonly ILogger<SendMessageAdapterController> logger1;
 
-		public SendMessageAdapterController(
-			IAs4BusinessApiClientFactory businessApiClientFactory,
-			IConfigurationAccess configuration,
+		public SendMessageAdapterController(IAs4BusinessApiClientFactory businessApiClientFactory,
 			IEdifactDirectoryResolver edifactDirectoryResolver,
+			IOptions<SendOptions> sendOptions,
 			ILogger<SendMessageAdapterController> logger)
 		{
-			this.businessApiClientFactory = businessApiClientFactory;
-			this.configuration = configuration;
-			this.edifactDirectoryResolver = edifactDirectoryResolver;
-			this.logger = logger;
+			businessApiClientFactory1 = businessApiClientFactory;
+			edifactDirectoryResolver1 = edifactDirectoryResolver;
+			sendOptions1 = sendOptions;
+			logger1 = logger;
 		}
 
 		public async Task SendAvailableMessagesAsync(CancellationToken cancellationToken)
 		{
-			string sendDirectoryPath = configuration.ReadSendDirectory();
+			string sendDirectoryPath = sendOptions1.Value.SendDirectory;
 			if (string.IsNullOrEmpty(sendDirectoryPath))
 			{
 				throw new CatastrophicException("The send directory is not configured.");
 			}
 
-			List<IEdifactFile> edifactFiles = edifactDirectoryResolver.GetEditfactFilesFrom(sendDirectoryPath).ToList();
+			List<IEdifactFile> edifactFiles = edifactDirectoryResolver1.GetEditfactFilesFrom(sendDirectoryPath).ToList();
 
 			Dictionary<string, IAs4BusinessApiClient> as4BusinessApiClients = new Dictionary<string, IAs4BusinessApiClient>();
 			int successfulMessageCount = 0;
 			int failedMessageCount = 0;
-			int configuredDeliveryLimit = configuration.DeliveryMessageLimitCount;
+			int configuredDeliveryLimit = sendOptions1.Value.MessageLimitCount;
 			int deliveryLimit = Math.Min(edifactFiles.Count, configuredDeliveryLimit);
 			int initialEdifactFileCount = edifactFiles.Count;
 			bool hasTooManyRequestsError = false;
@@ -53,71 +53,72 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 			try
 			{
 				PolicyResult policyResult = await Policy.Handle<Exception>()
-				.WaitAndRetryAsync(configuration.DeliveryRetryCount, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while sending messages"); })
-				.ExecuteAndCaptureAsync(
-					async () =>
-					{
-						List<IEdifactFile> messagesForRetry = new List<IEdifactFile>();
-						List<Exception> exceptions = new List<Exception>();
-						for (int i = 0; i < deliveryLimit && i < edifactFiles.Count; i++)
+					.WaitAndRetryAsync(sendOptions1.Value.RetryCount, _ => TimeSpan.FromSeconds(10),
+						(ex, _) => { logger1.LogError(ex, "Error while sending messages"); })
+					.ExecuteAndCaptureAsync(
+						async () =>
 						{
-							IEdifactFile edifactFile = edifactFiles[i];
-							try
+							List<IEdifactFile> messagesForRetry = new List<IEdifactFile>();
+							List<Exception> exceptions = new List<Exception>();
+							for (int i = 0; i < deliveryLimit && i < edifactFiles.Count; i++)
 							{
-								logger.LogInformation("Sending file {FinishedFiles}/{AllFiles}", i + 1, edifactFiles.Count);
-								if (edifactFile.SenderIdentificationNumber == null)
+								IEdifactFile edifactFile = edifactFiles[i];
+								try
 								{
-									logger.LogError("Unable to retrieve sender code number from file {Filepath}.", edifactFile.Path);
-									continue;
-								}
-
-								if (!as4BusinessApiClients.TryGetValue(edifactFile.SenderIdentificationNumber, out IAs4BusinessApiClient? client))
-								{
-									try
+									logger1.LogInformation("Sending file {FinishedFiles}/{AllFiles}", i + 1, edifactFiles.Count);
+									if (edifactFile.SenderIdentificationNumber == null)
 									{
-										client = businessApiClientFactory.CreateAs4BusinessApiClient(edifactFile.SenderIdentificationNumber);
-										as4BusinessApiClients.Add(edifactFile.SenderIdentificationNumber, client);
-									}
-									catch (Exception e)
-									{
-										exceptions.Add(e);
-										messagesForRetry.Add(edifactFile);
+										logger1.LogError("Unable to retrieve sender code number from file {Filepath}.", edifactFile.Path);
 										continue;
 									}
-								}
 
-								OutboxMessage outboxMessage = edifactFile.CreateOutboxMessage();
-								MessageResponse<OutboxMessage> response = await client.SendMessageAsync(outboxMessage);
-								if (!response.WasSuccessful)
-								{
-									if (response.HasTooManyRequestsStatusCode())
+									if (!as4BusinessApiClients.TryGetValue(edifactFile.SenderIdentificationNumber, out IAs4BusinessApiClient? client))
 									{
-										hasTooManyRequestsError = true;
-										return;
+										try
+										{
+											client = businessApiClientFactory1.CreateAs4BusinessApiClient(edifactFile.SenderIdentificationNumber);
+											as4BusinessApiClients.Add(edifactFile.SenderIdentificationNumber, client);
+										}
+										catch (Exception e)
+										{
+											exceptions.Add(e);
+											messagesForRetry.Add(edifactFile);
+											continue;
+										}
 									}
 
+									OutboxMessage outboxMessage = edifactFile.CreateOutboxMessage();
+									MessageResponse<OutboxMessage> response = await client.SendMessageAsync(outboxMessage);
+									if (!response.WasSuccessful)
+									{
+										if (response.HasTooManyRequestsStatusCode())
+										{
+											hasTooManyRequestsError = true;
+											return;
+										}
+
+										messagesForRetry.Add(edifactFile);
+										if (response.ApiException != null)
+										{
+											exceptions.Add(response.ApiException);
+										}
+									}
+									else
+									{
+										successfulMessageCount++;
+										HandleSuccessfulDelivery(edifactFile);
+									}
+								}
+								catch (Exception e)
+								{
 									messagesForRetry.Add(edifactFile);
-									if (response.ApiException != null)
-									{
-										exceptions.Add(response.ApiException);
-									}
-								}
-								else
-								{
-									successfulMessageCount++;
-									HandleSuccessfulDelivery(edifactFile);
+									exceptions.Add(e);
 								}
 							}
-							catch (Exception e)
-							{
-								messagesForRetry.Add(edifactFile);
-								exceptions.Add(e);
-							}
-						}
 
-						edifactFiles = messagesForRetry;
-						ThrowIfRetryIsNeeded(messagesForRetry, exceptions);
-					});
+							edifactFiles = messagesForRetry;
+							ThrowIfRetryIsNeeded(messagesForRetry, exceptions);
+						});
 
 				if (policyResult.FinalException != null)
 				{
@@ -132,8 +133,9 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 					as4BusinessApiClient.Value.Dispose();
 				}
 
-				string statusMessage = CreateStatusMessage(successfulMessageCount, initialEdifactFileCount, failedMessageCount, configuredDeliveryLimit, hasTooManyRequestsError);
-				logger.LogInformation("Finished sending available messages: {Status}", statusMessage);
+				string statusMessage = CreateStatusMessage(successfulMessageCount, initialEdifactFileCount, failedMessageCount, configuredDeliveryLimit,
+					hasTooManyRequestsError);
+				logger1.LogInformation("Finished sending available messages: {Status}", statusMessage);
 			}
 		}
 
@@ -152,7 +154,8 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 			throw new InvalidOperationException("Error while sending AS4 messages.");
 		}
 
-		private string CreateStatusMessage(int successfulMessageCount, int initialEdifactFileCount, int failedMessageCount, int configuredDeliveryLimit, bool hasTooManyRequestsError)
+		private string CreateStatusMessage(int successfulMessageCount, int initialEdifactFileCount, int failedMessageCount, int configuredDeliveryLimit,
+			bool hasTooManyRequestsError)
 		{
 			string statusMessage = $"{successfulMessageCount}/{initialEdifactFileCount} sent successfully.";
 			if (failedMessageCount > 0)
@@ -167,7 +170,8 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 
 			if (hasTooManyRequestsError)
 			{
-				statusMessage += "A 429 TooManyRequests status code was encountered while sending the EDIFACT messages which caused the sending to end before all messages could be sent.";
+				statusMessage +=
+					"A 429 TooManyRequests status code was encountered while sending the EDIFACT messages which caused the sending to end before all messages could be sent.";
 			}
 
 			return statusMessage;
@@ -175,7 +179,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 
 		private void HandleSuccessfulDelivery(IEdifactFile edifactFile)
 		{
-			edifactDirectoryResolver.DeleteFile(edifactFile.Path);
+			edifactDirectoryResolver1.DeleteFile(edifactFile.Path);
 		}
 	}
 }

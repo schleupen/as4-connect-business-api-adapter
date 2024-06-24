@@ -4,8 +4,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
 {
 	using System;
 	using System.IdentityModel.Tokens.Jwt;
+	using Microsoft.Extensions.Options;
 	using Microsoft.IdentityModel.Tokens;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
+	using Schleupen.AS4.BusinessAdapter.Configuration;
 
 	/// <summary>
 	/// Helper for the creation of JWT.
@@ -14,8 +16,9 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	{
 		private readonly IMarketpartnerCertificateProvider marketpartnerCertificateProvider;
 
-		public JwtHelper(IMarketpartnerCertificateProvider marketpartnerCertificateProvider)
+		public JwtHelper(IMarketpartnerCertificateProvider marketpartnerCertificateProvider, IOptions<SendOptions> options)
 		{
+
 			this.marketpartnerCertificateProvider = marketpartnerCertificateProvider;
 		}
 

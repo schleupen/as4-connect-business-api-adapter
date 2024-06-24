@@ -7,27 +7,14 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 
-	public sealed class As4BusinessApiClientFactory : IAs4BusinessApiClientFactory
+	public sealed class As4BusinessApiClientFactory(
+		IConfigurationAccess configuration,
+		IJwtHelper jwtHelper,
+		IMarketpartnerCertificateProvider marketpartnerCertificateProvider,
+		ILogger<As4BusinessApiClient> clientLogger,
+		IClientWrapperFactory clientWrapperFactory)
+		: IAs4BusinessApiClientFactory
 	{
-		private readonly IConfigurationAccess configuration;
-		private readonly IJwtHelper jwtHelper;
-		private readonly IMarketpartnerCertificateProvider marketpartnerCertificateProvider;
-		private readonly ILogger<As4BusinessApiClient> clientLogger;
-		private readonly IClientWrapperFactory clientWrapperFactory;
-
-		public As4BusinessApiClientFactory(IConfigurationAccess configuration,
-			IJwtHelper jwtHelper,
-			IMarketpartnerCertificateProvider marketpartnerCertificateProvider,
-			ILogger<As4BusinessApiClient> clientLogger,
-			IClientWrapperFactory clientWrapperFactory)
-		{
-			this.configuration = configuration;
-			this.jwtHelper = jwtHelper;
-			this.marketpartnerCertificateProvider = marketpartnerCertificateProvider;
-			this.clientLogger = clientLogger;
-			this.clientWrapperFactory = clientWrapperFactory;
-		}
-
 		public IAs4BusinessApiClient CreateAs4BusinessApiClient(string marktpartnerId)
 		{
 			string as4BusinessApiEndpoint = configuration.ResolveBusinessApiEndpoint();

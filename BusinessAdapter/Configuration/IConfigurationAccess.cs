@@ -12,18 +12,6 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration
 
 		string ResolveBusinessApiEndpoint();
 
-		string ReadReceiveDirectory();
-
-		string ReadSendDirectory();
-
 		IReadOnlyCollection<string> ReadOwnMarketpartners();
-
-		int ReceivingRetryCount { get; }
-
-		int ReceivingMessageLimitCount { get; }
-
-		int DeliveryRetryCount { get; }
-
-		int DeliveryMessageLimitCount { get; }
 	}
 }

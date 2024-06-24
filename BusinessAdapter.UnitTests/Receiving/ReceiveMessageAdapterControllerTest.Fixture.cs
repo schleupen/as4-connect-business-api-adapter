@@ -3,6 +3,7 @@
 namespace Schleupen.AS4.BusinessAdapter.Receiving
 {
 	using Microsoft.Extensions.Logging;
+	using Microsoft.Extensions.Options;
 	using Moq;
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
@@ -19,6 +20,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 			private readonly Mock<IConfigurationAccess> configurationAccessMock;
 			private readonly Mock<IEdifactDirectoryResolver> edifactDirectoryResolverMock;
 			private readonly Mock<ILogger<ReceiveMessageAdapterController>> loggerMock;
+			private readonly Mock<IOptions<ReceiveOptions>> receiveOptionsMock;
 			private readonly Mock<IAs4BusinessApiClient> businessApiClientMock;
 
 			public Fixture()
@@ -28,6 +30,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 				configurationAccessMock = mockRepository.Create<IConfigurationAccess>();
 				edifactDirectoryResolverMock = mockRepository.Create<IEdifactDirectoryResolver>();
 				loggerMock = mockRepository.Create<ILogger<ReceiveMessageAdapterController>>(MockBehavior.Loose);
+				receiveOptionsMock = mockRepository.Create<IOptions<ReceiveOptions>>(MockBehavior.Loose);
 			}
 
 			public void Dispose()
@@ -41,13 +44,13 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 					businessApiClientFactoryMock.Object,
 					configurationAccessMock.Object,
 					edifactDirectoryResolverMock.Object,
+					receiveOptionsMock.Object,
 					loggerMock.Object);
 			}
 
 			public void PrepareReceiveAvailableMessagesAsync()
 			{
 				SetupAdapterConfiguration();
-				SetupReadReceiveDirectory();
 				SetupOwnMarketpartners("12345");
 				SetupBusinessApiClientFactory("12345");
 
@@ -124,17 +127,14 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 					.Returns(marketpartners);
 			}
 
-			private void SetupReadReceiveDirectory()
-			{
-				configurationAccessMock
-					.Setup(x => x.ReadReceiveDirectory())
-					.Returns(@"C:\Temp");
-			}
-
 			private void SetupAdapterConfiguration(int messageLimit = 100)
 			{
-				configurationAccessMock.Setup(x => x.ReceivingMessageLimitCount).Returns(messageLimit);
-				configurationAccessMock.Setup(x => x.ReceivingRetryCount).Returns(0);
+				this.receiveOptionsMock.Setup(x => x.Value).Returns(new ReceiveOptions()
+				{
+					MessageLimitCount = messageLimit,
+					RetryCount = 0,
+					ReceiveDirectory = @"C:\Temp"
+				});
 			}
 		}
 	}
