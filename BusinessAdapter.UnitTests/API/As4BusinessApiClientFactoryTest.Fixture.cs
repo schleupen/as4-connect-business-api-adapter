@@ -4,6 +4,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 {
 	using System.Security.Cryptography.X509Certificates;
 	using Microsoft.Extensions.Logging;
+	using Microsoft.Extensions.Options;
 	using Moq;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
@@ -14,7 +15,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		private sealed class Fixture : IDisposable
 		{
 			private readonly MockRepository mockRepository = new(MockBehavior.Strict);
-			private readonly Mock<IConfigurationAccess> configurationMock;
+			private readonly Mock<IOptions<AdapterOptions>> adapterOptions;
 			private readonly Mock<IJwtHelper> jwtHelperMock;
 			private readonly Mock<IMarketpartnerCertificateProvider> marketpartnerCertificateProviderMock;
 			private readonly Mock<ILogger<As4BusinessApiClient>> clientLoggerMock;
@@ -24,7 +25,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 
 			public Fixture()
 			{
-				configurationMock = mockRepository.Create<IConfigurationAccess>();
+				adapterOptions = mockRepository.Create<IOptions<AdapterOptions>>();
 				jwtHelperMock = mockRepository.Create<IJwtHelper>();
 				marketpartnerCertificateProviderMock = mockRepository.Create<IMarketpartnerCertificateProvider>();
 				clientLoggerMock = mockRepository.Create<ILogger<As4BusinessApiClient>>();
@@ -35,7 +36,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			public As4BusinessApiClientFactory CreateTestObject()
 			{
 				return new As4BusinessApiClientFactory(
-					configurationMock.Object,
+					adapterOptions.Object,
 					jwtHelperMock.Object,
 					marketpartnerCertificateProviderMock.Object,
 					clientLoggerMock.Object,
@@ -72,9 +73,9 @@ namespace Schleupen.AS4.BusinessAdapter.API
 
 			private void SetupEndpoint(string endpoint)
 			{
-				configurationMock
-					.Setup(x => x.ResolveBusinessApiEndpoint())
-					.Returns(endpoint);
+				adapterOptions
+					.Setup(x => x.Value)
+					.Returns(new AdapterOptions() { As4ConnectEndpoint = endpoint });
 			}
 		}
 	}

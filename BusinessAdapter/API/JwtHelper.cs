@@ -16,7 +16,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	{
 		private readonly IMarketpartnerCertificateProvider marketpartnerCertificateProvider;
 
-		public JwtHelper(IMarketpartnerCertificateProvider marketpartnerCertificateProvider, IOptions<SendOptions> options)
+		public JwtHelper(IMarketpartnerCertificateProvider marketpartnerCertificateProvider)
 		{
 
 			this.marketpartnerCertificateProvider = marketpartnerCertificateProvider;

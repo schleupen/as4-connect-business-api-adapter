@@ -17,7 +17,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 		{
 			private readonly MockRepository mockRepository = new(MockBehavior.Strict);
 			private readonly Mock<IAs4BusinessApiClientFactory> businessApiClientFactoryMock;
-			private readonly Mock<IConfigurationAccess> configurationAccessMock;
+			private readonly Mock<IOptions<AdapterOptions>> adapterOptions;
 			private readonly Mock<IEdifactDirectoryResolver> edifactDirectoryResolverMock;
 			private readonly Mock<ILogger<ReceiveMessageAdapterController>> loggerMock;
 			private readonly Mock<IOptions<ReceiveOptions>> receiveOptionsMock;
@@ -27,7 +27,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 			{
 				businessApiClientMock = mockRepository.Create<IAs4BusinessApiClient>();
 				businessApiClientFactoryMock = mockRepository.Create<IAs4BusinessApiClientFactory>();
-				configurationAccessMock = mockRepository.Create<IConfigurationAccess>();
+				adapterOptions = mockRepository.Create<IOptions<AdapterOptions>>();
 				edifactDirectoryResolverMock = mockRepository.Create<IEdifactDirectoryResolver>();
 				loggerMock = mockRepository.Create<ILogger<ReceiveMessageAdapterController>>(MockBehavior.Loose);
 				receiveOptionsMock = mockRepository.Create<IOptions<ReceiveOptions>>(MockBehavior.Loose);
@@ -42,9 +42,9 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 			{
 				return new ReceiveMessageAdapterController(
 					businessApiClientFactoryMock.Object,
-					configurationAccessMock.Object,
 					edifactDirectoryResolverMock.Object,
 					receiveOptionsMock.Object,
+					adapterOptions.Object,
 					loggerMock.Object);
 			}
 
@@ -122,9 +122,9 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 
 			private void SetupOwnMarketpartners(params string[] marketpartners)
 			{
-				configurationAccessMock
-					.Setup(x => x.ReadOwnMarketpartners())
-					.Returns(marketpartners);
+				adapterOptions
+					.Setup(x => x.Value)
+					.Returns(new AdapterOptions() { Marketpartners = marketpartners });
 			}
 
 			private void SetupAdapterConfiguration(int messageLimit = 100)
@@ -133,7 +133,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 				{
 					MessageLimitCount = messageLimit,
 					RetryCount = 0,
-					ReceiveDirectory = @"C:\Temp"
+					Directory = @"C:\Temp"
 				});
 			}
 		}

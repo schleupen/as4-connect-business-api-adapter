@@ -22,7 +22,6 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 			private readonly MockRepository mockRepository = new(MockBehavior.Strict);
 			private readonly Mock<IAs4BusinessApiClientFactory> businessApiClientFactory;
-			private readonly Mock<IConfigurationAccess> configurationMock;
 			private readonly Mock<IEdifactDirectoryResolver> edifactDirectoryResolverMock;
 			private readonly Mock<ILogger<SendMessageAdapterController>> loggerMock;
 			private readonly Mock<IEdifactFile> edifactFile1Mock;
@@ -33,7 +32,6 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 			public Fixture()
 			{
 				businessApiClientFactory = mockRepository.Create<IAs4BusinessApiClientFactory>();
-				configurationMock = mockRepository.Create<IConfigurationAccess>();
 				edifactDirectoryResolverMock = mockRepository.Create<IEdifactDirectoryResolver>();
 				edifactFile1Mock = mockRepository.Create<IEdifactFile>();
 				edifactFile2Mock = mockRepository.Create<IEdifactFile>();
@@ -60,7 +58,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 			{
 				this.sendOptionsMock
 					.Setup(x => x.Value)
-					.Returns(new SendOptions() { SendDirectory = null });
+					.Returns(new SendOptions() { Directory = null });
 			}
 
 			private void SetupAdapterConfiguration(int sendLimit = 100)
@@ -68,7 +66,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 				this.sendOptionsMock.Setup(x => x.Value).Returns(new SendOptions()
 				{
 					RetryCount = 0,
-					SendDirectory = @"C:\Temp",
+					Directory = @"C:\Temp",
 					MessageLimitCount = sendLimit
 				});
 			}

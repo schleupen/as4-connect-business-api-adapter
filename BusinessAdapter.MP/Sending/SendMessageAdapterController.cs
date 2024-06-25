@@ -25,7 +25,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 
 		public async Task SendAvailableMessagesAsync(CancellationToken cancellationToken)
 		{
-			string sendDirectoryPath = sendOptions.SendDirectory;
+			string sendDirectoryPath = sendOptions.Directory;
 			if (string.IsNullOrEmpty(sendDirectoryPath))
 			{
 				throw new CatastrophicException("The send directory is not configured.");

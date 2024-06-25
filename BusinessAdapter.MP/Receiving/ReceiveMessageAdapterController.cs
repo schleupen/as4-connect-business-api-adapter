@@ -19,9 +19,9 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 
 	public sealed class ReceiveMessageAdapterController(
 		IAs4BusinessApiClientFactory businessApiClientFactory,
-		IConfigurationAccess configuration,
 		IEdifactDirectoryResolver edifactDirectoryResolver,
 		IOptions<ReceiveOptions> receiveOptions,
+		IOptions<AdapterOptions> adapterOptions,
 		ILogger<ReceiveMessageAdapterController> logger)
 		: IReceiveMessageAdapterController
 	{
@@ -33,13 +33,13 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		{
 			logger.LogDebug("Receiving of available messages starting.");
 
-			string receiveDirectoryPath = receiveOptions.ReceiveDirectory;
+			string receiveDirectoryPath = receiveOptions.Directory;
 			if (string.IsNullOrEmpty(receiveDirectoryPath))
 			{
 				throw new CatastrophicException("The receive directory is not configured.");
 			}
 
-			IReadOnlyCollection<string> ownMarketpartners = configuration.ReadOwnMarketpartners();
+			IReadOnlyCollection<string> ownMarketpartners = adapterOptions.Value.Marketpartners!;
 			if (ownMarketpartners.Count == 0)
 			{
 				throw new CatastrophicException("No valid own market partners were found.");

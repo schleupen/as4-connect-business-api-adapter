@@ -4,9 +4,11 @@ namespace Schleupen.AS4.BusinessAdapter.MP;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.Certificates;
 using Schleupen.AS4.BusinessAdapter.Configuration;
+using Schleupen.AS4.BusinessAdapter.Configuration.Validation;
 using Schleupen.AS4.BusinessAdapter.MP.API;
 using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 using Schleupen.AS4.BusinessAdapter.MP.Sending;
@@ -17,13 +19,12 @@ public class HostConfigurator
 	{
 		HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 		builder.Services
-				// Common
+			// Common
 			.AddTransient<IJwtHelper, JwtHelper>()
 			.AddTransient<IMarketpartnerCertificateProvider, MarketpartnerCertificateProvider>()
-			.AddSingleton<IConfigurationAccess, ConfigurationAccess>()
 			.AddTransient<ICertificateStoreFactory, CertificateStoreFactory>()
 			.AddTransient<IFileSystemWrapper, FileSystemWrapper>()
-				// MP
+			// MP
 			.AddTransient<IAs4BusinessApiClientFactory, As4BusinessApiClientFactory>()
 			.AddTransient<IClientWrapperFactory, ClientWrapperFactory>()
 			.AddHostedService<SendMessageWorker>()
@@ -33,8 +34,12 @@ public class HostConfigurator
 			.AddTransient<IEdifactDirectoryResolver, EdifactDirectoryResolver>()
 			.AddTransient<IEdifactFileNameExtractor, EdifactFileNameExtractor>()
 			.AddTransient<IEdifactFileParser, EdifactFileParser>()
-
-			.Configure<AdapterOptions>(builder.Configuration.GetSection(AdapterOptions.SectionName));
+			// Config
+			.Configure<AdapterOptions>(builder.Configuration.GetSection(AdapterOptions.SectionName))
+			.Configure<SendOptions>(builder.Configuration.GetSection(AdapterOptions.SendSectionName))
+			.Configure<ReceiveOptions>(builder.Configuration.GetSection(AdapterOptions.ReceiveSectionName))
+			.AddSingleton<IValidateOptions<AdapterOptions>, AdapterOptionsValidator>()
+			.AddOptionsWithValidateOnStart<AdapterOptions>();
 
 		IHost host = builder.Build();
 		return host;

@@ -3,19 +3,15 @@
 namespace Schleupen.AS4.BusinessAdapter.Certificates
 {
 	using System.Security.Cryptography.X509Certificates;
+	using Microsoft.Extensions.Options;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 
 	/// <summary>
 	/// Factory for certificate stores.
 	/// </summary>
-	public sealed class CertificateStoreFactory : ICertificateStoreFactory
+	public sealed class CertificateStoreFactory(IOptions<AdapterOptions> options) : ICertificateStoreFactory
 	{
-		private readonly IConfigurationAccess configuration;
-
-		public CertificateStoreFactory(IConfigurationAccess configuration)
-		{
-			this.configuration = configuration;
-		}
+		private readonly AdapterOptions options = options.Value;
 
 		/// <summary>
 		/// Creates a new certificate store and opens it.
@@ -23,8 +19,8 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		/// <returns>A certificate store.</returns>
 		public ICertificateStore CreateAndOpen()
 		{
-			StoreName storeName = configuration.GetCertificateStoreName();
-			StoreLocation storeLocation = configuration.GetCertificateStoreLocation();
+			StoreName storeName = options.CertificateStoreName;
+			StoreLocation storeLocation = options.CertificateStoreLocation;
 
 			X509Store store = new X509Store(storeName, storeLocation);
 			store.Open(OpenFlags.ReadOnly);
