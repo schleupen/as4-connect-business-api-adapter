@@ -35,11 +35,11 @@ public class HostConfigurator
 			.AddTransient<IEdifactFileNameExtractor, EdifactFileNameExtractor>()
 			.AddTransient<IEdifactFileParser, EdifactFileParser>()
 			// Config
-			.Configure<AdapterOptions>(builder.Configuration.GetSection(AdapterOptions.SectionName))
-			.Configure<SendOptions>(builder.Configuration.GetSection(AdapterOptions.SendSectionName))
-			.Configure<ReceiveOptions>(builder.Configuration.GetSection(AdapterOptions.ReceiveSectionName))
-			.AddSingleton<IValidateOptions<AdapterOptions>, AdapterOptionsValidator>()
-			.AddOptionsWithValidateOnStart<AdapterOptions>();
+			.Configure<Configuration.AdapterOptions>(builder.Configuration.GetSection(Configuration.AdapterOptions.SectionName))
+			.Configure<SendOptions>(builder.Configuration.GetSection(Configuration.AdapterOptions.SendSectionName))
+			.Configure<ReceiveOptions>(builder.Configuration.GetSection(Configuration.AdapterOptions.ReceiveSectionName))
+			.AddSingleton<IValidateOptions<Configuration.AdapterOptions>, AdapterOptionsValidator>()
+			.AddOptionsWithValidateOnStart<Configuration.AdapterOptions>();
 
 		IHost host = builder.Build();
 		return host;

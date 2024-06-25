@@ -6,6 +6,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="Certificates\Resources\client.pfx" />
+	  <None Update="appsettings.unittests.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="Certificates\Resources\client.pfx" />

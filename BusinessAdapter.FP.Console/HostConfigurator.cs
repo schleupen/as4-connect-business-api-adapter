@@ -12,6 +12,7 @@ using Schleupen.AS4.BusinessAdapter.Configuration.Validation;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
+
 public class HostConfigurator
 {
 	public IHost ConfigureHost(string[] args)
@@ -29,11 +30,11 @@ public class HostConfigurator
 			.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>()
 			.AddTransient<ISendMessageAdapterController, SendMessageAdapterController>()
 			// Config
-			.Configure<AdapterOptions>(builder.Configuration.GetSection(AdapterOptions.SectionName))
-			.Configure<SendOptions>(builder.Configuration.GetSection(AdapterOptions.SendSectionName))
-			.Configure<ReceiveOptions>(builder.Configuration.GetSection(AdapterOptions.ReceiveSectionName))
-			.AddSingleton<IValidateOptions<AdapterOptions>, AdapterOptionsValidator>()
-			.AddOptionsWithValidateOnStart<AdapterOptions>();
+			.Configure<Configuration.AdapterOptions>(builder.Configuration.GetSection(Configuration.AdapterOptions.SectionName))
+			.Configure<SendOptions>(builder.Configuration.GetSection(Configuration.AdapterOptions.SendSectionName))
+			.Configure<ReceiveOptions>(builder.Configuration.GetSection(Configuration.AdapterOptions.ReceiveSectionName))
+			.AddSingleton<IValidateOptions<Configuration.AdapterOptions>, AdapterOptionsValidator>()
+			.AddOptionsWithValidateOnStart<Configuration.AdapterOptions>();
 
 
 		IHost host = builder.Build();

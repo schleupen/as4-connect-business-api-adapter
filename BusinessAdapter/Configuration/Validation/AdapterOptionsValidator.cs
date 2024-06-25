@@ -2,10 +2,9 @@
 
 using Microsoft.Extensions.Options;
 
-public class AdapterOptionsValidator : IValidateOptions<AdapterOptions>
+public class AdapterOptionsValidator : IValidateOptions<Configuration.AdapterOptions>
 {
-	// TODO: unittests
-	public ValidateOptionsResult Validate(string? name, AdapterOptions options)
+	public ValidateOptionsResult Validate(string? name, Configuration.AdapterOptions options)
 	{
 		ValidateOptionsResultBuilder builder = new ValidateOptionsResultBuilder();
 
@@ -50,12 +49,12 @@ public class AdapterOptionsValidator : IValidateOptions<AdapterOptions>
 		return ValidateOptionsResult.Success;
 	}
 
-	private ValidateOptionsResult ValidateCertificateOptions(AdapterOptions receiveOptions)
+	private ValidateOptionsResult ValidateCertificateOptions(Configuration.AdapterOptions receiveOptions)
 	{
 		return ValidateOptionsResult.Success;
 	}
 
-	private ValidateOptionsResult ValidateEndpoint(AdapterOptions receiveOptions)
+	private ValidateOptionsResult ValidateEndpoint(Configuration.AdapterOptions receiveOptions)
 	{
 		if (string.IsNullOrEmpty(receiveOptions.As4ConnectEndpoint))
 		{
@@ -65,7 +64,7 @@ public class AdapterOptionsValidator : IValidateOptions<AdapterOptions>
 		return ValidateOptionsResult.Success;
 	}
 
-	private ValidateOptionsResult ValidateMarketpartner(AdapterOptions receiveOptions)
+	private ValidateOptionsResult ValidateMarketpartner(Configuration.AdapterOptions receiveOptions)
 	{
 		if (receiveOptions.Marketpartners == null || receiveOptions.Marketpartners.Length == 0)
 		{
