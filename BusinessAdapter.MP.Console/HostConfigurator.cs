@@ -34,12 +34,8 @@ public class HostConfigurator
 			.AddTransient<IEdifactDirectoryResolver, EdifactDirectoryResolver>()
 			.AddTransient<IEdifactFileNameExtractor, EdifactFileNameExtractor>()
 			.AddTransient<IEdifactFileParser, EdifactFileParser>()
-			// Config
-			.Configure<Configuration.AdapterOptions>(builder.Configuration.GetSection(Configuration.AdapterOptions.SectionName))
-			.Configure<SendOptions>(builder.Configuration.GetSection(Configuration.AdapterOptions.SendSectionName))
-			.Configure<ReceiveOptions>(builder.Configuration.GetSection(Configuration.AdapterOptions.ReceiveSectionName))
-			.AddSingleton<IValidateOptions<Configuration.AdapterOptions>, AdapterOptionsValidator>()
-			.AddOptionsWithValidateOnStart<Configuration.AdapterOptions>();
+			.AddConfiguration(builder.Configuration);
+
 
 		IHost host = builder.Build();
 		return host;
