@@ -2,9 +2,9 @@
 
 public record SendOptions
 {
-	public int RetryCount { get; set; }
+	public int RetryCount { get; set; } = 3;
 
-	public int MessageLimitCount { get; set; }
+	public int MessageLimitCount { get; set; } = 1000;
 
 	public string Directory { get; set; }
 }

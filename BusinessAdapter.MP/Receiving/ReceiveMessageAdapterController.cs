@@ -58,7 +58,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 					try
 					{
 						IAs4BusinessApiClient client = businessApiClientFactory.CreateAs4BusinessApiClient(receiverIdentificationNumber);
-						int messageLimit = receiveOptions.MessageLimitCount <= 0 ? 1000 : receiveOptions.MessageLimitCount;
+						int messageLimit = receiveOptions.MessageLimitCount;
 						MessageReceiveInfo receiveInfo = await client.QueryAvailableMessagesAsync(messageLimit);
 						as4BusinessApiClients.Add(receiveInfo, client);
 					}
@@ -145,7 +145,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 			int failedMessageCountBase,
 			CancellationToken cancellationToken)
 		{
-			int configuredLimit = this.receiveOptions.MessageLimitCount <= 0 ? int.MaxValue : this.receiveOptions.MessageLimitCount;
+			int configuredLimit = this.receiveOptions.MessageLimitCount;
 			int messageLimit = Math.Min(receiveContext.Key.GetAvailableMessages().Length, configuredLimit);
 			MpMessage[] availableMessages = receiveContext.Key.GetAvailableMessages();
 
