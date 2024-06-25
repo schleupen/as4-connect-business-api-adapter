@@ -44,7 +44,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 			public SendMessageAdapterController CreateTestObject()
 			{
-				return new SendMessageAdapterController(
+					return new SendMessageAdapterController(
 					businessApiClientFactory.Object,
 					edifactDirectoryResolverMock.Object,
 					sendOptionsMock.Object,

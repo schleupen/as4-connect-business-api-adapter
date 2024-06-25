@@ -17,28 +17,17 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Parsing;
 
-	public sealed class ReceiveMessageAdapterController : IReceiveMessageAdapterController
+	public sealed class ReceiveMessageAdapterController(
+		IAs4BusinessApiClientFactory businessApiClientFactory,
+		IConfigurationAccess configuration,
+		IEdifactDirectoryResolver edifactDirectoryResolver,
+		IOptions<ReceiveOptions> receiveOptions,
+		ILogger<ReceiveMessageAdapterController> logger)
+		: IReceiveMessageAdapterController
 	{
 		private const string TooManyRequestsMessage = "A 429 TooManyRequests status code was encountered while receiving the EDIFACT messages which caused the receiving to end before all messages could be received.";
 
-		private readonly ReceiveOptions receiveOptions;
-		private readonly IAs4BusinessApiClientFactory businessApiClientFactory;
-		private readonly IConfigurationAccess configuration;
-		private readonly IEdifactDirectoryResolver edifactDirectoryResolver;
-		private readonly ILogger<ReceiveMessageAdapterController> logger;
-
-		public ReceiveMessageAdapterController(IAs4BusinessApiClientFactory businessApiClientFactory,
-			IConfigurationAccess configuration,
-			IEdifactDirectoryResolver edifactDirectoryResolver,
-			IOptions<ReceiveOptions> receiveOptions,
-			ILogger<ReceiveMessageAdapterController> logger)
-		{
-			this.businessApiClientFactory = businessApiClientFactory;
-			this.configuration = configuration;
-			this.edifactDirectoryResolver = edifactDirectoryResolver;
-			this.logger = logger;
-			this.receiveOptions = receiveOptions.Value;
-		}
+		private readonly ReceiveOptions receiveOptions = receiveOptions.Value;
 
 		public async Task ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
 		{
