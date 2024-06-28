@@ -6,13 +6,13 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
-	internal sealed partial class OutboxMessageTest
+	internal sealed partial class MpOutboxMessageTest
 	{
 		private sealed class Fixture
 		{
 			private const string SenderMessageId = "960A5057-529F-4A9F-B5FA-73551867BEAB";
 
-			public OutboxMessage CreateTestObject()
+			public MpOutboxMessage CreateTestObject()
 			{
 				ReceivingParty receiver = new ReceivingParty("Reciever", "BDEW");
 				string senderMessageId = SenderMessageId;
@@ -21,10 +21,10 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 				string fileName = "test.edi";
 				DateTimeOffset documentDate = new DateTimeOffset(new DateTime(2024, 01, 24, 11, 10, 43), TimeSpan.FromHours(1));
 
-				return new OutboxMessage(receiver, senderMessageId, bdewDocumentNumber, bdewDocumentType, Array.Empty<byte>(), fileName, documentDate);
+				return new MpOutboxMessage(receiver, senderMessageId, bdewDocumentNumber, bdewDocumentType, Array.Empty<byte>(), fileName, documentDate);
 			}
 
-			public void ValidateProperties(OutboxMessage testObject)
+			public void ValidateProperties(MpOutboxMessage testObject)
 			{
 				Assert.That(testObject.BdewDocumentNumber, Is.EqualTo("DocumentNumber"));
 				Assert.That(testObject.BdewDocumentType, Is.EqualTo("DocumentType"));

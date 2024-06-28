@@ -17,7 +17,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		/// Adds an outgoing message including the EDIFACT content to be send to the foreign market partner.
 		/// </summary>
 		/// <returns>Contains information regarding the success of the sending process.</returns>
-		Task<MessageResponse<OutboxMessage>> SendMessageAsync(OutboxMessage message);
+		Task<MessageResponse<MpOutboxMessage>> SendMessageAsync(MpOutboxMessage message);
 
 		/// <summary>
 		/// Queries the available messages ready to be received.

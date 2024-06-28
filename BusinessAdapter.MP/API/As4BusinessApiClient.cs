@@ -52,7 +52,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			httpClient = InitializeHttpClient();
 		}
 
-		public async Task<MessageResponse<OutboxMessage>> SendMessageAsync(OutboxMessage message)
+		public async Task<MessageResponse<MpOutboxMessage>> SendMessageAsync(MpOutboxMessage message)
 		{
 			using (MemoryStream compressedStream = new MemoryStream())
 			{
@@ -75,11 +75,11 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 						Guid.NewGuid(),
 						message.SenderMessageId);
 
-					return new MessageResponse<OutboxMessage>(true, message);
+					return new MessageResponse<MpOutboxMessage>(true, message);
 				}
 				catch (ApiException ex)
 				{
-					return new MessageResponse<OutboxMessage>(false, message, (HttpStatusCode)ex.StatusCode, ex);
+					return new MessageResponse<MpOutboxMessage>(false, message, (HttpStatusCode)ex.StatusCode, ex);
 				}
 			}
 		}

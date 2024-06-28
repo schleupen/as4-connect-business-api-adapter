@@ -78,8 +78,8 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 										}
 									}
 
-									OutboxMessage outboxMessage = edifactFile.CreateOutboxMessage();
-									MessageResponse<OutboxMessage> response = await client.SendMessageAsync(outboxMessage);
+									MpOutboxMessage mpOutboxMessage = edifactFile.CreateOutboxMessage();
+									MessageResponse<MpOutboxMessage> response = await client.SendMessageAsync(mpOutboxMessage);
 									if (!response.WasSuccessful)
 									{
 										if (response.HasTooManyRequestsStatusCode())

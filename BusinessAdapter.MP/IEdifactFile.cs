@@ -10,5 +10,5 @@ public interface IEdifactFile
 
 	string Path { get; }
 
-	OutboxMessage CreateOutboxMessage();
+	MpOutboxMessage CreateOutboxMessage();
 }

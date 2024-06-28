@@ -120,13 +120,13 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Setup(x => x.Dispose());
 
 				as4BusinessApiClientMock
-					.Setup(x => x.SendMessageAsync(It.Is<OutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((OutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<OutboxMessage>(true, outboxMessage)));
+					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(true, outboxMessage)));
 			}
 
-			private OutboxMessage CreateOutboxMessage()
+			private MpOutboxMessage CreateOutboxMessage()
 			{
-				return new OutboxMessage(new ReceivingParty("54321", "BDEW"), SenderMessageId, "DocumentNumber", "MSCONS", Array.Empty<byte>(), "test.edi",
+				return new MpOutboxMessage(new ReceivingParty("54321", "BDEW"), SenderMessageId, "DocumentNumber", "MSCONS", Array.Empty<byte>(), "test.edi",
 					new DateTimeOffset(new DateTime(2024, 01, 23, 09, 24, 44), TimeSpan.FromHours(1)));
 			}
 
@@ -157,7 +157,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Setup(x => x.Dispose());
 
 				as4BusinessApiClientMock
-					.Setup(x => x.SendMessageAsync(It.Is<OutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
+					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
 					.Throws(() => new InvalidOperationException("Expected"));
 			}
 
@@ -223,8 +223,8 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Setup(x => x.Dispose());
 
 				as4BusinessApiClientMock
-					.Setup(x => x.SendMessageAsync(It.Is<OutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((OutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<OutboxMessage>(true, outboxMessage)));
+					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(true, outboxMessage)));
 			}
 
 			public void SendAvailableMessagesAsyncWithApiExceptionForTooManyMessages()
@@ -259,8 +259,8 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Setup(x => x.Dispose());
 
 				as4BusinessApiClientMock
-					.Setup(x => x.SendMessageAsync(It.Is<OutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((OutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<OutboxMessage>(false, outboxMessage,
+					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(false, outboxMessage,
 						HttpStatusCode.TooManyRequests,
 						new ApiException("Error from API", 429, "response", new Dictionary<string, IEnumerable<string>>(), null))));
 			}
@@ -316,8 +316,8 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Setup(x => x.Dispose());
 
 				as4BusinessApiClientMock
-					.Setup(x => x.SendMessageAsync(It.Is<OutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((OutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<OutboxMessage>(false, outboxMessage,
+					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(false, outboxMessage,
 						HttpStatusCode.BadGateway, new ApiException("Error from API", 502, "response", new Dictionary<string, IEnumerable<string>>(), null))));
 			}
 
@@ -356,8 +356,8 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Setup(x => x.Dispose());
 
 				as4BusinessApiClientMock
-					.Setup(x => x.SendMessageAsync(It.Is<OutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((OutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<OutboxMessage>(true, outboxMessage)));
+					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(true, outboxMessage)));
 			}
 
 			public void VerifySecondMessageWasNotSend()

@@ -33,9 +33,9 @@ public class EdifactFile : IEdifactFile
 
 	public string Path { get; }
 
-	public OutboxMessage CreateOutboxMessage()
+	public MpOutboxMessage CreateOutboxMessage()
 	{
-		return new OutboxMessage(
+		return new MpOutboxMessage(
 			new ReceivingParty(receiverIdentificationNumber, receiverIdentificationNumberType),
 			string.Empty,
 			documentNumber,

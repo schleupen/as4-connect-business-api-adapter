@@ -8,9 +8,9 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 	/// <summary>
 	/// Outgoing AS4 message with metadata and edifact message.
 	/// </summary>
-	public class OutboxMessage
+	public class MpOutboxMessage
 	{
-		public OutboxMessage(ReceivingParty receiver, string senderMessageId, string bdewDocumentNumber, string bdewDocumentType, byte[] payload, string filename, DateTimeOffset documentDate)
+		public MpOutboxMessage(ReceivingParty receiver, string senderMessageId, string bdewDocumentNumber, string bdewDocumentType, byte[] payload, string filename, DateTimeOffset documentDate)
 		{
 			Receiver = receiver;
 			SenderMessageId = senderMessageId;
