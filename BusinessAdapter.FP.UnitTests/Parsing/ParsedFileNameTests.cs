@@ -3,6 +3,7 @@
 using NUnit.Framework;
 using System;
 using Schleupen.AS4.BusinessAdapter.FP;
+using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
 [TestFixture]
 public class ParsedFileNameTests

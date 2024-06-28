@@ -1,35 +1,35 @@
-﻿namespace Schleupen.AS4.BusinessAdapter.FP;
+﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
 // ACK format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
-// ANO format: <JJJJMMTT>_<TYP>_<EIC-NAME- BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML 
-// CON format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML 
-// Status format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_CRQ.XML 
+// ANO format: <JJJJMMTT>_<TYP>_<EIC-NAME- BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
+// CON format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
+// Status format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_CRQ.XML
 // Schedule format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
 
 public class ParsedFileName
 {
     // Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag
     public string Date { get; set; }
-    
+
     public string EicNameBilanzkreis { get; set; }
-    
+
     public string EicNameTso { get; set; }
-    
+
     public string Version { get; set; }
-    
+
     // Typ des Händlerfahrplans (3 Zeichen)
     // Typen:
-    //        - TPS Trade-responsible Party Schedule BKV-Fahrplan 
+    //        - TPS Trade-responsible Party Schedule BKV-Fahrplan
     //        - PPS Production-responsible Party Schedule Erzeugerfahrplan
     public string Type { get; set; }
-    
+
     public FpMessageType MessageType { get; set; }
-    
+
     // Zeitpunkt der Erstellung der Anomaly bzw. Confirmation Meldung.
     // Der Zeitstempel dient zur Unterscheidung mehrerer Anomaly- (und ggf. auch Confirmation-)
-    // Meldungen zu einer Fahrplanmeldung. 
+    // Meldungen zu einer Fahrplanmeldung.
     public string Timestamp { get; set; }
-    
+
     public static ParsedFileName Parse(string filename)
     {
         var coreFilename = filename.Substring(0, filename.LastIndexOf('.'));
@@ -47,7 +47,7 @@ public class ParsedFileName
             EicNameBilanzkreis = parts[2],
             EicNameTso = parts[3]
         };
-        
+
         var isNumeric = int.TryParse(parts[4], out _);
         string messageTypePart = "";
 
@@ -80,7 +80,7 @@ public class ParsedFileName
     {
         return $"Date: {Date}, Type: {Type}, EicNameBilanzkreis: {EicNameBilanzkreis}, EicNameTso: {EicNameTso}, Version: {Version}, Timestamp: {Timestamp}, MessageType: {MessageType}";
     }
-    
+
     public string GenerateFilename()
     {
         string messageTypeString = MessageType switch

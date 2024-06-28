@@ -1,6 +1,6 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.FP.Console
+namespace Schleupen.AS4.BusinessAdapter.FP
 {
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Hosting;

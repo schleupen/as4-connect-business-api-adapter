@@ -1,5 +1,6 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP;
 
+using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public class FileNameExtractor : IFileNameExtractor
@@ -17,10 +18,10 @@ public class FileNameExtractor : IFileNameExtractor
 
         return parsedFileName.GenerateFilename();
     }
-    
+
     private FpMessageType ToMessageType(string bdewDocumentType)
     {
         // TODO
         return FpMessageType.Acknowledge;
     }
-}   
+}

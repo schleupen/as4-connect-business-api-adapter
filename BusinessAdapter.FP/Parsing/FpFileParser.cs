@@ -1,7 +1,7 @@
-namespace Schleupen.AS4.BusinessAdapter.FP;
+namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
-using System.Xml.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 public class FpFileParser : IFpFileParser
 {
