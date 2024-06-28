@@ -9,53 +9,50 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	/// <summary>
 	/// Incoming AS4 message with metadata and EDIFACT payload.
 	/// </summary>
-	public class InboxMpMessage : IInboxMessage
+	public class InboxMpMessage(
+		string messageId,
+		DateTimeOffset createdAt,
+		string bdewDocumentDate,
+		SendingParty sender,
+		ReceivingParty receiver,
+		string? edifactContent,
+		byte[]? zippedContent)
+		: IInboxMessage
 	{
-		public InboxMpMessage(string messageId, DateTimeOffset createdAt, string bdewDocumentDate, SendingParty sender, ReceivingParty receiver, string? edifactContent, byte[]? zippedContent)
-		{
-			MessageId = messageId;
-			CreatedAt = createdAt;
-			BdewDocumentDate = bdewDocumentDate;
-			Sender = sender;
-			Receiver = receiver;
-			EdifactContent = edifactContent;
-			ZippedContent = zippedContent;
-		}
-
 		/// <summary>
 		/// The Identifier of the message.
 		/// </summary>
-		public string? MessageId { get; }
+		public string? MessageId { get; } = messageId;
 
 		/// <summary>
 		/// The timestamp when the message was generated in AS4 Connect.
 		/// </summary>
-		public DateTimeOffset CreatedAt { get; }
+		public DateTimeOffset CreatedAt { get; } = createdAt;
 
 		/// <summary>
 		/// The document date of the EDIFACT message.
 		/// </summary>
-		public string BdewDocumentDate { get; }
+		public string BdewDocumentDate { get; } = bdewDocumentDate;
 
 		/// <summary>
 		/// The sending party of the AS4 message.
 		/// </summary>
-		public SendingParty Sender { get; }
+		public SendingParty Sender { get; } = sender;
 
 		/// <summary>
 		/// The receiving party of the AS4 message.
 		/// </summary>
-		public ReceivingParty Receiver { get; }
+		public ReceivingParty Receiver { get; } = receiver;
 
 		/// <summary>
 		/// Decompressed content of the EDIFACT file.
 		/// </summary>
-		public string? EdifactContent { get; }
+		public string? EdifactContent { get; } = edifactContent;
 
 		/// <summary>
 		/// Zipped content of the EDIFACT message.
 		/// </summary>
-		private byte[]? ZippedContent { get; }
+		private byte[]? ZippedContent { get; } = zippedContent;
 
 		public string? ContentHashSha256
 		{

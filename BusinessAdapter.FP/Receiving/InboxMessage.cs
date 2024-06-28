@@ -1,19 +1,20 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 using Schleupen.AS4.BusinessAdapter.API;
+
 public class InboxFpMessage : IInboxMessage
 {
     public InboxFpMessage(
-        string? messageId, 
+        string? messageId,
         SendingParty sender,
         ReceivingParty receiver,
         string? contentHashSha256,
         byte[] payload,
         string bdewDocumentType,
-        string bdewDocumentNo, 
+        string bdewDocumentNo,
         string bdewFulfillmentDate,
         string bdewSubjectPartyId,
-        string bdewSubjectPartyRole, 
+        string bdewSubjectPartyRole,
         string? senderMessageId)
     {
         MessageId = messageId;
@@ -30,13 +31,13 @@ public class InboxFpMessage : IInboxMessage
     }
 
     public string? MessageId { get; }
-    
+
     public SendingParty Sender { get; }
-    
+
     public ReceivingParty Receiver { get; }
-    
+
     public string? ContentHashSha256 { get; }
-    
+
     /// <summary>
     /// XML payload.
     /// </summary>

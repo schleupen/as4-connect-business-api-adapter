@@ -3,21 +3,14 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 using System.Text;
 using System.Xml.Linq;
 
-public class FpFileParser : IFpFileParser
+public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
 {
-    private readonly IFileSystemWrapper fileSystemWrapper;
-    
-    private readonly string ESS_NAMESPACE_STRING = "urn:entsoe.eu:wgedi:ess";
-    
-    public FpFileParser(IFileSystemWrapper fileSystemWrapper)
-    {
-        this.fileSystemWrapper = fileSystemWrapper;
-    }
+	private readonly string ESS_NAMESPACE_STRING = "urn:entsoe.eu:wgedi:ess";
 
     public IFpFile Parse(string path)
     {
          string filename = fileSystemWrapper.GetFileName(path);
-         
+
          XDocument doc = XDocument.Load(path);
 
          XNamespace? ns = doc.Root?.GetDefaultNamespace();
@@ -25,36 +18,36 @@ public class FpFileParser : IFpFileParser
          string xmlData = File.ReadAllText(path);
 
          byte[] content = Encoding.UTF8.GetBytes(xmlData);
-         
-         ParsedFileName parsedFileName = ParsedFileName.Parse(filename);
-         
+
+         FpFileName fpFileName = FpFileName.Parse(filename);
+
          // TODO maybe find a better way to determine the format
          if (ns!.NamespaceName.Contains(ESS_NAMESPACE_STRING))
          {
-             return ParseEssFile(parsedFileName, doc, filename, path, content);
+             return ParseEssFile(fpFileName, doc, filename, path, content);
          }
          else
          {
-             return ParseCimFile(parsedFileName, doc, filename, path, content);
+             return ParseCimFile(fpFileName, doc, filename, path, content);
          }
     }
 
-    private IFpFile ParseEssFile(ParsedFileName parsedFileName,
-        XDocument doc, 
+    private IFpFile ParseEssFile(FpFileName fpFileName,
+        XDocument doc,
         string filename,
         string path,
         byte[] content)
     {
         XNamespace? ns = doc.Root?.GetDefaultNamespace();
 
-        var documentNo = ParseESSDocumentNoForMessageType(parsedFileName.MessageType, doc, ns, parsedFileName);
+        var documentNo = ParseESSDocumentNoForMessageType(fpFileName.MessageType, doc, ns, fpFileName);
         if (documentNo == null)
         {
             throw new ArgumentException($"Could not document number from file {path}.");
         }
-   
+
         var documentIdentification = doc.Descendants(ns + "DocumentIdentification").First().Attribute("v").Value;
-    
+
         var senderIdentification = doc.Descendants(ns + "SenderIdentification").First().Attribute("v").Value;
         if (senderIdentification == null)
         {
@@ -75,18 +68,18 @@ public class FpFileParser : IFpFileParser
         {
             throw new ArgumentException($"Could not retrieve receiver role from file {path}.");
         }
-        
+
         string? scheduleTimeInterval = "";
         // For acknowledge und status messages we take the date from the filename
-        if (parsedFileName.MessageType == FpMessageType.Acknowledge || parsedFileName.MessageType == FpMessageType.Status)
+        if (fpFileName.MessageType == FpMessageType.Acknowledge || fpFileName.MessageType == FpMessageType.Status)
         {
-            scheduleTimeInterval = parsedFileName.Date;
+            scheduleTimeInterval = fpFileName.Date;
         }
         else
         {
             scheduleTimeInterval = doc.Descendants(ns + "ScheduleTimeInterval").First().Attribute("v").Value;
         }
-        
+
         if (scheduleTimeInterval == null)
         {
             throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
@@ -95,7 +88,7 @@ public class FpFileParser : IFpFileParser
             content,
             filename,
             documentNo,
-            parsedFileName.MessageType.ToString(),
+            fpFileName.MessageType.ToString(),
             scheduleTimeInterval,
             senderIdentification,
             senderRole,
@@ -105,7 +98,7 @@ public class FpFileParser : IFpFileParser
             receiverRole);
     }
 
-    private IFpFile ParseCimFile(ParsedFileName parsedFileName,
+    private IFpFile ParseCimFile(FpFileName fpFileName,
         XDocument doc,
         string filename,
         string path,
@@ -113,14 +106,14 @@ public class FpFileParser : IFpFileParser
     {
         XNamespace? ns = doc.Root?.GetDefaultNamespace();
 
-        var documentNo = ParseCIMDocumentNoForMessageType(parsedFileName.MessageType, doc, ns, parsedFileName);
+        var documentNo = ParseCIMDocumentNoForMessageType(fpFileName.MessageType, doc, ns, fpFileName);
         if (documentNo == null)
         {
             throw new ArgumentException($"Could not document number from file {path}.");
         }
-        
+
         var documentIdentification = doc.Descendants(ns + "mRID").First().Attribute("v").Value;
-        
+
         var senderIdentification = doc.Descendants(ns + "sender_MarketParticipant.mRID").First().Attribute("v").Value;
         if (senderIdentification == null)
         {
@@ -141,12 +134,12 @@ public class FpFileParser : IFpFileParser
         {
             throw new ArgumentException($"Could not retrieve receiver role from file {path}.");
         }
-        
+
         string? scheduleTimeInterval = "";
         // For acknowledge und status messages we take the date from the filename
-        if (parsedFileName.MessageType == FpMessageType.Acknowledge || parsedFileName.MessageType == FpMessageType.Status)
+        if (fpFileName.MessageType == FpMessageType.Acknowledge || fpFileName.MessageType == FpMessageType.Status)
         {
-            scheduleTimeInterval = parsedFileName.Date;
+            scheduleTimeInterval = fpFileName.Date;
         }
         else
         {
@@ -155,17 +148,17 @@ public class FpFileParser : IFpFileParser
 
             scheduleTimeInterval = startTimeInterval + "/" + endTimeInterval;
         }
-        
+
         if (scheduleTimeInterval == null)
         {
             throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
         }
-        
-        return new FpFile( 
+
+        return new FpFile(
             content,
             filename,
             documentNo,
-            parsedFileName.MessageType.ToString(),
+            fpFileName.MessageType.ToString(),
             scheduleTimeInterval,
             senderIdentification,
             senderRole,
@@ -176,10 +169,10 @@ public class FpFileParser : IFpFileParser
     }
 
     private string ParseESSDocumentNoForMessageType(
-        FpMessageType type, 
+        FpMessageType type,
         XDocument doc,
         XNamespace? ns,
-        ParsedFileName parsedFileName)
+        FpFileName fpFileName)
     {
         switch (type)
         {
@@ -191,19 +184,19 @@ public class FpFileParser : IFpFileParser
             case FpMessageType.Confirmation:
                 return doc.Descendants(ns + "DocumentIdentification").First().Attribute("v").Value;
             case FpMessageType.Anomaly:
-                return parsedFileName.Version;
+                return fpFileName.Version;
             case FpMessageType.Status:
                 return "1"; // Is this correct?
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
-    
+
     private string? ParseCIMDocumentNoForMessageType(
-        FpMessageType type, 
+        FpMessageType type,
         XDocument doc,
         XNamespace? ns,
-        ParsedFileName parsedFileName)
+        FpFileName fpFileName)
     {
         switch (type)
         {
@@ -216,7 +209,7 @@ public class FpFileParser : IFpFileParser
                 // This should be confirmed_market-document.revisionNumber
                 return doc.Descendants(ns + "revisionNumber").First().Attribute("v").Value;
             case FpMessageType.Anomaly:
-                return parsedFileName.Version;
+                return fpFileName.Version;
             case FpMessageType.Status:
                 return "1"; // Is this correct?
             default:

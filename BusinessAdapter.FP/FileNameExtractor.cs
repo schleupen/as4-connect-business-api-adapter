@@ -5,23 +5,23 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public class FileNameExtractor : IFileNameExtractor
 {
-    public string ExtractFilename(InboxFpMessage mpMessage)
-    {
-        ParsedFileName parsedFileName = new ParsedFileName();
-        parsedFileName.MessageType = ToMessageType(mpMessage.BDEWDocumentType);
-        parsedFileName.EicNameBilanzkreis = ""; // TODO Mapping
-        parsedFileName.EicNameTso = ""; // TODO Mapping
-        parsedFileName.Timestamp = mpMessage.BDEWFulfillmentDate; // TODO is this correct?
-        parsedFileName.Date = mpMessage.BDEWFulfillmentDate; // TODO is this correct?
-        parsedFileName.Version = ""; // TODO parse?
-        parsedFileName.Type = ""; // TODO parse?
+	public FpFileName ExtractFileName(InboxFpMessage mpMessage)
+	{
+		return new FpFileName()
+		{
+			MessageType = ToMessageType(mpMessage.BDEWDocumentType),
+			EicNameBilanzkreis = "", // TODO Mapping,
+			EicNameTso = "", // TODO Mapping
+			Timestamp = mpMessage.BDEWFulfillmentDate, // TODO is this correct?
+			Date = mpMessage.BDEWFulfillmentDate, // TODO is this correct?
+			Version = "", // TODO parse?
+			Type = "" // TODO parse?
+		};
+	}
 
-        return parsedFileName.GenerateFilename();
-    }
-
-    private FpMessageType ToMessageType(string bdewDocumentType)
-    {
-        // TODO
-        return FpMessageType.Acknowledge;
-    }
+	private FpMessageType ToMessageType(string bdewDocumentType)
+	{
+		// TODO
+		return FpMessageType.Acknowledge;
+	}
 }
