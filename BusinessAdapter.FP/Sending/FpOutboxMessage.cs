@@ -32,7 +32,7 @@ public class FpOutboxMessage
     public ReceivingParty Receiver { get; }
 
     /// <summary>
-    /// EDIFACT payload.
+    /// XML payload.
     /// </summary>
 #pragma warning disable CA1819 // Eigenschaften dürfen keine Arrays zurückgeben
     public byte[] Payload { get; }

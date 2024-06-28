@@ -1,16 +1,11 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP;
 
-// ACK format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm- ssZ>.XML
+// ACK format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
 // ANO format: <JJJJMMTT>_<TYP>_<EIC-NAME- BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML 
 // CON format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML 
 // Status format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_CRQ.XML 
 // Schedule format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
 
-//20240126_CNF_0X1001A1001A264_FINGRID_002_CNF_01-26T08-2344Z.XML
-    
-//20240125_ANO_0X1001A1001A264_FINGRID_002_ANO_2024-01-26T08-2344Z
-
-// 20240125_PPS_0X1001A1001A264_FINGRID_002.XML
 public class ParsedFileName
 {
     // Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag
@@ -84,5 +79,31 @@ public class ParsedFileName
     public override string ToString()
     {
         return $"Date: {Date}, Type: {Type}, EicNameBilanzkreis: {EicNameBilanzkreis}, EicNameTso: {EicNameTso}, Version: {Version}, Timestamp: {Timestamp}, MessageType: {MessageType}";
+    }
+    
+    public string GenerateFilename()
+    {
+        string messageTypeString = MessageType switch
+        {
+            FpMessageType.Acknowledge => "ACK",
+            FpMessageType.Anomaly => "ANO",
+            FpMessageType.Confirmation => "CNF",
+            FpMessageType.Status => "CRQ",
+            _ => null
+        };
+
+        if (messageTypeString == null)
+        {
+            return $"{Date}_{Type}_{EicNameBilanzkreis}_{EicNameTso}_{Version}.XML";
+        }
+
+        if (!string.IsNullOrEmpty(Timestamp))
+        {
+            return $"{Date}_{Type}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{Timestamp}.XML";
+        }
+        else
+        {
+            return $"{Date}_{Type}_{EicNameBilanzkreis}_{EicNameTso}_{messageTypeString}.XML";
+        }
     }
 }

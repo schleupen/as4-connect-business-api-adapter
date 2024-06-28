@@ -35,8 +35,8 @@ public class FpFile : IFpFile
         this.bdewFulfillmentDate = bdewFulfillmentDate;
         this.bdewSubjectPartyId = bdewSubjectPartyId;
         this.bdewSubjectPartyRole = bdewSubjectPartyRole;
-        Path = path;
-        SenderIdentificationNumber = senderIdentificationNumber;
+        this.Path = path;
+        this.SenderIdentificationNumber = senderIdentificationNumber;
         this.receiverIdentificationNumber = receiverIdentificationNumber;
         this.receiverIdentificationNumberType = receiverIdentificationNumberType;
     }
