@@ -163,7 +163,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 					MessageId,
 					new DateTimeOffset(new DateTime(2024, 01, 18, 09, 28, 00), TimeSpan.FromHours(1)),
 					"DocumentDate",
-					new SendingParty("SendingParty"),
+					new SendingParty("SendingParty", "BDEW"),
 					new ReceivingParty("ReceivingParty", "BDEW"),
 					string.Empty,
 					null);

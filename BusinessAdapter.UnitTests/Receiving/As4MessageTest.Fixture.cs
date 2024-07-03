@@ -16,7 +16,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 			{
 				DateTimeOffset createdAt = new DateTimeOffset(new DateTime(2024, 01, 24, 11, 22, 43), TimeSpan.FromHours(1));
 				string bdewDocumentDate = "DocumentDate";
-				PartyInfo partyInfo = new(new SendingParty("Sender"), new ReceivingParty("Receiver", "BDEW"));
+				PartyInfo partyInfo = new(new SendingParty("Sender", "BDEW"), new ReceivingParty("Receiver", "BDEW"));
 
 				return new MpMessage(createdAt, bdewDocumentDate, MessageId, partyInfo);
 			}

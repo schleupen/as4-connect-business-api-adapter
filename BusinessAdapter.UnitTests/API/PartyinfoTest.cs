@@ -20,7 +20,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		[Test]
 		public void Ctor_ShouldSetSender()
 		{
-			SendingParty sender = new SendingParty("Identifier");
+			SendingParty sender = new SendingParty("Identifier", "Type");
 
 			PartyInfo testObject = new PartyInfo(sender, null);
 

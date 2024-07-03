@@ -7,6 +7,8 @@
 	</PropertyGroup>
 	<ItemGroup>
         <PackageReference Include="JunitXml.TestLogger" Version="3.1.12" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
         <PackageReference Include="Moq" Version="4.20.70" />
         <PackageReference Include="NUnit" Version="3.14.0" />
@@ -14,5 +16,10 @@
     </ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\BusinessAdapter.FP\BusinessAdapter.FP.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="appsettings.unittests.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>

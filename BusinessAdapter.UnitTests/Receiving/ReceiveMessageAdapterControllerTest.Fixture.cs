@@ -92,7 +92,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 					messageId,
 					DateTimeOffset.Now,
 					"DocumentDate",
-					new SendingParty("Sender"),
+					new SendingParty("Sender", "BDEW"),
 					new ReceivingParty("Receiver", "BDew"),
 					"UNA",
 					Array.Empty<byte>());
@@ -109,7 +109,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 
 			private MpMessage CreateAvailableMessage(string messageId)
 			{
-				PartyInfo partyInfo = new PartyInfo(new SendingParty("Sender"), new ReceivingParty("Receiver", "BDEW"));
+				PartyInfo partyInfo = new PartyInfo(new SendingParty("Sender", "BDEW"), new ReceivingParty("Receiver", "BDEW"));
 				return new MpMessage(DateTimeOffset.Now, $"DocumentDate{messageId}", messageId, partyInfo);
 			}
 

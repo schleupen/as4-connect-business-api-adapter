@@ -104,7 +104,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 						message.Created_at,
 						message.BdewDocumentDate,
 						message.MessageId.ToString(),
-						new PartyInfo(new SendingParty(message.PartyInfo.Sender.Id), new ReceivingParty(message.PartyInfo.Receiver.Id, message.PartyInfo.Receiver.Type.ToString()))));
+						new PartyInfo(new SendingParty(message.PartyInfo.Sender.Id, message.PartyInfo.Sender.Type.ToString()), new ReceivingParty(message.PartyInfo.Receiver.Id, message.PartyInfo.Receiver.Type.ToString()))));
 				}
 				catch (Exception e)
 				{
