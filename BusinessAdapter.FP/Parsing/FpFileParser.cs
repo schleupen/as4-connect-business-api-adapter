@@ -18,16 +18,24 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
 
     private IFpFileSpecificParser CreateParserFor(XDocument doc)
     {
-	    XNamespace? ns = doc.Root?.GetDefaultNamespace();
+	    if (IsEssDocument(doc))
+	    {
+		    return new EssFileParser();
+	    }
+
+	    return new CimFileParser();
+    }
+
+    private bool IsEssDocument(XDocument document)
+    {
+	    XNamespace? ns = document.Root?.GetDefaultNamespace();
 
 	    // TODO maybe find a better way to determine the format
 	    if (ns!.NamespaceName.Contains(ESS_NAMESPACE_STRING))
 	    {
-		    return new EssFileParser();
+		    return true;
 	    }
-	    else
-	    {
-		    return new CimFileParser();
-	    }
+
+	    return false;
     }
 }
