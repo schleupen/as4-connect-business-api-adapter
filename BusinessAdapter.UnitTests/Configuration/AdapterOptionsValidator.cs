@@ -84,8 +84,7 @@ public partial class AdapterOptionsValidatorTest
 	{
 		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
 
-		options.Receive.Directory = "NA";
-
+		options.Receive = options.Receive! with { Directory = "NA" };
 		var result = ExecuteValidation(options);
 
 		Assert.That(result.Failed, Is.True);
@@ -96,7 +95,7 @@ public partial class AdapterOptionsValidatorTest
 	{
 		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
 
-		options.Send.Directory = "NA";
+		options.Send = options.Send! with { Directory = "NA" };
 
 		var result = ExecuteValidation(options);
 
