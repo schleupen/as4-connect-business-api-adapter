@@ -1,12 +1,14 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP;
 
-using  Schleupen.AS4.BusinessAdapter.FP.Sending;
-
 public interface IFpFile
 {
-    string? SenderIdentificationNumber { get; }
-
-    string Path { get; }
-
-    FpOutboxMessage CreateOutboxMessage();
+	string Path { get; }
+	EIC Sender { get; }
+	EIC Receiver { get; }
+	string BDEWDocumentType { get; }
+	string BDEWDocumentNo { get; }
+	string BDEWFulfillmentDate { get; }
+	string BDEWSubjectPartyId { get; }
+	string BDEWSubjectPartyRole { get; }
+	byte[] Content { get; }
 }

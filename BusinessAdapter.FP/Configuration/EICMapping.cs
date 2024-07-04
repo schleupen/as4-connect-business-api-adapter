@@ -23,8 +23,25 @@ public sealed class EICMapping : Dictionary<string, Party>
 		return GetEICOrDefault(party) ?? throw new InvalidOperationException($"party '{party.AsKey()}' is not configured.");;
 	}
 
-	public Party GetParty(EIC eic)
+	public SendingParty GetSendingParty(EIC eic)
 	{
-		return GetPartyOrDefault(eic) ?? throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
+		var party = GetPartyOrDefault(eic) ?? throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
+		return ToSendingParty(party);
+	}
+
+	public ReceivingParty GetReceivingParty(EIC eic)
+	{
+		var party = GetPartyOrDefault(eic) ?? throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
+		return ToReceivingParty(party);
+	}
+
+	private SendingParty ToSendingParty(Party sendingParty)
+	{
+		return new SendingParty(sendingParty.Id, sendingParty.Id);
+	}
+
+	private ReceivingParty ToReceivingParty(Party sendingParty)
+	{
+		return new ReceivingParty(sendingParty.Id, sendingParty.Id);
 	}
 }

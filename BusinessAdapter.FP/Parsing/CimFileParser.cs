@@ -67,6 +67,8 @@ public class CimFileParser : IFpFileSpecificParser
 		}
 
 		return new FpFile(
+			new EIC(senderIdentification),
+			new EIC(receiverIdentification),
 			content,
 			filename,
 			documentNo,
@@ -74,10 +76,7 @@ public class CimFileParser : IFpFileSpecificParser
 			scheduleTimeInterval,
 			senderIdentification,
 			senderRole,
-			path,
-			senderIdentification,
-			receiverIdentification,
-			receiverRole);
+			path);
 	}
 
 	private string? ParseCIMDocumentNoForMessageType(

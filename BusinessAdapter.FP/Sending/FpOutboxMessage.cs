@@ -3,21 +3,26 @@
 using Schleupen.AS4.BusinessAdapter.API;
 
 public class FpOutboxMessage(
-	SendingParty sendingParty,
+	SendingParty sender,
 	ReceivingParty receiver,
-	string senderMessageId,
 	byte[] payload,
 	string filename,
 	string bdewDocumentNo,
 	string bdewDocumentType,
 	string bdewFulfillmentDate,
 	string bdewSubjectPartyId,
-	string bdewSubjectPartyRole)
+	string bdewSubjectPartyRole,
+	string? senderMessageId = null)
 {
 	/// <summary>
-    /// Receiving party of the message.
-    /// </summary>
-    public ReceivingParty Receiver { get; } = receiver;
+	/// Receiving party of the message.
+	/// </summary>
+	public SendingParty Sender { get; } = sender;
+
+	/// <summary>
+	/// Receiving party of the message.
+	/// </summary>
+	public ReceivingParty Receiver { get; } = receiver;
 
     /// <summary>
     /// XML payload.

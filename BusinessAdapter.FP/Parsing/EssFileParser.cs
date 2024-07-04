@@ -56,7 +56,10 @@ public class EssFileParser : IFpFileSpecificParser
 		{
 			throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
 		}
+
 		return new FpFile(
+			new EIC(senderIdentification),
+			new EIC(receiverIdentification),
 			content,
 			filename,
 			documentNo,
@@ -64,10 +67,7 @@ public class EssFileParser : IFpFileSpecificParser
 			scheduleTimeInterval,
 			senderIdentification,
 			senderRole,
-			path,
-			senderIdentification,
-			receiverIdentification,
-			receiverRole);
+			path);
 	}
 
 	private string ParseEssDocumentNoForMessageType(

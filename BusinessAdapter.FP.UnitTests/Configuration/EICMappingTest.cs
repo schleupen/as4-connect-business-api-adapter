@@ -59,7 +59,7 @@ public partial class EICMappingTest
 	{
 		var mapping = fixture.CreateSimpleEicMapping();
 
-		Assert.Throws<InvalidOperationException>(() => mapping.GetParty(new EIC("na")));
+		Assert.Throws<InvalidOperationException>(() => mapping.GetSendingParty(new EIC("na")));
 	}
 
 	[Test]
