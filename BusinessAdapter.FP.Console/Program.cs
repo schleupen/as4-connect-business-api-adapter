@@ -5,7 +5,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Hosting;
 
-	public class Program
+	public static class Program
 	{
 		public static async Task Main(string[] args)
 		{

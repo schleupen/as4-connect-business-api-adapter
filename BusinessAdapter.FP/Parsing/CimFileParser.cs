@@ -20,25 +20,25 @@ public class CimFileParser : IFpFileSpecificParser
 
 		var documentIdentification = document.Descendants(ns + "mRID").First().Attribute("v").Value;
 
-		var senderIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").First().Attribute("v").Value;
+		var senderIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Attribute("v")?.Value;
 		if (senderIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve sender code number from file {path}.");
 		}
 
-		var senderRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").First().Attribute("v").Value;
+		var senderRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Attribute("v")?.Value;
 		if (senderRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve sender role from file {path}.");
 		}
 
-		var receiverIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").First().Attribute("v").Value;
+		var receiverIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Attribute("v")?.Value;
 		if (receiverIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver code number from file {path}.");
 		}
 
-		var receiverRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").First().Attribute("v").Value;
+		var receiverRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Attribute("v")?.Value;
 		if (receiverRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver role from file {path}.");
@@ -52,10 +52,13 @@ public class CimFileParser : IFpFileSpecificParser
 		}
 		else
 		{
-			var startTimeInterval = document.Descendants(ns + "sender_MarketParticipant.start").First().Attribute("v")?.Value;
-			var endTimeInterval = document.Descendants(ns + "sender_MarketParticipant.end").First().Attribute("v")?.Value;
+			var startTimeInterval = document.Descendants(ns + "sender_MarketParticipant.start").FirstOrDefault()?.Attribute("v")?.Value;
+			var endTimeInterval = document.Descendants(ns + "sender_MarketParticipant.end").FirstOrDefault()?.Attribute("v")?.Value;
 
-			scheduleTimeInterval = startTimeInterval + "/" + endTimeInterval;
+			if (startTimeInterval is not null && endTimeInterval is not null)
+			{
+				scheduleTimeInterval = startTimeInterval + "/" + endTimeInterval;
+			}
 		}
 
 		if (scheduleTimeInterval == null)

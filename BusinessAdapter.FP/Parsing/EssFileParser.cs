@@ -12,7 +12,7 @@ public class EssFileParser : IFpFileSpecificParser
 		FpFileName fpFileName = FpFileName.Parse(filename);
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-		var documentNo = ParseESSDocumentNoForMessageType(fpFileName.MessageType, document, ns, fpFileName);
+		var documentNo = ParseEssDocumentNoForMessageType(fpFileName.MessageType, document, ns, fpFileName);
 		if (documentNo == null)
 		{
 			throw new ArgumentException($"Could not document number from file {path}.");
@@ -20,7 +20,7 @@ public class EssFileParser : IFpFileSpecificParser
 
 		var documentIdentification = document.Descendants(ns + "DocumentIdentification").First().Attribute("v").Value;
 
-		var senderIdentification = document.Descendants(ns + "SenderIdentification").First().Attribute("v").Value;
+		var senderIdentification = document.Descendants(ns + "SenderIdentification").FirstOrDefault()?.Attribute("v")?.Value;
 		if (senderIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve sender code number from file {path}.");
@@ -30,12 +30,12 @@ public class EssFileParser : IFpFileSpecificParser
 		{
 			throw new ArgumentException($"Could not retrieve sender role from file {path}.");
 		}
-		var receiverIdentification = document.Descendants(ns + "ReceiverIdentification").First().Attribute("v").Value;
+		var receiverIdentification = document.Descendants(ns + "ReceiverIdentification").FirstOrDefault()?.Attribute("v")?.Value;
 		if (receiverIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver code number from file {path}.");
 		}
-		var receiverRole = document.Descendants(ns + "ReceiverRole").First().Attribute("v").Value;
+		var receiverRole = document.Descendants(ns + "ReceiverRole").FirstOrDefault()?.Attribute("v")?.Value;
 		if (receiverRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver role from file {path}.");
@@ -49,7 +49,7 @@ public class EssFileParser : IFpFileSpecificParser
 		}
 		else
 		{
-			scheduleTimeInterval = document.Descendants(ns + "ScheduleTimeInterval").First().Attribute("v").Value;
+			scheduleTimeInterval = document.Descendants(ns + "ScheduleTimeInterval").FirstOrDefault()?.Attribute("v")?.Value;
 		}
 
 		if (scheduleTimeInterval == null)
@@ -70,7 +70,7 @@ public class EssFileParser : IFpFileSpecificParser
 			receiverRole);
 	}
 
-	private string ParseESSDocumentNoForMessageType(
+	private string ParseEssDocumentNoForMessageType(
 		FpMessageType type,
 		XDocument doc,
 		XNamespace? ns,
@@ -90,7 +90,7 @@ public class EssFileParser : IFpFileSpecificParser
 			case FpMessageType.Status:
 				return "1"; // Is this correct?
 			default:
-				throw new ArgumentOutOfRangeException();
+				throw new ArgumentOutOfRangeException($"unkown FpMessageType: {type}");
 		}
 	}
 }

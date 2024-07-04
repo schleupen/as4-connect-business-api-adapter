@@ -12,18 +12,19 @@ public class FpFile(
 	string bdewSubjectPartyId,
 	string bdewSubjectPartyRole,
 	string path,
-	string? senderIdentificationNumber,
+	string senderIdentificationNumber,
 	string receiverIdentificationNumber,
 	string receiverIdentificationNumberType)
 	: IFpFile
 {
 	public string Path { get; } = path;
 
-    public string? SenderIdentificationNumber { get; } = senderIdentificationNumber;
+    public string SenderIdentificationNumber { get; } = senderIdentificationNumber;
 
     public FpOutboxMessage CreateOutboxMessage()
     {
         return new FpOutboxMessage(
+	        new SendingParty(SenderIdentificationNumber, "unkown"),
             new ReceivingParty(receiverIdentificationNumber, receiverIdentificationNumberType),
             string.Empty,
             content,
