@@ -17,4 +17,14 @@ public sealed class EICMapping : Dictionary<string, Party>
 	{
 		return this.GetValueOrDefault(eic.Code);
 	}
+
+	public EIC GetEIC(Party party)
+	{
+		return GetEICOrDefault(party) ?? throw new InvalidOperationException($"party '{party.AsKey()}' is not configured.");;
+	}
+
+	public Party GetParty(EIC eic)
+	{
+		return GetPartyOrDefault(eic) ?? throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
+	}
 }

@@ -27,6 +27,14 @@ public partial class EICMappingTest
 	}
 
 	[Test]
+	public void GetEIC_Unmapped_ShouldThrow()
+	{
+		var mapping = fixture.CreateSimpleEicMapping();
+
+		Assert.Throws<InvalidOperationException>(() => mapping.GetEIC(new Party("na", "na")));
+	}
+
+	[Test]
 	public void GetPartyOrDefault_Mapped_ShouldReturnParty()
 	{
 		var mapping = fixture.CreateSimpleEicMapping();
@@ -44,6 +52,14 @@ public partial class EICMappingTest
 		var result = mapping.GetPartyOrDefault(new EIC("na"));
 
 		Assert.That(result, Is.Null);
+	}
+
+	[Test]
+	public void GetParty_Unmapped_ShouldThrow()
+	{
+		var mapping = fixture.CreateSimpleEicMapping();
+
+		Assert.Throws<InvalidOperationException>(() => mapping.GetParty(new EIC("na")));
 	}
 
 	[Test]
