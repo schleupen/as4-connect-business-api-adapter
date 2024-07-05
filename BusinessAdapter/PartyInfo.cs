@@ -1,6 +1,6 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.API
+namespace Schleupen.AS4.BusinessAdapter
 {
 	/// <summary>
 	/// Information about the receving and sending party of an AS4 message.
