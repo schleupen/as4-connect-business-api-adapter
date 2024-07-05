@@ -7,15 +7,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	/// <summary>
 	/// Wrapper for the business API client.
 	/// </summary>
-	internal sealed class ClientWrapper : IClientWrapper
+	internal sealed class BusinessApiClient(Client client) : IBusinessApiClient
 	{
-		private readonly Client client;
-
-		public ClientWrapper(Client client)
-		{
-			this.client = client;
-		}
-
 		/// <summary>
 		/// Adds a message to the outbox.
 		/// </summary>

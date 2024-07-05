@@ -21,21 +21,21 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 			private const string SenderMessageId = "53DFDBB7-9A17-4E4F-BAA9-5A787437DB71";
 
 			private readonly MockRepository mockRepository = new(MockBehavior.Strict);
-			private readonly Mock<IAs4BusinessApiClientFactory> businessApiClientFactory;
+			private readonly Mock<IBusinessApiGatewayFactory> businessApiClientFactory;
 			private readonly Mock<IEdifactDirectoryResolver> edifactDirectoryResolverMock;
 			private readonly Mock<ILogger<SendMessageAdapterController>> loggerMock;
 			private readonly Mock<IEdifactFile> edifactFile1Mock;
 			private readonly Mock<IEdifactFile> edifactFile2Mock;
-			private readonly Mock<IAs4BusinessApiClient> as4BusinessApiClientMock;
+			private readonly Mock<IBusinessApiGateway> as4BusinessApiClientMock;
 			private readonly Mock<IOptions<SendOptions>> sendOptionsMock;
 
 			public Fixture()
 			{
-				businessApiClientFactory = mockRepository.Create<IAs4BusinessApiClientFactory>();
+				businessApiClientFactory = mockRepository.Create<IBusinessApiGatewayFactory>();
 				edifactDirectoryResolverMock = mockRepository.Create<IEdifactDirectoryResolver>();
 				edifactFile1Mock = mockRepository.Create<IEdifactFile>();
 				edifactFile2Mock = mockRepository.Create<IEdifactFile>();
-				as4BusinessApiClientMock = mockRepository.Create<IAs4BusinessApiClient>();
+				as4BusinessApiClientMock = mockRepository.Create<IBusinessApiGateway>();
 				loggerMock = mockRepository.Create<ILogger<SendMessageAdapterController>>(MockBehavior.Loose);
 				sendOptionsMock = mockRepository.Create<IOptions<SendOptions>>(MockBehavior.Loose);
 			}

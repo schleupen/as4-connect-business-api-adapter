@@ -1,8 +1,5 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-// Generate ApiClient and Contracts with NSwag.
-// Required settings can be found in edi.as4.Gateways.Contracts.BusinessApi.snwag.
-
 namespace Schleupen.AS4.BusinessAdapter.MP.API
 {
 	using System;
@@ -23,31 +20,30 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
-	public sealed class As4BusinessApiClient : IAs4BusinessApiClient
+	public sealed class BusinessApiGateway : IBusinessApiGateway
 	{
 		private static readonly Encoding DefaultEncoding = Encoding.GetEncoding("ISO-8859-1");
 
-		private readonly IJwtHelper jwtHelper;
+		private readonly IJwtBuilder jwtBuilder;
 		private readonly string as4BusinessApiEndpoint;
-		private readonly ILogger<As4BusinessApiClient> logger;
-		private readonly IClientWrapperFactory clientWrapperFactory;
+		private readonly ILogger<BusinessApiGateway> logger;
+		private readonly IBusinessApiClientFactory businessApiClientFactory;
 		private readonly HttpClient httpClient;
 		private readonly HttpClientHandler httpClientHandler;
 
-		public As4BusinessApiClient(
-			IJwtHelper jwtHelper,
-			IMarketpartnerCertificateProvider marketpartnerCertificateProvider,
+		public BusinessApiGateway(IJwtBuilder jwtBuilder,
+			IClientCertificateProvider clientCertificateProvider,
 			string as4BusinessApiEndpoint,
 			string marketpartnerIdentification,
-			ILogger<As4BusinessApiClient> logger,
-			IClientWrapperFactory clientWrapperFactory)
+			IBusinessApiClientFactory businessApiClientFactory,
+			ILogger<BusinessApiGateway> logger)
 		{
-			this.jwtHelper = jwtHelper;
+			this.jwtBuilder = jwtBuilder;
 			this.as4BusinessApiEndpoint = as4BusinessApiEndpoint;
 			this.logger = logger;
-			this.clientWrapperFactory = clientWrapperFactory;
+			this.businessApiClientFactory = businessApiClientFactory;
 
-			IAs4Certificate resolvedMarketpartnerCertificate = marketpartnerCertificateProvider.GetMarketpartnerCertificate(marketpartnerIdentification);
+			IClientCertificate resolvedMarketpartnerCertificate = clientCertificateProvider.GetCertificate(marketpartnerIdentification);
 			httpClientHandler = InitializeHttpClientHandler(resolvedMarketpartnerCertificate);
 			httpClient = InitializeHttpClient();
 		}
@@ -63,10 +59,10 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 				}
 
 				compressedStream.Position = 0;
-				IClientWrapper client = clientWrapperFactory.Create(as4BusinessApiEndpoint, httpClient);
+				IBusinessApiClient businessApiClient = businessApiClientFactory.Create(as4BusinessApiEndpoint, httpClient);
 				try
 				{
-					await client.V1MpMessagesOutboxPostAsync(message.Receiver.Id,
+					await businessApiClient.V1MpMessagesOutboxPostAsync(message.Receiver.Id,
 						ToPartyTypeDto(message.Receiver.Type),
 						new FileParameter(compressedStream, message.FileName),
 						message.BdewDocumentType,
@@ -86,8 +82,8 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 
 		public async Task<MessageReceiveInfo> QueryAvailableMessagesAsync(int limit = 50)
 		{
-			IClientWrapper client = clientWrapperFactory.Create(as4BusinessApiEndpoint, httpClient);
-			QueryInboxMessagesResponseDto clientResponse = await client.V1MpMessagesInboxAsync(limit);
+			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(as4BusinessApiEndpoint, httpClient);
+			QueryInboxMessagesResponseDto clientResponse = await businessApiClient.V1MpMessagesInboxAsync(limit);
 
 			List<MpMessage> messages = new List<MpMessage>();
 
@@ -117,10 +113,10 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 
 		public async Task<MessageResponse<InboxMpMessage>> ReceiveMessageAsync(MpMessage mpMessage)
 		{
-			IClientWrapper client = clientWrapperFactory.Create(as4BusinessApiEndpoint, httpClient);
+			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(as4BusinessApiEndpoint, httpClient);
 			try
 			{
-				FileResponse clientResponse = await client.V1MpMessagesInboxPayloadAsync(Guid.Parse(mpMessage.MessageId));
+				FileResponse clientResponse = await businessApiClient.V1MpMessagesInboxPayloadAsync(Guid.Parse(mpMessage.MessageId));
 
 				using (MemoryStream ms = new MemoryStream())
 				{
@@ -166,8 +162,8 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 
 		public async Task<MessageResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMpMessage mpMessage)
 		{
-			string tokenString = jwtHelper.CreateSignedToken(mpMessage);
-			IClientWrapper client = clientWrapperFactory.Create(as4BusinessApiEndpoint, httpClient);
+			string tokenString = jwtBuilder.CreateSignedToken(mpMessage);
+			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(as4BusinessApiEndpoint, httpClient);
 			try
 			{
 				if (mpMessage.MessageId == null)
@@ -175,7 +171,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 					throw new InvalidOperationException("The message does not have a MessageId.");
 				}
 
-				await client.V1MpMessagesInboxAcknowledgementAsync(Guid.Parse(mpMessage.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
+				await businessApiClient.V1MpMessagesInboxAcknowledgementAsync(Guid.Parse(mpMessage.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
 
 				return new MessageResponse<bool>(true, true);
 			}
@@ -219,7 +215,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			};
 		}
 
-		private static HttpClientHandler InitializeHttpClientHandler(IAs4Certificate as4Certificate)
+		private static HttpClientHandler InitializeHttpClientHandler(IClientCertificate clientCertificate)
 		{
 #pragma warning disable CA5398 // Avoid hardcoding SslProtocols values
 			HttpClientHandler httpClientHandler = new HttpClientHandler
@@ -240,7 +236,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 												};
 #pragma warning restore CA5398 // Avoid hardcoding SslProtocols values
 
-			httpClientHandler.ClientCertificates.Add(as4Certificate.AsX509Certificate());
+			httpClientHandler.ClientCertificates.Add(clientCertificate.AsX509Certificate());
 
 			httpClientHandler.ServerCertificateCustomValidationCallback = Test;
 

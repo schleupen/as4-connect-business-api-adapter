@@ -4,24 +4,14 @@ namespace Schleupen.AS4.BusinessAdapter.API
 {
 	using System;
 	using System.IdentityModel.Tokens.Jwt;
-	using Microsoft.Extensions.Options;
 	using Microsoft.IdentityModel.Tokens;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
-	using Schleupen.AS4.BusinessAdapter.Configuration;
 
 	/// <summary>
 	/// Helper for the creation of JWT.
 	/// </summary>
-	public sealed class JwtHelper : IJwtHelper
+	public sealed class JwtBuilder(IClientCertificateProvider clientCertificateProvider) : IJwtBuilder
 	{
-		private readonly IMarketpartnerCertificateProvider marketpartnerCertificateProvider;
-
-		public JwtHelper(IMarketpartnerCertificateProvider marketpartnerCertificateProvider)
-		{
-
-			this.marketpartnerCertificateProvider = marketpartnerCertificateProvider;
-		}
-
 		/// <summary>
 		/// Creates a signed JWT.
 		/// </summary>
@@ -54,10 +44,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			//    ...
 			//}
 
-			IAs4Certificate as4Certificate = marketpartnerCertificateProvider.GetMarketpartnerCertificate(message.Receiver.Id);
-			SecurityKey securityKey = as4Certificate.GetPrivateSecurityKey();
+			IClientCertificate clientCertificate = clientCertificateProvider.GetCertificate(message.Receiver.Id);
+			SecurityKey securityKey = clientCertificate.GetPrivateSecurityKey();
 			SigningCredentials jwtCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.EcdsaSha384);
-			string certBase64 = Convert.ToBase64String(as4Certificate.GetRawCertData());
+			string certBase64 = Convert.ToBase64String(clientCertificate.GetRawCertData());
 
 			JwtHeader header = new JwtHeader(jwtCredentials);
 			JwtPayload payload = new JwtPayload

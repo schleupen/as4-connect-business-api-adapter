@@ -7,7 +7,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	/// <summary>
 	/// Factory for business API clients to access AS4 Connect.
 	/// </summary>
-	public interface IAs4BusinessApiClientFactory
+	public interface IBusinessApiGatewayFactory
 	{
 		/// <summary>
 		/// Creates a IAs4BusinessApiClient to access AS4.
@@ -15,6 +15,6 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		/// <param name="marktpartnerId">Identification number of the own market partner which calls AS4 Connect.</param>
 		/// <returns>IAs4BusinessApiClient</returns>
 		/// <exception cref="MissingCertificateException">if no certificate für die angegebene Codenummer gefunden wurde.</exception>
-		IAs4BusinessApiClient CreateAs4BusinessApiClient(string marktpartnerId);
+		IBusinessApiGateway CreateAs4BusinessApiClient(string marktpartnerId);
 	}
 }

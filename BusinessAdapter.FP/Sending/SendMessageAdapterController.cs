@@ -6,7 +6,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 	using Microsoft.Extensions.Logging;
 	using Schleupen.AS4.BusinessAdapter.API;
 
-	public sealed class SendMessageAdapterController(IJwtHelper jwtHelper,
+	public sealed class SendMessageAdapterController(IJwtBuilder jwtBuilder,
 		ILogger<SendMessageAdapterController> logger)
 		: ISendMessageAdapterController
 	{

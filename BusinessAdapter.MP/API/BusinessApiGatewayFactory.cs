@@ -8,15 +8,15 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 
-	public sealed class As4BusinessApiClientFactory(
+	public sealed class BusinessApiGatewayFactory(
 		IOptions<AdapterOptions> options,
-		IJwtHelper jwtHelper,
-		IMarketpartnerCertificateProvider marketpartnerCertificateProvider,
-		ILogger<As4BusinessApiClient> clientLogger,
-		IClientWrapperFactory clientWrapperFactory)
-		: IAs4BusinessApiClientFactory
+		IJwtBuilder jwtBuilder,
+		IClientCertificateProvider clientCertificateProvider,
+		ILogger<BusinessApiGateway> clientLogger,
+		IBusinessApiClientFactory businessApiClientFactory)
+		: IBusinessApiGatewayFactory
 	{
-		public IAs4BusinessApiClient CreateAs4BusinessApiClient(string marktpartnerId)
+		public IBusinessApiGateway CreateAs4BusinessApiClient(string marktpartnerId)
 		{
 			string as4BusinessApiEndpoint = options.Value.As4ConnectEndpoint;
 			if (string.IsNullOrEmpty(as4BusinessApiEndpoint))
@@ -24,7 +24,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 				throw new CatastrophicException("The endpoint for AS4 connect is not configured.");
 			}
 
-			return new As4BusinessApiClient(jwtHelper, marketpartnerCertificateProvider, as4BusinessApiEndpoint, marktpartnerId, clientLogger, clientWrapperFactory);
+			return new BusinessApiGateway(jwtBuilder, clientCertificateProvider, as4BusinessApiEndpoint, marktpartnerId, businessApiClientFactory, clientLogger);
 		}
 	}
 }

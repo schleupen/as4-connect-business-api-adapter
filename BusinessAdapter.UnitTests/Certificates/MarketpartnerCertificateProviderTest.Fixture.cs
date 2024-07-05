@@ -4,27 +4,27 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 {
 	using Moq;
 
-	internal sealed partial class MarketpartnerCertificateProviderTest
+	internal sealed partial class ClientCertificateProviderTest
 	{
 		private sealed class Fixture : IDisposable
 		{
 			private readonly MockRepository mockRepository = new(MockBehavior.Strict);
 			private readonly Mock<ICertificateStoreFactory> certificateStoreFactoryMock;
-			private readonly Mock<ICertificateStore> certificateStoreMock;
-			private readonly Mock<IAs4Certificate> certificate1Mock;
-			private readonly Mock<IAs4Certificate> certificate2Mock;
+			private readonly Mock<IClientCertificateStore> certificateStoreMock;
+			private readonly Mock<IClientCertificate> certificate1Mock;
+			private readonly Mock<IClientCertificate> certificate2Mock;
 
 			public Fixture()
 			{
 				certificateStoreFactoryMock = mockRepository.Create<ICertificateStoreFactory>();
-				certificateStoreMock = mockRepository.Create<ICertificateStore>();
-				certificate1Mock = mockRepository.Create<IAs4Certificate>();
-				certificate2Mock = mockRepository.Create<IAs4Certificate>();
+				certificateStoreMock = mockRepository.Create<IClientCertificateStore>();
+				certificate1Mock = mockRepository.Create<IClientCertificate>();
+				certificate2Mock = mockRepository.Create<IClientCertificate>();
 			}
 
-			public MarketpartnerCertificateProvider CreateTestObject()
+			public ClientCertificateProvider CreateTestObject()
 			{
-				return new MarketpartnerCertificateProvider(certificateStoreFactoryMock.Object);
+				return new ClientCertificateProvider(certificateStoreFactoryMock.Object);
 			}
 
 			public void Dispose()
@@ -39,8 +39,8 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					.Returns(certificateStoreMock.Object);
 
 				certificateStoreMock
-					.SetupGet(x => x.As4Certificates)
-					.Returns(new List<IAs4Certificate>
+					.SetupGet(x => x.Certificates)
+					.Returns(new List<IClientCertificate>
 							{
 								certificate1Mock.Object
 							});
@@ -60,8 +60,8 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					.Returns(certificateStoreMock.Object);
 
 				certificateStoreMock
-					.SetupGet(x => x.As4Certificates)
-					.Returns(new List<IAs4Certificate>());
+					.SetupGet(x => x.Certificates)
+					.Returns(new List<IClientCertificate>());
 
 				certificateStoreMock
 					.Setup(x => x.Dispose());
@@ -74,8 +74,8 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					.Returns(certificateStoreMock.Object);
 
 				certificateStoreMock
-					.SetupGet(x => x.As4Certificates)
-					.Returns(new List<IAs4Certificate>
+					.SetupGet(x => x.Certificates)
+					.Returns(new List<IClientCertificate>
 							{
 								certificate1Mock.Object
 							});
@@ -95,8 +95,8 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					.Returns(certificateStoreMock.Object);
 
 				certificateStoreMock
-					.SetupGet(x => x.As4Certificates)
-					.Returns(new List<IAs4Certificate>
+					.SetupGet(x => x.Certificates)
+					.Returns(new List<IClientCertificate>
 							{
 								certificate1Mock.Object,
 								certificate2Mock.Object

@@ -5,11 +5,11 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	/// <summary>
 	/// A certificate store.
 	/// </summary>
-	public interface ICertificateStore : IDisposable
+	public interface IClientCertificateStore : IDisposable
 	{
 		/// <summary>
 		/// Returns the available AS4 certificates in the store.
 		/// </summary>
-		IReadOnlyCollection<IAs4Certificate> As4Certificates { get; }
+		IReadOnlyCollection<IClientCertificate> Certificates { get; }
 	}
 }

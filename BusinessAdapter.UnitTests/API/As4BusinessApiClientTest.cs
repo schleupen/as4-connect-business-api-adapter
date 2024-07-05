@@ -9,7 +9,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using Schleupen.AS4.BusinessAdapter.Receiving;
 
 	[TestFixture]
-	internal sealed partial class As4BusinessApiClientTest : IDisposable
+	internal sealed partial class BusinessApiGatewayTest : IDisposable
 	{
 		private Fixture? fixture;
 
@@ -30,7 +30,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		public async Task QueryAvailableMessagesAsync_ShouldGetCertificateAndCallClient()
 		{
 			fixture!.PrepareQueryAvailableMessages();
-			using (As4BusinessApiClient testObject = fixture!.CreateTestObject())
+			using (BusinessApiGateway testObject = fixture!.CreateTestObject())
 			{
 				MessageReceiveInfo receiveInfo = await testObject.QueryAvailableMessagesAsync(51);
 
@@ -42,7 +42,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		public async Task AcknowledgeReceivedMessageAsync_WithSuccessfulCall_ShouldReturnSuccessfulResult()
 		{
 			InboxMpMessage inboxMpMessage = fixture!.PrepareAcknowledgeReceivedMessage();
-			using (As4BusinessApiClient testObject = fixture!.CreateTestObject())
+			using (BusinessApiGateway testObject = fixture!.CreateTestObject())
 			{
 				MessageResponse<bool> isAcknowledgedResponse = await testObject.AcknowledgeReceivedMessageAsync(inboxMpMessage);
 
@@ -57,7 +57,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		public async Task AcknowledgeReceivedMessageAsync_WithNotSuccessfulCall_ShouldReturnFailed()
 		{
 			InboxMpMessage inboxMpMessage = fixture!.PrepareAcknowledgeReceivedMessageFailed();
-			using (As4BusinessApiClient testObject = fixture!.CreateTestObject())
+			using (BusinessApiGateway testObject = fixture!.CreateTestObject())
 			{
 				MessageResponse<bool> isAcknowledgedResponse = await testObject.AcknowledgeReceivedMessageAsync(inboxMpMessage);
 

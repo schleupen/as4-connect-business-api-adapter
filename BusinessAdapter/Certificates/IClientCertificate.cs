@@ -8,7 +8,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	/// <summary>
 	/// An AS4 certificate.
 	/// </summary>
-	public interface IAs4Certificate
+	public interface IClientCertificate
 	{
 		/// <summary>
 		/// Returns the AS4 certificate as a X509 certificate.

@@ -8,17 +8,10 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	/// <summary>
 	/// An AS4 certificate.
 	/// </summary>
-	public class As4Certificate : IAs4Certificate
+	public class ClientCertificate(X509Certificate2 x509Certificate2) : IClientCertificate
 	{
 		private const string RsaVersionString = "1.2.840.113549.1.1.1";
 		private const string EccVersionString = "1.2.840.10045.2.1";
-
-		private readonly X509Certificate2 x509Certificate2;
-
-		public As4Certificate(X509Certificate2 x509Certificate2)
-		{
-			this.x509Certificate2 = x509Certificate2;
-		}
 
 		/// <summary>
 		/// Returns the AS4 certificate as a X509 certificate.
@@ -66,7 +59,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 			string? identificationNumberFromCertificate = ResolveFromOrganizationalUnitField();
 			return string.Equals(identificationNumberFromCertificate, marketpartnerIdentificationNumber, StringComparison.OrdinalIgnoreCase);
 		}
-		
+
 		private string? ResolveFromOrganizationalUnitField()
 		{
 			return x509Certificate2.ResolveFromOrganizationalUnitField();

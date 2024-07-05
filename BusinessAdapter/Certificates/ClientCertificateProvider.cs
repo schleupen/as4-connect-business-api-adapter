@@ -8,32 +8,25 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	/// <summary>
 	/// Provides access to the market partner certificates.
 	/// </summary>
-	public sealed class MarketpartnerCertificateProvider : IMarketpartnerCertificateProvider
+	public sealed class ClientCertificateProvider(ICertificateStoreFactory certificateStoreFactory) : IClientCertificateProvider
 	{
-		private readonly ICertificateStoreFactory certificateStoreFactory;
-
-		public MarketpartnerCertificateProvider(ICertificateStoreFactory certificateStoreFactory)
-		{
-			this.certificateStoreFactory = certificateStoreFactory;
-		}
-
 		/// <summary>
 		/// Returns the certificate for the market partner with the given identification number.
 		/// </summary>
 		/// <param name="marketpartnerIdentificationNumber">The identification number of the market partner</param>
 		/// <returns>The certificate.</returns>
-		public IAs4Certificate GetMarketpartnerCertificate(string marketpartnerIdentificationNumber)
+		public IClientCertificate GetCertificate(string marketpartnerIdentificationNumber)
 		{
-			using (ICertificateStore store = certificateStoreFactory.CreateAndOpen())
+			using (IClientCertificateStore store = certificateStoreFactory.CreateAndOpen())
 			{
-				List<IAs4Certificate> candidates = store.As4Certificates.Where(certificate => certificate.IsCertificateFor(marketpartnerIdentificationNumber)).ToList();
+				List<IClientCertificate> candidates = store.Certificates.Where(certificate => certificate.IsCertificateFor(marketpartnerIdentificationNumber)).ToList();
 
 				if (candidates.Count > 1)
 				{
 					throw new NoUniqueCertificateException(marketpartnerIdentificationNumber);
 				}
 
-				IAs4Certificate? certificate = candidates.SingleOrDefault();
+				IClientCertificate? certificate = candidates.SingleOrDefault();
 				if (certificate == null)
 				{
 					throw new MissingCertificateException(marketpartnerIdentificationNumber);

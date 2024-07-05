@@ -20,13 +20,13 @@ public class HostConfigurator
 		HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 		builder.Services
 			// Common
-			.AddTransient<IJwtHelper, JwtHelper>()
-			.AddTransient<IMarketpartnerCertificateProvider, MarketpartnerCertificateProvider>()
+			.AddTransient<IJwtBuilder, JwtBuilder>()
+			.AddTransient<IClientCertificateProvider, ClientCertificateProvider>()
 			.AddTransient<ICertificateStoreFactory, CertificateStoreFactory>()
 			.AddTransient<IFileSystemWrapper, FileSystemWrapper>()
 			// MP
-			.AddTransient<IAs4BusinessApiClientFactory, As4BusinessApiClientFactory>()
-			.AddTransient<IClientWrapperFactory, ClientWrapperFactory>()
+			.AddTransient<IBusinessApiGatewayFactory, BusinessApiGatewayFactory>()
+			.AddTransient<IBusinessApiClientFactory, BusinessApiClientFactory>()
 			.AddHostedService<SendMessageWorker>()
 			.AddHostedService<ReceiveMessageWorker>()
 			.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>()

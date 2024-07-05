@@ -15,7 +15,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 	using Schleupen.AS4.BusinessAdapter.MP.API;
 
 	public sealed class SendMessageAdapterController(
-		IAs4BusinessApiClientFactory businessApiClientFactory,
+		IBusinessApiGatewayFactory businessApiGatewayFactory,
 		IEdifactDirectoryResolver edifactDirectoryResolver,
 		IOptions<SendOptions> sendOptions,
 		ILogger<SendMessageAdapterController> logger)
@@ -33,7 +33,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 
 			List<IEdifactFile> edifactFiles = edifactDirectoryResolver.GetEditfactFilesFrom(sendDirectoryPath).ToList();
 
-			Dictionary<string, IAs4BusinessApiClient> as4BusinessApiClients = new Dictionary<string, IAs4BusinessApiClient>();
+			Dictionary<string, IBusinessApiGateway> as4BusinessApiClients = new Dictionary<string, IBusinessApiGateway>();
 			int successfulMessageCount = 0;
 			int failedMessageCount = 0;
 			int configuredDeliveryLimit = sendOptions.MessageLimitCount;
@@ -63,11 +63,11 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 										continue;
 									}
 
-									if (!as4BusinessApiClients.TryGetValue(edifactFile.SenderIdentificationNumber, out IAs4BusinessApiClient? client))
+									if (!as4BusinessApiClients.TryGetValue(edifactFile.SenderIdentificationNumber, out IBusinessApiGateway? client))
 									{
 										try
 										{
-											client = businessApiClientFactory.CreateAs4BusinessApiClient(edifactFile.SenderIdentificationNumber);
+											client = businessApiGatewayFactory.CreateAs4BusinessApiClient(edifactFile.SenderIdentificationNumber);
 											as4BusinessApiClients.Add(edifactFile.SenderIdentificationNumber, client);
 										}
 										catch (Exception e)
@@ -119,7 +119,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 			}
 			finally
 			{
-				foreach (KeyValuePair<string, IAs4BusinessApiClient> as4BusinessApiClient in as4BusinessApiClients)
+				foreach (KeyValuePair<string, IBusinessApiGateway> as4BusinessApiClient in as4BusinessApiClients)
 				{
 					as4BusinessApiClient.Value.Dispose();
 				}

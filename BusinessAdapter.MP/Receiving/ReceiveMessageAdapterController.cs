@@ -18,7 +18,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	using Schleupen.AS4.BusinessAdapter.MP.Parsing;
 
 	public sealed class ReceiveMessageAdapterController(
-		IAs4BusinessApiClientFactory businessApiClientFactory,
+		IBusinessApiGatewayFactory businessApiGatewayFactory,
 		IEdifactDirectoryResolver edifactDirectoryResolver,
 		IOptions<ReceiveOptions> receiveOptions,
 		IOptions<AdapterOptions> adapterOptions,
@@ -45,7 +45,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 				throw new CatastrophicException("No valid own market partners were found.");
 			}
 
-			Dictionary<MessageReceiveInfo, IAs4BusinessApiClient> as4BusinessApiClients = new Dictionary<MessageReceiveInfo, IAs4BusinessApiClient>();
+			Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients = new Dictionary<MessageReceiveInfo, IBusinessApiGateway>();
 			int successfulMessageCount = 0;
 			int failedMessageCount = 0;
 			bool hasTooManyRequestsError = false;
@@ -57,10 +57,10 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 				{
 					try
 					{
-						IAs4BusinessApiClient client = businessApiClientFactory.CreateAs4BusinessApiClient(receiverIdentificationNumber);
+						IBusinessApiGateway gateway = businessApiGatewayFactory.CreateAs4BusinessApiClient(receiverIdentificationNumber);
 						int messageLimit = receiveOptions.MessageLimitCount;
-						MessageReceiveInfo receiveInfo = await client.QueryAvailableMessagesAsync(messageLimit);
-						as4BusinessApiClients.Add(receiveInfo, client);
+						MessageReceiveInfo receiveInfo = await gateway.QueryAvailableMessagesAsync(messageLimit);
+						as4BusinessApiClients.Add(receiveInfo, gateway);
 					}
 					catch (MissingCertificateException certificateException)
 					{
@@ -81,7 +81,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 
 				logger.LogInformation("Receiving {AllAvailableMessageCount} messages.", allAvailableMessageCount);
 
-				foreach (KeyValuePair<MessageReceiveInfo, IAs4BusinessApiClient> as4BusinessApiClient in as4BusinessApiClients)
+				foreach (KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClient in as4BusinessApiClients)
 				{
 					PolicyResult policyResult = await ReceiveMessagesAsync(receiveDirectoryPath, as4BusinessApiClient, allAvailableMessageCount, successfulMessageCount, failedMessageCount, cancellationToken);
 					successfulMessageCount += as4BusinessApiClient.Key.ConfirmableMessages.Count;
@@ -105,7 +105,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 			}
 			finally
 			{
-				foreach (KeyValuePair<MessageReceiveInfo, IAs4BusinessApiClient> as4BusinessApiClient in as4BusinessApiClients)
+				foreach (KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClient in as4BusinessApiClients)
 				{
 					as4BusinessApiClient.Value.Dispose();
 				}
@@ -139,7 +139,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		}
 
 		private async Task<PolicyResult> ReceiveMessagesAsync(string receiveDirectoryPath,
-			KeyValuePair<MessageReceiveInfo, IAs4BusinessApiClient> receiveContext,
+			KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> receiveContext,
 			long allAvailableMessageCount,
 			int successfulMessageCountBase,
 			int failedMessageCountBase,

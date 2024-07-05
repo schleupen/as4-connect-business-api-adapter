@@ -7,7 +7,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	/// <summary>
 	/// Wrapper for the business API client.
 	/// </summary>
-	public interface IClientWrapper
+	public interface IBusinessApiClient
 	{
 		/// <summary>
 		/// Adds a message to the outbox.

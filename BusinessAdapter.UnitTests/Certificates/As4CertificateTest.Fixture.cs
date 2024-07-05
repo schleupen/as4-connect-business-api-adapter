@@ -5,15 +5,15 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	using System.Reflection;
 	using System.Security.Cryptography.X509Certificates;
 
-	internal sealed partial class As4CertificateTest
+	internal sealed partial class ClientCertificateTest
 	{
 		private sealed class Fixture : IDisposable
 		{
 			private X509Certificate2? certificate;
 
-			public As4Certificate CreateTestObject()
+			public ClientCertificate CreateTestObject()
 			{
-				return new As4Certificate(ReadCertificateFromResource("client.pfx"));
+				return new ClientCertificate(ReadCertificateFromResource("client.pfx"));
 			}
 
 			private X509Certificate2 ReadCertificateFromResource(string filename)

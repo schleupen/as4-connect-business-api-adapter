@@ -11,7 +11,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	/// <summary>
 	/// Client of the access to AS4 Connect.
 	/// </summary>
-	public interface IAs4BusinessApiClient : IDisposable
+	public interface IBusinessApiGateway : IDisposable
 	{
 		/// <summary>
 		/// Adds an outgoing message including the EDIFACT content to be send to the foreign market partner.
