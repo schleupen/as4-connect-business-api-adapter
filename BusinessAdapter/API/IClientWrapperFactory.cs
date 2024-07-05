@@ -1,6 +1,6 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.MP.API
+namespace Schleupen.AS4.BusinessAdapter.API
 {
 	/// <summary>
 	/// Factory for client wrappers.
