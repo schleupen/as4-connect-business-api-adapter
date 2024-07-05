@@ -3,7 +3,6 @@
 namespace Schleupen.AS4.BusinessAdapter.API
 {
 	using System.Net.Http;
-	using BusinessApi;
 
 	/// <summary>
 	/// Factory for the client wrapper

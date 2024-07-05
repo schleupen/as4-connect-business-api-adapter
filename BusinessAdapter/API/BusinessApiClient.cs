@@ -2,8 +2,6 @@
 
 namespace Schleupen.AS4.BusinessAdapter.API
 {
-	using BusinessApi;
-
 	/// <summary>
 	/// Wrapper for the business API client.
 	/// </summary>
@@ -33,7 +31,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		/// <returns>The messages in the inbox.</returns>
 		public Task<QueryInboxMessagesResponseDto> V1MpMessagesInboxAsync(int limit)
 		{
-			return client.V1MpMessagesInboxAsync(limit);
+			return client.V1MpMessagesInboxGetAsync(limit);
 		}
 
 		/// <summary>

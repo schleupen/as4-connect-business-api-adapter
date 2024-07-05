@@ -7,7 +7,6 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	using System.Linq;
 	using System.Net;
 	using System.Threading.Tasks;
-	using BusinessApi;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Polly;

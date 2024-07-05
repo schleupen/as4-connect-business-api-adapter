@@ -5,14 +5,12 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using System.Globalization;
 	using System.Net;
 	using System.Security.Cryptography.X509Certificates;
-	using BusinessApi;
 	using Microsoft.Extensions.Logging;
 	using Moq;
 	using NUnit.Framework;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
-	using Schleupen.AS4.BusinessAdapter.Receiving;
 
 	internal sealed partial class BusinessApiGatewayTest
 	{

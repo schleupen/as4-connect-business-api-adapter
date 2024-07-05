@@ -3,7 +3,6 @@
 namespace Schleupen.AS4.BusinessAdapter.API
 {
 	using System.Net;
-	using BusinessApi;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -13,7 +12,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		public void Ctor_ForUseCaseWithoutException_ShouldOnlySetPayloadAndSuccessFlag()
 		{
 			MessageResponse<bool> testObject = new MessageResponse<bool>(false, true);
-			
+
 			Assert.That(testObject.WasSuccessful, Is.False);
 			Assert.That(testObject.Message, Is.True);
 			Assert.That(testObject.ApiException, Is.Null);

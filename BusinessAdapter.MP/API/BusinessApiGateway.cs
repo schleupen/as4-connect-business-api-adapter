@@ -13,7 +13,6 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Threading.Tasks;
-	using BusinessApi;
 	using Microsoft.Extensions.Logging;
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
