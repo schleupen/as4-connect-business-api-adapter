@@ -7,7 +7,7 @@ public interface IInboxMessage
 	/// <summary>
 	/// The Identifier of the message.
 	/// </summary>
-	string? MessageId { get; }
+	string MessageId { get; }
 
 	/// <summary>
 	/// The sending party of the AS4 message.

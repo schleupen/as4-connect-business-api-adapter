@@ -1,17 +1,14 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 using Schleupen.AS4.BusinessAdapter.API;
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public class FpOutboxMessage(
 	SendingParty sender,
 	ReceivingParty receiver,
 	byte[] payload,
 	string filename,
-	string bdewDocumentNo,
-	string bdewDocumentType,
-	string bdewFulfillmentDate,
-	string bdewSubjectPartyId,
-	string bdewSubjectPartyRole,
+	FpBDEWProperties bdewProperties,
 	string? senderMessageId = null)
 {
 	/// <summary>
@@ -31,27 +28,7 @@ public class FpOutboxMessage(
     public byte[] Payload { get; } = payload;
 #pragma warning restore CA1819 // Eigenschaften dürfen keine Arrays zurückgeben
 
-    public string BDEWDocumentType { get;} = bdewDocumentType;
-
-    /// <summary>
-    /// Datenaustauschreferenz (DAR) aus UNB DE0020
-    /// </summary>
-    public string BDEWDocumentNo { get; } = bdewDocumentNo;
-
-    /// <summary>
-    /// Das geplante Zeitintervall.
-    /// </summary>
-    public string BDEWFulfillmentDate { get; } = bdewFulfillmentDate;
-
-    /// <summary>
-    /// Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.
-    /// </summary>
-    public string BDEWSubjectPartyId { get; } = bdewSubjectPartyId;
-
-    /// <summary>
-    /// Ein Code für die Senderrole, z. B. A08 (bei Schedule Messages) oder A04 (ACK, CNF oder ANO).
-    /// </summary>
-    public string BDEWSubjectPartyRole { get; } = bdewSubjectPartyRole;
+	public FpBDEWProperties BDEWProperties { get; } = bdewProperties;
 
     /// <summary>
     /// Optional Id which the sender of the message may individually add. This Id should originate from the connected bussiness application and allows to identify the message in AS4 Connect later on.

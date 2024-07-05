@@ -2,6 +2,7 @@
 
 using System.Text;
 using System.Xml.Linq;
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public class CimFileParser : IFpFileSpecificParser
 {
@@ -66,17 +67,14 @@ public class CimFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
 		}
 
+		FpBDEWProperties bdewProperties = new FpBDEWProperties(fpFileName.MessageType.ToString(), documentNo, scheduleTimeInterval, senderIdentification, senderRole);
 		return new FpFile(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
 			content,
 			filename,
-			documentNo,
-			fpFileName.MessageType.ToString(),
-			scheduleTimeInterval,
-			senderIdentification,
-			senderRole,
-			path);
+			path,
+			bdewProperties);
 	}
 
 	private string? ParseCIMDocumentNoForMessageType(

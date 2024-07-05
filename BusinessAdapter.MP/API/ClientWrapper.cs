@@ -28,7 +28,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		/// <param name="messageId">The identification of the message.</param>
 		/// <param name="senderMessageId">The sender identification number of the message.</param>
 		/// <returns></returns>
-		public Task V1MpMessagesOutboxPostAsync(string receiverId, PartyIdTypeDto? receiverIdType, FileParameter payload, string bdewDocumentType, string bdewDocumentNo, string bdewDocumentDate, Guid messageId, string? senderMessageId)
+		public Task V1MpMessagesOutboxPostAsync(string receiverId, PartyIdTypeDto receiverIdType, FileParameter payload, string bdewDocumentType, string bdewDocumentNo, string bdewDocumentDate, Guid messageId, string? senderMessageId)
 		{
 			return client.V1MpMessagesOutboxPostAsync(receiverId, receiverIdType, payload, bdewDocumentType, bdewDocumentNo, bdewDocumentDate, messageId, senderMessageId);
 		}

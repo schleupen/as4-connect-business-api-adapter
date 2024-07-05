@@ -3,7 +3,7 @@
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
-public interface IFileNameExtractor
+public interface IFpFileNameExtractor
 {
     FpFileName ExtractFileName(InboxFpMessage mpMessage);
 }

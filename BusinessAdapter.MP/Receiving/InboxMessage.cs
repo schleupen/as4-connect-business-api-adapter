@@ -22,7 +22,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 		/// <summary>
 		/// The Identifier of the message.
 		/// </summary>
-		public string? MessageId { get; } = messageId;
+		public string MessageId { get; } = messageId;
 
 		/// <summary>
 		/// The timestamp when the message was generated in AS4 Connect.

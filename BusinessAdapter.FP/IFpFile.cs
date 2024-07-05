@@ -1,14 +1,12 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP;
 
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
+
 public interface IFpFile
 {
 	string Path { get; }
 	EIC Sender { get; }
 	EIC Receiver { get; }
-	string BDEWDocumentType { get; }
-	string BDEWDocumentNo { get; }
-	string BDEWFulfillmentDate { get; }
-	string BDEWSubjectPartyId { get; }
-	string BDEWSubjectPartyRole { get; }
+	FpBDEWProperties BDEWProperties { get; }
 	byte[] Content { get; }
 }

@@ -191,12 +191,11 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			httpClientHandler.Dispose();
 		}
 
-		private PartyIdTypeDto? ToPartyTypeDto(string? foreignMarketpartnerType)
+		private PartyIdTypeDto ToPartyTypeDto(string partyTypeValue)
 		{
-			switch (foreignMarketpartnerType?.ToUpperInvariant())
+			var partyType = partyTypeValue.ToUpperInvariant();
+			switch (partyType)
 			{
-				case null:
-					return null;
 				case "BDEW":
 					return PartyIdTypeDto.BDEW;
 				case "DVGW":
@@ -205,7 +204,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 				case "GS1GERMANY":
 					return PartyIdTypeDto.GS1;
 				default:
-					throw new NotSupportedException(nameof(foreignMarketpartnerType));
+					throw new NotSupportedException($"PartyType '{partyType}' is unsupported");
 			}
 		}
 

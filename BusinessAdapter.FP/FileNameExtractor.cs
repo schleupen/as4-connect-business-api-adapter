@@ -3,17 +3,17 @@
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
-public class FileNameExtractor : IFileNameExtractor
+public class FpFileNameExtractor : IFpFileNameExtractor
 {
 	public FpFileName ExtractFileName(InboxFpMessage mpMessage)
 	{
 		return new FpFileName()
 		{
-			MessageType = ToMessageType(mpMessage.BDEWDocumentType),
+			MessageType = ToMessageType(mpMessage.BDEWProperties.BDEWDocumentType),
 			EicNameBilanzkreis = "", // TODO Mapping,
 			EicNameTso = "", // TODO Mapping
-			Timestamp = mpMessage.BDEWFulfillmentDate, // TODO is this correct?
-			Date = mpMessage.BDEWFulfillmentDate, // TODO is this correct?
+			Timestamp = mpMessage.BDEWProperties.BDEWFulfillmentDate, // TODO is this correct?
+			Date = mpMessage.BDEWProperties.BDEWFulfillmentDate, // TODO is this correct?
 			Version = "", // TODO parse?
 			Type = "" // TODO parse?
 		};

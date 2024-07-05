@@ -2,6 +2,7 @@
 
 using System.Text;
 using System.Xml.Linq;
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public class EssFileParser : IFpFileSpecificParser
 {
@@ -25,16 +26,19 @@ public class EssFileParser : IFpFileSpecificParser
 		{
 			throw new ArgumentException($"Could not retrieve sender code number from file {path}.");
 		}
+
 		var senderRole = document.Descendants(ns + "SenderRole").First().Attribute("v").Value;
 		if (senderRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve sender role from file {path}.");
 		}
+
 		var receiverIdentification = document.Descendants(ns + "ReceiverIdentification").FirstOrDefault()?.Attribute("v")?.Value;
 		if (receiverIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver code number from file {path}.");
 		}
+
 		var receiverRole = document.Descendants(ns + "ReceiverRole").FirstOrDefault()?.Attribute("v")?.Value;
 		if (receiverRole == null)
 		{
@@ -57,17 +61,16 @@ public class EssFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
 		}
 
+		FpBDEWProperties properties =
+			new FpBDEWProperties(fpFileName.MessageType.ToString(), documentNo, scheduleTimeInterval, senderIdentification, senderRole);
+
 		return new FpFile(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
 			content,
 			filename,
-			documentNo,
-			fpFileName.MessageType.ToString(),
-			scheduleTimeInterval,
-			senderIdentification,
-			senderRole,
-			path);
+			path,
+			properties);
 	}
 
 	private string ParseEssDocumentNoForMessageType(
