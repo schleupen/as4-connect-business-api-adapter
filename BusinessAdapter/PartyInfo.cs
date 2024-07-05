@@ -3,7 +3,7 @@
 namespace Schleupen.AS4.BusinessAdapter
 {
 	/// <summary>
-	/// Information about the receving and sending party of an AS4 message.
+	/// Information about the receiving and sending party of an AS4 message.
 	/// </summary>
 	public sealed class PartyInfo(SendingParty? sender, ReceivingParty? receiver)
 	{
