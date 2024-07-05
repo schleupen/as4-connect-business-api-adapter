@@ -16,17 +16,17 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 		private sealed class Fixture : IDisposable
 		{
 			private readonly MockRepository mockRepository = new(MockBehavior.Strict);
-			private readonly Mock<IAs4BusinessApiClientFactory> businessApiClientFactoryMock;
+			private readonly Mock<IBusinessApiGatewayFactory> businessApiClientFactoryMock;
 			private readonly Mock<IOptions<AdapterOptions>> adapterOptions;
 			private readonly Mock<IEdifactDirectoryResolver> edifactDirectoryResolverMock;
 			private readonly Mock<ILogger<ReceiveMessageAdapterController>> loggerMock;
 			private readonly Mock<IOptions<ReceiveOptions>> receiveOptionsMock;
-			private readonly Mock<IAs4BusinessApiClient> businessApiClientMock;
+			private readonly Mock<IBusinessApiGateway> businessApiClientMock;
 
 			public Fixture()
 			{
-				businessApiClientMock = mockRepository.Create<IAs4BusinessApiClient>();
-				businessApiClientFactoryMock = mockRepository.Create<IAs4BusinessApiClientFactory>();
+				businessApiClientMock = mockRepository.Create<IBusinessApiGateway>();
+				businessApiClientFactoryMock = mockRepository.Create<IBusinessApiGatewayFactory>();
 				adapterOptions = mockRepository.Create<IOptions<AdapterOptions>>();
 				edifactDirectoryResolverMock = mockRepository.Create<IEdifactDirectoryResolver>();
 				loggerMock = mockRepository.Create<ILogger<ReceiveMessageAdapterController>>(MockBehavior.Loose);

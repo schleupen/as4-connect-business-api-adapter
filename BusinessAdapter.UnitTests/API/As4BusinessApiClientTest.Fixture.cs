@@ -14,29 +14,29 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.Receiving;
 
-	internal sealed partial class As4BusinessApiClientTest
+	internal sealed partial class BusinessApiGatewayTest
 	{
 		private sealed class Fixture : IDisposable
 		{
 			private const string MessageId = "EC953F86-038F-49E4-A7D9-3C417922EDB1";
 
 			private readonly MockRepository mockRepository = new (MockBehavior.Strict);
-			private readonly Mock<IJwtHelper> jwtHelperMock;
-			private readonly Mock<IMarketpartnerCertificateProvider> marketpartnerCertificateProviderMock;
-			private readonly Mock<ILogger<As4BusinessApiClient>> loggerMock;
-			private readonly Mock<IClientWrapperFactory> clientWrapperFactoryMock;
-			private readonly Mock<IClientWrapper> clientWrapperMock;
-			private readonly Mock<IAs4Certificate> certificateMock;
+			private readonly Mock<IJwtBuilder> jwtHelperMock;
+			private readonly Mock<IClientCertificateProvider> marketpartnerCertificateProviderMock;
+			private readonly Mock<ILogger<BusinessApiGateway>> loggerMock;
+			private readonly Mock<IBusinessApiClientFactory> clientWrapperFactoryMock;
+			private readonly Mock<IBusinessApiClient> clientWrapperMock;
+			private readonly Mock<IClientCertificate> certificateMock;
 			private readonly X509Certificate2 certificate;
 
 			public Fixture()
 			{
-				jwtHelperMock = mockRepository.Create<IJwtHelper>();
-				marketpartnerCertificateProviderMock = mockRepository.Create<IMarketpartnerCertificateProvider>();
-				loggerMock = mockRepository.Create<ILogger<As4BusinessApiClient>>();
-				clientWrapperFactoryMock = mockRepository.Create<IClientWrapperFactory>();
-				clientWrapperMock = mockRepository.Create<IClientWrapper>();
-				certificateMock = mockRepository.Create<IAs4Certificate>();
+				jwtHelperMock = mockRepository.Create<IJwtBuilder>();
+				marketpartnerCertificateProviderMock = mockRepository.Create<IClientCertificateProvider>();
+				loggerMock = mockRepository.Create<ILogger<BusinessApiGateway>>();
+				clientWrapperFactoryMock = mockRepository.Create<IBusinessApiClientFactory>();
+				clientWrapperMock = mockRepository.Create<IBusinessApiClient>();
+				certificateMock = mockRepository.Create<IClientCertificate>();
 				certificate = new X509Certificate2(Array.Empty<byte>());
 			}
 
@@ -46,16 +46,14 @@ namespace Schleupen.AS4.BusinessAdapter.API
 				mockRepository.VerifyAll();
 			}
 
-			public As4BusinessApiClient CreateTestObject()
+			public BusinessApiGateway CreateTestObject()
 			{
-				return new As4BusinessApiClient(
+				return new BusinessApiGateway(
 					jwtHelperMock.Object,
 					marketpartnerCertificateProviderMock.Object,
 					"https://Dummy",
 					"12345",
-					loggerMock.Object,
-					clientWrapperFactoryMock.Object
-				);
+					clientWrapperFactoryMock.Object, loggerMock.Object);
 			}
 
 			public void ValidateReceiveInfo(MessageReceiveInfo receiveInfo)
@@ -136,7 +134,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			private void SetupMarketpartnerCertificateProvider()
 			{
 				marketpartnerCertificateProviderMock
-					.Setup(x => x.GetMarketpartnerCertificate(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
+					.Setup(x => x.GetCertificate(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
 					.Returns(certificateMock.Object);
 			}
 
