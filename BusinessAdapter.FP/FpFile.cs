@@ -1,14 +1,12 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP;
 
-using Schleupen.AS4.BusinessAdapter.FP.Sending;
-using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public class FpFile(
 	EIC sender,
 	EIC receiver,
 	byte[] content,
-	string filename,
+	string fileName,
 	string path,
 	FpBDEWProperties fpBDEWProperties) : IFpFile
 {
@@ -22,16 +20,5 @@ public class FpFile(
 
 	public byte[] Content { get; } = content;
 
-	public FpOutboxMessage CreateOutboxMessage(EICMapping mapping)
-	{
-		var sendingParty = mapping.GetSendingParty(sender);
-		var receivingParty = mapping.GetReceivingParty(receiver);
-
-		return new FpOutboxMessage(
-			sendingParty,
-			receivingParty,
-			content,
-			filename,
-			fpBDEWProperties);
-	}
+	public string FileName { get; } = fileName;
 }

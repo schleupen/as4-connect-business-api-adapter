@@ -58,7 +58,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 				}
 
 				compressedStream.Position = 0;
-				IBusinessApiClient businessApiClient = businessApiClientFactory.Create(as4BusinessApiEndpoint, httpClient);
+				IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 				try
 				{
 					await businessApiClient.V1MpMessagesOutboxPostAsync(message.Receiver.Id,
@@ -81,7 +81,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 
 		public async Task<MessageReceiveInfo> QueryAvailableMessagesAsync(int limit = 50)
 		{
-			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(as4BusinessApiEndpoint, httpClient);
+			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			QueryInboxMessagesResponseDto clientResponse = await businessApiClient.V1MpMessagesInboxGetAsync(limit);
 
 			List<MpMessage> messages = new List<MpMessage>();
@@ -112,7 +112,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 
 		public async Task<MessageResponse<InboxMpMessage>> ReceiveMessageAsync(MpMessage mpMessage)
 		{
-			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(as4BusinessApiEndpoint, httpClient);
+			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			try
 			{
 				FileResponse clientResponse = await businessApiClient.V1MpMessagesInboxPayloadAsync(Guid.Parse(mpMessage.MessageId));
@@ -162,7 +162,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		public async Task<MessageResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMpMessage mpMessage)
 		{
 			string tokenString = jwtBuilder.CreateSignedToken(mpMessage);
-			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(as4BusinessApiEndpoint, httpClient);
+			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			try
 			{
 				if (mpMessage.MessageId == null)
@@ -186,6 +186,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			httpClientHandler.Dispose();
 		}
 
+		// TODO use PartyIdTypeAssembler
 		private PartyIdTypeDto ToPartyTypeDto(string partyTypeValue)
 		{
 			var partyType = partyTypeValue.ToUpperInvariant();
@@ -244,6 +245,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 
 		private static bool Test(HttpRequestMessage arg1, X509Certificate2? arg2, X509Chain? arg3, SslPolicyErrors arg4)
 		{
+			// TODO ServerCertificateCustomValidationCallback returns always true?
 			return true;
 		}
 	}
