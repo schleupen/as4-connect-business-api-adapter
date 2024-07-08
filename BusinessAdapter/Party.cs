@@ -1,4 +1,4 @@
-﻿namespace Schleupen.AS4.BusinessAdapter.API;
+﻿namespace Schleupen.AS4.BusinessAdapter;
 
 public record Party(string Id, string Type)
 {

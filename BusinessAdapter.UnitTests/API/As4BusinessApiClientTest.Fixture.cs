@@ -77,7 +77,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 				SetupCertificate();
 
 				clientWrapperMock
-					.Setup(x => x.V1MpMessagesInboxAsync(It.Is<int>(limit => limit == 51)))
+					.Setup(x => x.V1MpMessagesInboxGetAsync(It.Is<int>(limit => limit == 51), It.IsAny<CancellationToken>()))
 					.Returns(Task.FromResult(new QueryInboxMessagesResponseDto
 					{
 						Messages = new List<InboundMPMessageDto>
@@ -147,7 +147,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
 					.Returns("SignedToken");
 
 				clientWrapperMock
-					.Setup(x => x.V1MpMessagesInboxAcknowledgementAsync(It.Is<Guid>(messageId => messageId == Guid.Parse(MessageId)), It.Is<MessageAcknowledgedRequestDto>(request => request.Jwt == "SignedToken")))
+					.Setup(x => x.V1MpMessagesInboxAcknowledgementAsync(
+							It.Is<Guid>(messageId => messageId == Guid.Parse(MessageId)),
+							It.Is<MessageAcknowledgedRequestDto>(request => request.Jwt == "SignedToken"),
+							It.IsAny<CancellationToken>()))
 					.Returns(Task.CompletedTask);
 
 				return CreateInboxMessage();
@@ -176,7 +179,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
 					.Returns("SignedToken");
 
 				clientWrapperMock
-					.Setup(x => x.V1MpMessagesInboxAcknowledgementAsync(It.Is<Guid>(messageId => messageId == Guid.Parse(MessageId)), It.Is<MessageAcknowledgedRequestDto>(request => request.Jwt == "SignedToken")))
+					.Setup(x => x.V1MpMessagesInboxAcknowledgementAsync(
+						It.Is<Guid>(messageId => messageId == Guid.Parse(MessageId)),
+						It.Is<MessageAcknowledgedRequestDto>(request => request.Jwt == "SignedToken"),
+						It.IsAny<CancellationToken>()))
 					.Throws(new ApiException("something failed", (int)HttpStatusCode.Conflict, "The response", new Dictionary<string, IEnumerable<string>>(), new InvalidOperationException("The inner exception")));
 
 				return CreateInboxMessage();

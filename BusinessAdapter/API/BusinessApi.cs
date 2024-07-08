@@ -24,7 +24,554 @@ namespace Schleupen.AS4.BusinessAdapter.API
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.0.8.0 (NJsonSchema v11.0.1.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class Client
+    public partial interface IBusinessApiClient
+    {
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Bietet Abfragemöglichkeiten für eingehende und ausgehende Nachrichten.
+        /// </summary>
+        /// <remarks>
+        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen.
+        /// </remarks>
+        /// <param name="bDEWFulfillmentDate">Das geplante Zeitintervall.</param>
+        /// <param name="bDEWSubjectPartyId">Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.</param>
+        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (Schedule Message) oder A04 (ACK, CNF oder ANO).</param>
+        /// <param name="bDEWDocumentNo">Die Datenaustauschreferenz (DAR).</param>
+        /// <param name="bDEWDocType">Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTL, UTILMD ...)</param>
+        /// <param name="foreignMarketpartner_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
+        /// <param name="foreignMarketpartner_Type">Die codevergebene Stelle der MP-ID.</param>
+        /// <param name="created_at_from">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
+        /// <param name="created_at_to">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
+        /// <param name="direction">Die Richtung der Nachricht.</param>
+        /// <param name="outboundState">Die Zustände für ausgehende Nachrichten.</param>
+        /// <param name="inboundState">Die Zustände für eingehende Nachrichten.</param>
+        /// <param name="includeTrace">Bestimmt ob die Historie der Nachricht mit übertragen werden soll.</param>
+        /// <param name="limit">Legt die Anzahl der Nachrichten fest die zurück gegeben werden sollen pro Richtung (Inbox/Outbox). (default: 50, min: 1)</param>
+        /// <returns>Die Daten der Nachricht.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<FPMessageQueryResponseDto> V1FpMessagesAsync(string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, string? bDEWDocumentNo = null, string? bDEWDocType = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Abfrage von empfangenen Nachrichten
+        /// </summary>
+        /// <remarks>
+        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
+        /// </remarks>
+        /// <param name="limit">Legt die Anzahl der Nachrichten fest, die zurückgegeben werden sollen. (default: 50, min: 1, max: 1000)</param>
+        /// <returns>Gibt die empfangenen Nachrichten zurück.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<QueryInboxFPMessagesResponseDto> V1FpMessagesInboxGetAsync(int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt eine Nachrichten von eingehenden Nachrichten ab inklusive Fehler und Traces.
+        /// </summary>
+        /// <remarks>
+        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
+        /// <br/>
+        /// <br/>    Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<InboundFPMessageDto> V1FpMessagesInboxGetAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Abfrage des Payloads (Fahrplan-Datei) für eine eingegangene Nachricht.
+        /// </summary>
+        /// <remarks>
+        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
+        /// <br/>
+        /// <br/>    Empfangene Fahrplan-Dateien können über diesen Endpunkt heruntergeladen werden. Die Fahrplan-Datei ist dabei immer
+        /// <br/>    per gzip komprimiert und muss vom Nutzer der Api noch dekomprimiert werden.
+        /// <br/>    Nach dem Download befinden sich die zugehörige Nachrichten in dem Zustand `PAYLOAD_DELIVERED` und müssen im
+        /// <br/>    weiteren Verlauf über `/acknowledgement` bestätigt werden (Zustandswechsel auf `ACKNOWLEDGED`).
+        /// </remarks>
+        /// <param name="messageId">Die GUID der Nachricht.</param>
+        /// <returns>Gibt den Payload der Nachricht zurück.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<FileResponse> V1FpMessagesInboxPayloadAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt ausgehende Nachrichten (insb. den Zustand) ab.
+        /// </summary>
+        /// <remarks>
+        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
+        /// <br/>
+        /// <br/>    Hier kann der aktuelle Zustand abgefragt werden.
+        /// <br/>    Nachrichten werden von AS4 Connect asynchron verarbeitet. Eine ausgehende Nachricht kann dabei die folgenden
+        /// <br/>    Zustände annehmen:
+        /// <br/>    * `ACCEPTED`: Die Nachricht der Geschäftsapplikation wurde von AS4 Connect angenommen und wird zeitnah verarbeitet.
+        /// <br/>    * `IN_PROGRESS`: Die Nachricht befindet aktuell in Verarbeitung und wird zeitnah an den fremdnen Marktpartner gesendet.
+        /// <br/>    * `SUCCESSFUL`: Die Nachricht wurde von AS4 Connect erfolreich an den fremden Marktpartner gesendet. Der fremden Marktpartner hat für die Nachricht eine valide Quittung (Receipt) erzeugt.
+        /// <br/>    * `FAILED`: Die Nachricht wird aufgrund von Fehlern nicht weiter verarbeitet. Weitere Informationen sind als 'Error' hinterlegt. Soll die Nachricht weiterhin an den fremden Martpartner gesendet werden, muss die Geschäftsapplikation die Nachricht erneut an AS4 Connect senden.
+        /// </remarks>
+        /// <param name="messageIds">Filterung nach MessageIds die von AS4 Connect vergeben wurden.</param>
+        /// <param name="senderMessageIds">Filterung nach MessageIds die von der Geschäftsapplikation beim Senden mit angegeben wurden (s. `SenderMessageId`).</param>
+        /// <param name="receiver_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
+        /// <param name="receiver_Type">Die codevergebene Stelle der MP-ID.</param>
+        /// <param name="bDEWFulfillmentDateStart">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
+        /// <param name="bDEWFulfillmentDateEnd">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
+        /// <param name="limit">Legt die Anzahl der Nachrichten fest die zurück gegeben werden sollen. (default: 50, min: 1)</param>
+        /// <param name="state">Filterung nach Status der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<GetOutboundFPMessagesResponseDto> V1FpMessagesOutboxGetAsync(System.Collections.Generic.IEnumerable<System.Guid>? messageIds = null, System.Collections.Generic.IEnumerable<string>? senderMessageIds = null, string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, System.DateTimeOffset? bDEWFulfillmentDateStart = null, System.DateTimeOffset? bDEWFulfillmentDateEnd = null, int? limit = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? state = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Hinterlegt eine ausgehende Nachricht inkl. Payload für den Versand zu einem Marktteilnehmer.
+        /// </summary>
+        /// <remarks>
+        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
+        /// </remarks>
+        /// <param name="receiver_Id">Die Id gemäß Codenummerndatenbank.
+        /// <br/>[OASIS ebXML Messaging Services Version: 'eb:UserMessage/eb:PartyInfo/From|To/PartyId/'/]</param>
+        /// <param name="payload">Der Payload der Nachricht (Edifact-Datei). Muss immer per gzip komprimiert übertragen werden.</param>
+        /// <param name="bDEWDocumentType">A01 für Fahrplananmeldungen. A17 für ACK. A16 für ANO. A07, A08 oder A09 für CNF.</param>
+        /// <param name="bDEWDocumentNo">Datenaustauschreferenz (DAR) aus UNB DE0020</param>
+        /// <param name="bDEWFulfillmentDate">Das geplante Zeitintervall.</param>
+        /// <param name="bDEWSubjectPartyId">Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.</param>
+        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (bei Schedule Messages) oder A04 (ACK, CNF oder ANO).</param>
+        /// <param name="messageId">Die Id der ausgehenden Nachricht. Über diese Id wird die Nachricht eindeutig in AS4.Connect identifizierbar.
+        /// <br/>Über diese Id wird die &lt;a href="https://developer-campus.de/tracks/architecture/makroarchitektur/resilienz/#idempotenz"&gt;Idempotenz&lt;/a&gt; der Operation gewährleistet.
+        /// <br/>Dieser Wert ist nur aufgrund der Kompatibilität optional und wird zukünftig verpflichtend.</param>
+        /// <param name="senderMessageId">Optionale Id welcher der Sender für die Nachricht individuell vergeben kann.
+        /// <br/>Diese Id sollte aus der zugehörigen Geschäftsapplikation stammen, um kann im weiteren Verlauf dazu benutzt werden die Nachricht in AS4 Connect zu identifizieren.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Guid? messageId = null, string? senderMessageId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt eine Nachrichten von ausgehenden Nachrichten ab inklusive Fehler und Traces.
+        /// </summary>
+        /// <remarks>
+        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
+        /// <br/>
+        /// <br/>    Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<OutboundFPMessageDto> V1FpMessagesOutboxGetAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Bietet Abfragemöglichkeiten für eingehende und ausgehende Nachrichten.
+        /// </summary>
+        /// <param name="bDEWDocumentNo">Die Datenaustauschreferenz (DAR).</param>
+        /// <param name="bDEWDocType">Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTL, UTILMD ...)</param>
+        /// <param name="foreignMarketpartner_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
+        /// <param name="foreignMarketpartner_Type">Die codevergebene Stelle der MP-ID.</param>
+        /// <param name="created_at_from">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
+        /// <param name="created_at_to">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
+        /// <param name="direction">Die Richtung der Nachricht.</param>
+        /// <param name="outboundState">Die Zustände für ausgehende Nachrichten.</param>
+        /// <param name="inboundState">Die Zustände für eingehende Nachrichten.</param>
+        /// <param name="includeTrace">Bestimmt ob die Historie der Nachricht mit übertragen werden soll.</param>
+        /// <param name="limit">Legt die Anzahl der Nachrichten fest die zurück gegeben werden sollen pro Richtung (Inbox/Outbox). (default: 50, min: 1)</param>
+        /// <returns>Die Daten der Nachricht.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<MessageQueryResponseDto> V1MpMessagesAsync(string? bDEWDocumentNo = null, string? bDEWDocType = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Abfrage von empfangenen Nachrichten.
+        /// </summary>
+        /// <remarks>
+        /// Informationen über empfangenen Nachrichten von fremden Marktpartnern werden hier bereitgestellt.
+        /// <br/>Das kontinuierliche Abrufverhalten von neuen Nachrichten sollte von der Geschäftsapplikation wie folgt realisiert werden:
+        /// <br/>
+        /// <br/>Die Identifikation von Nachrichten, die noch nicht durch die Geschäfsapplikation verarbeitet wurden, erfolgt über den Endpunkt (`/inbox`). Die Anzahl der Nachrichten die in einem Zyklus abgearbeitet werden sollen kann durch den
+        /// <br/>Parameter `limit` spezifiziert werden. Nachrichten die für die Verabeitung in der Geschäftsapplikation bereit sind haben einen der folgenden Zustände:
+        /// <br/>* `PROVIDED`: Die Nachricht wurde von AS4 Connect empfangen und bearbeitet. Der Payload wurde noch nicht durch die
+        /// <br/>Geschäftsapplikation heruntergeladen. Das Herunterladen der Editfact Dateien erfolgt über `/inbox/payload`. Dabei erfolgt ein Zustandswechsel auf: DELIVERED
+        /// <br/>* `DELIVERED`: Der Payload wurde bereits durch die Geschäftsapplikation heruntergeladen aber noch nicht bestätigt. Die heruntergeladene Editfact Datei kann über `/inbox/acknowledgement` bestätigt werden. Der Payload wird aufgrund der variabeln Größe einzeln abgerufen. Dabei erfolgt ein Zustandswechsel auf: auf ACKNOWLEDGED und es werden über (`/inbox`) wieder neuere Nachrichten bereitgestellt.
+        /// </remarks>
+        /// <param name="limit">Legt die Anzahl der Nachrichten fest, die zurückgegeben werden sollen. (default: 50, min: 1, max: 1000)</param>
+        /// <returns>Die eingegangenen Nachrichten.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<QueryInboxMessagesResponseDto> V1MpMessagesInboxGetAsync(int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt eine Nachrichten von eingehenden Nachrichten ab inklusive Fehler und Traces.
+        /// </summary>
+        /// <remarks>
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<InboundMPMessageDto> V1MpMessagesInboxGetAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Abfrage des Payloads (Edifact-Datei) der empfangenen Nachricht.
+        /// </summary>
+        /// <remarks>
+        /// Empfangene Edifact-Dateien können über diesen Endpunkt heruntergeladen werden. Die Edifact-Datei ist dabei immer
+        /// <br/>per gzip komprimiert und muss vom Nutzer der Api noch dekomprimiert werden.
+        /// <br/>Nach dem Download befinden sich die zugehörige Nachrichten in dem Zustand `PAYLOAD_DELIVERED` und müssen im
+        /// <br/>weiteren Verlauf über `/acknowledgement` bestätigt werden (Zustandswechsel auf `ACKNOWLEDGED`).
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Der Payload der Nachricht.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<FileResponse> V1MpMessagesInboxPayloadAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt ausgehende Nachrichten (insb. den Zustand) ab.
+        /// </summary>
+        /// <remarks>
+        /// Hier kann der aktuelle Zustand abgefragt werden.
+        /// <br/>Nachrichten werden von AS4 Connect asynchron verarbeitet. Eine ausgehende Nachricht kann dabei die folgenden
+        /// <br/>Zustände annehmen:
+        /// <br/>* `ACCEPTED`: Die Nachricht der Geschäftsapplikation wurde von AS4 Connect angenommen und wird zeitnah verarbeitet.
+        /// <br/>* `IN_PROGRESS`: Die Nachricht befindet aktuell in Verarbeitung und wird zeitnah an den fremdnen Marktpartner gesendet.
+        /// <br/>* `SUCCESSFUL`: Die Nachricht wurde von AS4 Connect erfolreich an den fremden Marktpartner gesendet. Der fremden Marktpartner hat für die Nachricht eine valide Quittung (Receipt) erzeugt.
+        /// <br/>* `FAILED`: Die Nachricht wird aufgrund von Fehlern nicht weiter verarbeitet. Weitere Informationen sind als 'Error' hinterlegt. Soll die Nachricht weiterhin an den fremden Martpartner gesendet werden, muss die Geschäftsapplikation die Nachricht erneut an AS4 Connect senden.
+        /// </remarks>
+        /// <param name="messageIds">Filterung nach MessageIds die von AS4 Connect vergeben wurden.</param>
+        /// <param name="senderMessageIds">Filterung nach MessageIds die von der Geschäftsapplikation beim Senden mit angegeben wurden (s. `SenderMessageId`).</param>
+        /// <param name="receiver_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
+        /// <param name="receiver_Type">Die codevergebene Stelle der MP-ID.</param>
+        /// <param name="bDEWFulfillmentDateStart">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
+        /// <param name="bDEWFulfillmentDateEnd">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
+        /// <param name="limit">Legt die Anzahl der Nachrichten fest die zurück gegeben werden sollen. (default: 50, min: 1)</param>
+        /// <param name="state">Filterung nach Status der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<GetOutboundMessagesResponseDto> V1MpMessagesOutboxGetAsync(System.Collections.Generic.IEnumerable<System.Guid>? messageIds = null, System.Collections.Generic.IEnumerable<string>? senderMessageIds = null, string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, System.DateTimeOffset? bDEWFulfillmentDateStart = null, System.DateTimeOffset? bDEWFulfillmentDateEnd = null, int? limit = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? state = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Hinterlegt eine ausgehende Nachricht inkl. Payload für den Versand zu einem Marktteilnehmer.
+        /// </summary>
+        /// <remarks>
+        /// Nachrichten werden von AS4 Connect asynchron zugestellt.
+        /// <br/>Der Status einer Nachricht kann über `GET /outbox` abgefragt werden.
+        /// </remarks>
+        /// <param name="receiver_Id">Die Id gemäß Codenummerndatenbank.
+        /// <br/>[OASIS ebXML Messaging Services Version: 'eb:UserMessage/eb:PartyInfo/From|To/PartyId/'/]</param>
+        /// <param name="payload">Der Payload der Nachricht (Edifact-Datei). Muss immer per gzip komprimiert übertragen werden.</param>
+        /// <param name="bDEWDocumentType">Der EDIFACT-Name des Nachrichtentyps gem. UNH DE0065 (z.B. CONTL, UTILMD ...)</param>
+        /// <param name="bDEWDocumentNo">Datenaustauschreferenz (DAR) aus UNB DE0020</param>
+        /// <param name="bDEWDocumentDate">Datumstempel bei Erzeugung im Format YYYY-MM-DD.</param>
+        /// <param name="messageId">Die Id der ausgehenden Nachricht. Über diese Id wird die Nachricht eindeutig in AS4.Connect identifizierbar.
+        /// <br/>Über diese Id wird die &lt;a href="https://developer-campus.de/tracks/architecture/makroarchitektur/resilienz/#idempotenz"&gt;Idempotenz&lt;/a&gt; der Operation gewährleistet.
+        /// <br/>Dieser Wert ist nur aufgrund der Kompatibilität optional und wird zukünftig verpflichtend.</param>
+        /// <param name="senderMessageId">Optionale Id welcher der Sender für die Nachricht individuell vergeben kann.
+        /// <br/>Diese Id sollte aus der zugehörigen Geschäftsapplikation stammen, um kann im weiteren Verlauf dazu benutzt werden die Nachricht in AS4 Connect zu identifizieren.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<SubmitMessageResponseDto> V1MpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWDocumentDate = null, System.Guid? messageId = null, string? senderMessageId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt eine Nachrichten von ausgehenden Nachrichten ab inklusive Fehler und Traces.
+        /// </summary>
+        /// <remarks>
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<OutboundMPMessageDto> V1MpMessagesOutboxGetAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt die zuletzt empfangenen Nachrichten für den Wechselprozess ab.
+        /// </summary>
+        /// <remarks>
+        /// AS4 Connect stellt hier nur die __letzten__ PATH_SWITCH-Nachrichten von fremden Marktteilenhmern bereit.
+        /// <br/>
+        /// <br/>Eingehende Nachrichten müssen geeignet über die Geschäftsapplikation verarbeitet werden.
+        /// <br/>
+        /// <br/>Grundsätzlich werden die Typen `PATH_SWITCH_REQUEST` und `PATH_SWITCH_CONFIRM` wie folgt unterschieden:
+        /// <br/>
+        /// <br/>### PATH_SWITCH_REQUEST ###
+        /// <br/>Ein fremder Marktteilnehmer möchte den Übertragungsweg auf AS4 wechseln.
+        /// <br/>
+        /// <br/>Der fremde Marktpartner kommuniziert (bis zu Bestätigung des Wechsels) weiterhin über den bisherige Übertragungsweg.
+        /// <br/>Um dem Wechsel auf AS4 zuzustimmen, muss eine Bestätigung vom Typ `PATH_SWITCH_CONFIRM` über `/path-switch/messages/outbox`
+        /// <br/>an den fremden Marktteilenhmer gesendet werden.
+        /// <br/>
+        /// <br/>Bitte berücksichtigen Sie die Vorgaben für den Wechselprozess aus [AWH Einführungsszenario AS4](https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK6-GZ/2021/BK6-21-282/Mitteilung02/AWH%20Einf%C3%BChrungsszenario%20AS4.pdf).
+        /// <br/>
+        /// <br/>### PATH_SWITCH_CONFIRM ###
+        /// <br/>Ein fremder Marktteilnehmer bestätigt den Wechsel auf den AS4-Übertragungsweg.
+        /// <br/>
+        /// <br/>Bitte berücksichtigen Sie die Vorgaben für den Wechselprozess aus [AWH Einführungsszenario AS4](https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK6-GZ/2021/BK6-21-282/Mitteilung02/AWH%20Einf%C3%BChrungsszenario%20AS4.pdf).
+        /// </remarks>
+        /// <param name="sender_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
+        /// <param name="sender_Type">Die codevergebene Stelle der MP-ID.</param>
+        /// <returns>Die Anfrage wurde erfolgreich verarbeitet.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<QueryPathSwitchInboxMessagesResponseDto> V1PathSwitchMessagesInboxGetAsync(string? sender_Id = null, PartyIdTypeDto? sender_Type = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt eine Nachrichten von eingehenden Nachrichten ab inklusive Fehler und Traces.
+        /// </summary>
+        /// <remarks>
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<InboundPathSwitchMessageDto> V1PathSwitchMessagesInboxGetAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt die zuletzt gesendetet Nachrichten für den Wechselprozess ab.
+        /// </summary>
+        /// <remarks>
+        /// AS4 Connect stellt hier nur die __letzten__ PATH_SWITCH-Nachrichten die per POST an `/path-switch/messages/outbox`
+        /// <br/>gesendet wurden bereit.
+        /// <br/>Nachrichten die erfolgreich an einen fremden Marktteilnehmer übertragen wurden, haben den Zustand `SUCCESSFUL`.
+        /// </remarks>
+        /// <param name="receiver_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
+        /// <param name="receiver_Type">Die codevergebene Stelle der MP-ID.</param>
+        /// <returns>Die Anfrage wurde erfolgreich verarbeitet.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<QueryPathSwitchOutboxMessagesResponseDto> V1PathSwitchMessagesOutboxGetAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Sendet Nachrichten für den Wechselprozess an Marktteilnehmer.
+        /// </summary>
+        /// <remarks>
+        /// Grundsätzlich werden die Typen `PATH_SWITCH_REQUEST` und `PATH_SWITCH_CONFIRM` wie folgt unterschieden:
+        /// <br/>### PATH_SWITCH_REQUEST ###
+        /// <br/>Der AS4-Connect Marktpartner möchte den Übertragungsweg auf AS4 ändern und informiert hiermit den fremden
+        /// <br/>Marktteilnehmer.
+        /// <br/>Bitte berücksichtigen die Vorgaben für den Wechselprozess aus [AWH Einführungsszenario
+        /// <br/>AS4](https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK6-GZ/2021/BK6-21-282/Mitteilung02/AWH%20Einf%C3%BChrungsszenario%20AS4.pdf).
+        /// <br/>Stimmt der fremde Marktteilnehmer dem Wechsel zu, wird er eine Bestätigung vom Typ `PATH_SWITCH_CONFIRM` senden.
+        /// <br/>Diese kann der AS4-Connect Marktpartner über `/path-switch/messages/inbox` abrufen.
+        /// <br/>### PATH_SWITCH_CONFIRM ###
+        /// <br/>Der AS4-Connect Marktpartner möchte eine über `/path-switch/messages/inbox` empfangene Wechselanfrage eines fremden
+        /// <br/>Marktteilnehmer bestätígen.
+        /// <br/>Bitte berücksichtigen die Vorgaben für den Wechselprozess aus [AWH Einführungsszenario
+        /// <br/>AS4](https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK6-GZ/2021/BK6-21-282/Mitteilung02/AWH%20Einf%C3%BChrungsszenario%20AS4.pdf).
+        /// </remarks>
+        /// <returns>Die Anfrage wurde erfolgreich verarbeitet.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<SubmitPathSwitchMessageResponseDto> V1PathSwitchMessagesOutboxPostAsync(SubmitPathSwitchMessageRequestDto? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt eine Nachrichten von ausgehenden Nachrichten ab inklusive Fehler und Traces.
+        /// </summary>
+        /// <remarks>
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<OutboundPathSwitchMessageDto> V1PathSwitchMessagesOutboxGetAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Gibt Statistiken über die Anzahl der ein- und ausgehenden Nachrichten für einen Marktpartner im letzten und im laufenden Monat zurück.
+        /// </summary>
+        /// <returns>Die Statistik für den Marktpartner.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<StatisticsResponseDto> V1StatisticsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt die zuletzt empfangenen Test-Nachrichten ab.
+        /// </summary>
+        /// <remarks>
+        /// Bevor ein Wechsel des Übertragungsweg auf AS4 stattfindet (initiiert und bestätigt durch `/path-switch/`)
+        /// <br/>sollten erfolreich s.g. Testnachrichten zwischen den Marktpartnern ausgetauscht werden.
+        /// <br/>Empfangene Testnachrichten von fremden Marktteilnehmern werden hier bereitgestellt.
+        /// <br/>Testnachrichten dienen lediglich zum "Anpingen" von Marktteilnehmern. Der Payload ist hierfür irrelevant und wird
+        /// <br/>daher nicht durch AS4 Connect bereitgestellt.
+        /// <br/>Details siehe Kapitel 2.3.6 'Testservice' des [BDEW
+        /// <br/>AS4-Profil](https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK6-GZ/2021/BK6-21-282/Mitteilung02/AS4%20Profil.pdf)
+        /// </remarks>
+        /// <param name="sender_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
+        /// <param name="sender_Type">Die codevergebene Stelle der MP-ID.</param>
+        /// <returns>Die Anfrage wurde erfolgreich verarbeitet.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<QueryInboxTestMessagesResponseDto> V1TestMessagesInboxGetAsync(string? sender_Id = null, PartyIdTypeDto? sender_Type = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt eine Nachrichten von eingehenden Nachrichten ab inklusive Fehler und Traces.
+        /// </summary>
+        /// <remarks>
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<InboundTestMessageDto> V1TestMessagesInboxGetAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt die zuletzt gesendeteten Test-Nachrichten ab.
+        /// </summary>
+        /// <remarks>
+        /// Bevor ein Wechsel des Übertragungsweg auf AS4 stattfindet (initiiert und bestätigt durch `/path-switch/`)
+        /// <br/>sollten erfolreich Testnachrichten zwischen den Marktpartnern ausgetauscht werden.
+        /// <br/>Über diesen Aufruf können AS4 Connect Marktteilnehmer feststellen, zu welchem fremden Marktteilenhmer bereits
+        /// <br/>Test-Nachrichten gesendet worden sind.
+        /// <br/>Nachrichten die erfolgreich an einen fremden Marktteilnehmer übertragen wurden, haben den Zustand
+        /// <br/>`SUCCESSFUL`.
+        /// </remarks>
+        /// <param name="receiver_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
+        /// <param name="receiver_Type">Die codevergebene Stelle der MP-ID.</param>
+        /// <returns>Die Anfrage wurde erfolgreich verarbeitet.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<QueryTestMessageOutboxMessagesResponseDto> V1TestMessagesOutboxGetAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Sendet Test-Nachrichten an Marktteilnehmer.
+        /// </summary>
+        /// <remarks>
+        /// Bevor ein Wechsel des Übertragungsweg auf AS4 stattfindet (initiiert und bestätigt durch `/path-switch/`)
+        /// <br/>sollten erfolreich Testnachrichten zwischen den Marktpartnern ausgetauscht werden.
+        /// <br/>Über diesen Aufruf können AS4 Connect Marktteilnehmer Test-Nachrichten an fremden Marktteilenhmer senden.
+        /// <br/>AS4 Connect stellt Test-Nachrichten asynchron zu.
+        /// <br/>Nachrichten die erfolgreich an einen fremden Marktteilnehmer übertragen wurden, haben den Zustand
+        /// <br/>`SUCCESSFUL`.
+        /// <br/>Der Zustand kann über GET  `/test/messages/outbox/` abgefragt werden.
+        /// </remarks>
+        /// <param name="body">Die Empänger der Testnachrichten.</param>
+        /// <returns>Erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<TestMessageResponseDto> V1TestMessagesOutboxPostAsync(TestMessageRequestDto? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Fragt eine Nachrichten von ausgehenden Nachrichten ab inklusive Fehler und Traces.
+        /// </summary>
+        /// <remarks>
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<OutboundTestMessageDto> V1TestMessagesOutboxGetAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Bestätigt den erfolgreichen Erhalt einer Nachricht.
+        /// </summary>
+        /// <remarks>
+        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
+        /// <br/>
+        /// <br/>Erst wenn die bereitgestellten Nachrichten bestätigt wurden, werden neuere Nachrichten für die Verarbeitung bereitgestellt.
+        /// <br/>
+        /// <br/>Um die Authentizität und Integrität der empfangenen Fahrplan-Datei gegenüber AS4 Connect zu bestätigen wird ein **JWT** gemäß [RFC7519](https://www.rfc-editor.org/rfc/rfc7519) genutzt.
+        /// <br/>Der Payload des **JWT** muss den Hashwert der Fahrplan-Datei mittels **SHA256** gemäß [RFC6234](https://www.rfc-editor.org/rfc/rfc6234) beinhalten.
+        /// <br/>Die Signierung erfolgt über den privaten Schlüsel des Client-Zertifikats, welches bereits für die Authentifizierung gegenüber AS4 Connect benutzt wird.
+        /// <br/>Verschlüsselt wird das Token nicht.
+        /// <br/>
+        /// <br/>**Hinweise**:
+        /// <br/>Der Hash Wert muss immer auf dem gzip komprimierten Payload berechnet werden.
+        /// <br/>Der Algorithmus für die Token-Signierung und -Validierung muss ES384 sein.
+        /// <br/>
+        /// <br/>Das Token muss mindestens folgende Claims enthalten:
+        /// <br/>```json
+        /// <br/>// HEADER:
+        /// <br/>{
+        /// <br/>   "alg": "ES384", // die verwendete Signatur-Algorithmus (immer ES384), (SECP384R1)
+        /// <br/>   "typ": "JWT" // der Typ des Tokens (immer JWT)
+        /// <br/>}
+        /// <br/>
+        /// <br/>// PAYLOAD:
+        /// <br/>{
+        /// <br/>   "hash": "07d8d11084e8d500852664c0f64ade1299d418cbe489edefcd422ad698666b33",  // der SHA256 Hashwert des Payloads, als hex-string
+        /// <br/>   "cert": "MIICsDCCAjegAwIBAgICEAkwCgYIKoZIzj0EAwMwQTESMBAGA1UEAwwJU00tU3ViLkNBMRIwEAYD…", // Base64-Darstellung des DER-kodierten Client-Zertifikats, welches zur Erstellung der Signatur verwendet wurde
+        /// <br/>   "iss": "9904843000000@BDEW", // der Aussteller des Tokens (Party-ID des Absenders, "MP-ID"@"Typ", analog zum "OU"-Feld im Zertifikat)
+        /// <br/>   "aud": "schleupen", // der Empfänger des Tokens (immer "schleupen")
+        /// <br/>   "mid": "f613cfa2-a7a2-446f-8599-ce2c9525bbb1", // die Message-ID
+        /// <br/>   "iat": 1516239022 // Zeitpunkt der Erstellung des Tokens
+        /// <br/>}
+        /// <br/>
+        /// <br/>// SIGNATURE:
+        /// <br/>{
+        /// <br/>    ...
+        /// <br/>}
+        /// <br/>```
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <param name="body">Die für die Bestätigung notwendigen Daten.</param>
+        /// <returns>Bestätigung wurde akzeptiert.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task V1FpMessagesInboxAcknowledgementAsync(System.Guid messageId, MessageAcknowledgedRequestDto? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Bestätigt den erfolgreichen Erhalt einer Nachricht.
+        /// </summary>
+        /// <remarks>
+        /// Erst wenn die bereitgestellten Nachrichten bestätigt wurden, werden über `inbox/messages` neuere Nachrichten für die Verarbeitung bereitgestellt.
+        /// <br/>
+        /// <br/>Um die Authentizität und Integrität der empfangenen Edifact-Datei gegenüber AS4 Connect zu bestätigen wird ein **JWT** gemäß [RFC7519](https://www.rfc-editor.org/rfc/rfc7519) genutzt.
+        /// <br/>Der Payload des **JWT** muss den Hashwert der Edifact-Datei mittels **SHA256** gemäß [RFC6234](https://www.rfc-editor.org/rfc/rfc6234) beinhalten.
+        /// <br/>Die Signierung erfolgt über den privaten Schlüsel des Client-Zertifikats, welches bereits für die Authentifizierung gegenüber AS4 Connect benutzt wird.
+        /// <br/>Verschlüsselt wird das Token nicht.
+        /// <br/>
+        /// <br/>**Hinweise**:
+        /// <br/>Der Hash Wert muss immer auf dem gzip komprimierten Payload berechnet werden.
+        /// <br/>Der Algorithmus für die Token-Signierung und -Validierung muss ES384 sein.
+        /// <br/>
+        /// <br/>Das Token muss mindestens folgende Claims enthalten:
+        /// <br/>```json
+        /// <br/>// HEADER:
+        /// <br/>{
+        /// <br/>   "alg": "ES384", // die verwendete Signatur-Algorithmus (immer ES384), (SECP384R1)
+        /// <br/>   "typ": "JWT" // der Typ des Tokens (immer JWT)
+        /// <br/>}
+        /// <br/>
+        /// <br/>// PAYLOAD:
+        /// <br/>{
+        /// <br/>   "hash": "07d8d11084e8d500852664c0f64ade1299d418cbe489edefcd422ad698666b33",  // der SHA256 Hashwert des Payloads, als hex-string
+        /// <br/>   "cert": "MIICsDCCAjegAwIBAgICEAkwCgYIKoZIzj0EAwMwQTESMBAGA1UEAwwJU00tU3ViLkNBMRIwEAYD…", // Base64-Darstellung des DER-kodierten Client-Zertifikats, welches zur Erstellung der Signatur verwendet wurde
+        /// <br/>   "iss": "9904843000000@BDEW", // der Aussteller des Tokens (Party-ID des Absenders, "MP-ID"@"Typ", analog zum "OU"-Feld im Zertifikat)
+        /// <br/>   "aud": "schleupen", // der Empfänger des Tokens (immer "schleupen")
+        /// <br/>   "mid": "f613cfa2-a7a2-446f-8599-ce2c9525bbb1", // die Message-ID
+        /// <br/>   "iat": 1516239022 // Zeitpunkt der Erstellung des Tokens
+        /// <br/>}
+        /// <br/>
+        /// <br/>// SIGNATURE:
+        /// <br/>{
+        /// <br/>    ...
+        /// <br/>}
+        /// <br/>```
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <param name="body">Die für die Bestätigung notwendigen Daten.</param>
+        /// <returns>Bestätigung wurde akzeptiert.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task V1MpMessagesInboxAcknowledgementAsync(System.Guid messageId, MessageAcknowledgedRequestDto? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Stößt die erneute Verarbeitung von fehlgeschlagenen Nachrichten an.
+        /// </summary>
+        /// <param name="body">Die Ids der erneut zuzustellenden Nachrichten.</param>
+        /// <returns>Die erneute Zustellung wurde empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<RetryMessagesResponseDto> V1MpMessagesOutboxRetriesAsync(RetryMessagesRequestDto? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.0.8.0 (NJsonSchema v11.0.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class BusinessApiClient : IBusinessApiClient
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -34,7 +581,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
 
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public Client(string baseUrl, System.Net.Http.HttpClient httpClient)
+        public BusinessApiClient(string baseUrl, System.Net.Http.HttpClient httpClient)
     #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             BaseUrl = baseUrl;

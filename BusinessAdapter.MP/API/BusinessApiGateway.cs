@@ -82,7 +82,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		public async Task<MessageReceiveInfo> QueryAvailableMessagesAsync(int limit = 50)
 		{
 			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(as4BusinessApiEndpoint, httpClient);
-			QueryInboxMessagesResponseDto clientResponse = await businessApiClient.V1MpMessagesInboxAsync(limit);
+			QueryInboxMessagesResponseDto clientResponse = await businessApiClient.V1MpMessagesInboxGetAsync(limit);
 
 			List<MpMessage> messages = new List<MpMessage>();
 

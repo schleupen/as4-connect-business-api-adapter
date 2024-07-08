@@ -17,7 +17,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		/// <returns>The configured client wrapper.</returns>
 		public IBusinessApiClient Create(string as4BusinessApiEndpoint, HttpClient httpClient)
 		{
-			return new BusinessApiClient(new Client(as4BusinessApiEndpoint, httpClient));
+			return new BusinessApiClient(as4BusinessApiEndpoint, httpClient);
 		}
 	}
 }
