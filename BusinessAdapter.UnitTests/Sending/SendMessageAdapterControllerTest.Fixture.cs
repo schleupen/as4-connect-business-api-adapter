@@ -57,7 +57,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 			{
 				this.sendOptionsMock
 					.Setup(x => x.Value)
-					.Returns(new SendOptions() { Directory = null });
+					.Returns(new SendOptions() { Directory = null! });
 			}
 
 			private void SetupAdapterConfiguration(int sendLimit = 100)

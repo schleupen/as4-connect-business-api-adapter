@@ -13,7 +13,7 @@ public partial class AdapterOptionsValidatorTest
 	{
 		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
 
-		options.As4ConnectEndpoint = value;
+		options.As4ConnectEndpoint = value!;
 
 		var result = ExecuteValidation(options);
 

@@ -20,13 +20,13 @@ public class AdapterOptionsTest
 		Assert.That(adapterOptions.As4ConnectEndpoint, Is.EqualTo("https://erp.prod.as4.schleupen.cloud"));
 		Assert.That(adapterOptions.CertificateStoreLocation, Is.EqualTo(StoreLocation.CurrentUser));
 		Assert.That(adapterOptions.CertificateStoreName, Is.EqualTo(StoreName.CertificateAuthority));
-		Assert.That(adapterOptions.Marketpartners.Single(), Is.EqualTo("9984617000002"));
+		Assert.That(adapterOptions.Marketpartners!.Single(), Is.EqualTo("9984617000002"));
 
-		Assert.That(adapterOptions.Receive.Directory, Is.EqualTo("./receive"));
+		Assert.That(adapterOptions.Receive!.Directory, Is.EqualTo("./receive"));
 		Assert.That(adapterOptions.Receive.RetryCount, Is.EqualTo(3));
 		Assert.That(adapterOptions.Receive.MessageLimitCount, Is.EqualTo(4));
 
-		Assert.That(adapterOptions.Send.Directory, Is.EqualTo("./send"));
+		Assert.That(adapterOptions.Send!.Directory, Is.EqualTo("./send"));
 		Assert.That(adapterOptions.Send.RetryCount, Is.EqualTo(1));
 		Assert.That(adapterOptions.Send.MessageLimitCount, Is.EqualTo(2));
 

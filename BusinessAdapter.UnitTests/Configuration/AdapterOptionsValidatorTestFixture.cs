@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 public partial class AdapterOptionsValidatorTest
 {
-	private Fixture? fixture;
+	private Fixture fixture = default!;
 
 	[SetUp]
 	public void Setup()
@@ -16,7 +16,7 @@ public partial class AdapterOptionsValidatorTest
 	[TearDown]
 	public void Dispose()
 	{
-		fixture = null;
+		fixture = null!;
 	}
 
 	private sealed class Fixture
@@ -35,7 +35,7 @@ public partial class AdapterOptionsValidatorTest
 		}
 	}
 
-	private class TestData
+	private sealed class TestData
 	{
 		public AdapterOptions CreateValidAdapterOptions()
 		{
