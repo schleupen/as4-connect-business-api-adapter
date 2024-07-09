@@ -21,7 +21,22 @@ public class FpFileNameExtractor : IFpFileNameExtractor
 
 	private FpMessageType ToMessageType(string bdewDocumentType)
 	{
-		// TODO
-		return FpMessageType.Acknowledge;
+		switch (bdewDocumentType)
+		{
+			case "A07":
+			case "A08":
+			case "A09":
+				return FpMessageType.Confirmation;
+			case "A01":
+				return FpMessageType.Schedule;
+			case "A17":
+				return FpMessageType.Acknowledge;
+			case "A16":
+				return FpMessageType.Anomaly;
+			case "A??": // TODO: --> welcher Wert?
+				return FpMessageType.Status; 
+			default:
+				throw new NotSupportedException($"Document type {bdewDocumentType} is not supported.");
+		}
 	}
 }
