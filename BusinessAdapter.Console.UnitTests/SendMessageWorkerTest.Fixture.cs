@@ -23,6 +23,7 @@ internal sealed partial class SendMessageWorkerTest
 			loggerMock = mockRepository.Create<ILogger<SendMessageWorker>>();
 			sendMessageAdapterControllerMock = mockRepository.Create<ISendMessageAdapterController>();
 			sendOptionsMock = mockRepository.Create<IOptions<SendOptions>>();
+			sendOptionsMock.SetupGet(o => o.Value).Returns(new SendOptions());
 		}
 
 		public SendMessageWorker CreateTestObject()
