@@ -29,6 +29,6 @@ public class AdapterOptionsTest
 		Assert.That(adapterOptions.Send!.Directory, Is.EqualTo("./send"));
 		Assert.That(adapterOptions.Send.RetryCount, Is.EqualTo(1));
 		Assert.That(adapterOptions.Send.MessageLimitCount, Is.EqualTo(2));
-
+		Assert.That(adapterOptions.Send.ScanInterval, Is.EqualTo(1337));
 	}
 }
