@@ -1,9 +1,9 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Sending;
 
-using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public class FpOutboxMessage(
+	Guid messageId,
 	SendingParty sender,
 	ReceivingParty receiver,
 	byte[] payload,
@@ -11,6 +11,8 @@ public class FpOutboxMessage(
 	FpBDEWProperties bdewProperties,
 	string? senderMessageId = null)
 {
+	public Guid MessageId { get; } = messageId;
+
 	/// <summary>
 	/// Receiving party of the message.
 	/// </summary>

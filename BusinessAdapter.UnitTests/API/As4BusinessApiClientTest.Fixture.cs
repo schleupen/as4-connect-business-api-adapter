@@ -125,7 +125,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			private void SetupClientWrapperFactory()
 			{
 				clientWrapperFactoryMock
-					.Setup(x => x.Create(It.Is<string>(endpoint => endpoint == "https://Dummy"), It.IsAny<HttpClient>()))
+					.Setup(x => x.Create(It.Is<Uri>(endpoint => endpoint.AbsoluteUri == "https://dummy/"), It.IsAny<HttpClient>()))
 					.Returns(clientWrapperMock.Object);
 			}
 

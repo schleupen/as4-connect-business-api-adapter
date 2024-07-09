@@ -15,6 +15,7 @@ using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 public class HostConfigurator
 {
+	// TODO Test DI wiring with UnitTest
 	public IHost ConfigureHost(string[] args)
 	{
 		HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
