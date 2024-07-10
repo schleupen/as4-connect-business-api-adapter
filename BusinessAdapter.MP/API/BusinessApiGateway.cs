@@ -145,7 +145,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			}
 			catch (ApiException ex)
 			{
-				return new BusinessApiResponse<InboxMpMessage>(true,
+				return new BusinessApiResponse<InboxMpMessage>(false,
 					new InboxMpMessage(mpMessage.MessageId,
 						mpMessage.CreatedAt,
 						mpMessage.BdewDocumentDate,
