@@ -21,6 +21,7 @@ public sealed class FpOutboxMessageAssembler(EICMapping eicMapping) : IFpOutboxM
 			receivingParty,
 			file.Content,
 			file.FileName,
+			file.FilePath,
 			file.BDEWProperties);
 	}
 }

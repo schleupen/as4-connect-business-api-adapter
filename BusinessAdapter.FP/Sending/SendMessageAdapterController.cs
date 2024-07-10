@@ -5,6 +5,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
+	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 	using Schleupen.AS4.BusinessAdapter.FP.Gateways;
 	using Schleupen.AS4.BusinessAdapter.FP.Sending.Assemblers;
@@ -12,8 +13,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 	// TODO Test
 	public sealed class SendMessageAdapterController(
 		IOptions<SendOptions> sendOptions,
-		IFpFileRepository repository,
-		IFpOutboxMessageAssembler fpOutboxMessageAssembler,
+		IFpFileRepository fileRepository,
+		IFpOutboxMessageAssembler outboxMessageAssembler,
 		IBusinessApiGatewayFactory businessApiGatewayFactory,
 		ILogger<SendMessageAdapterController> logger)
 		: ISendMessageAdapterController
@@ -25,24 +26,64 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 		{
 			logger.LogDebug("Sending of available messages starting.");
 
-			var filesToSend = await repository.GetFilesFromAsync(sendOptions.Directory, cancellationToken);
-			var messagesToSend = fpOutboxMessageAssembler.ToFpOutboxMessages(filesToSend);
+			var filesInSendDirectory = await fileRepository.GetFilesFromAsync(sendOptions.Directory, cancellationToken);
+			var filesInDirectoryCount = filesInSendDirectory.Count;
+			filesInSendDirectory = filesInSendDirectory.Take(sendOptions.MessageLimitCount).ToList();
+			var messagesToSend = outboxMessageAssembler.ToFpOutboxMessages(filesInSendDirectory);
 
-			await this.SendFilesAsync(messagesToSend, cancellationToken);
+			var sendStatus = new SendStatus(filesInDirectoryCount, sendOptions.MessageLimitCount);
+
+			try
+			{
+				await this.SendFilesAsync(messagesToSend, sendStatus, cancellationToken);
+			}
+			finally
+			{
+				sendStatus.LogTo(logger);
+			}
 		}
 
-		private async Task SendFilesAsync(List<FpOutboxMessage> messagesToSend, CancellationToken cancellationToken)
+		private async Task SendFilesAsync(List<FpOutboxMessage> messagesToSend, SendStatus sendStatus, CancellationToken cancellationToken)
 		{
 			logger.LogInformation("Sending '{FilesToSendCount}' FP files...", messagesToSend.Count);
 
 			var messagesBySender = messagesToSend.GroupBy(m => m.Sender);
 
-			foreach (IGrouping<SendingParty, FpOutboxMessage> sender in messagesBySender)
+			foreach (IGrouping<SendingParty, FpOutboxMessage> messageFromSender in messagesBySender)
 			{
-				using var bapiGateway = businessApiGatewayFactory.CreateGateway(sender.Key);
-				foreach (var message in sender)
+				try
 				{
-					await bapiGateway.SendMessageAsync(message, cancellationToken);
+					using var bapiGateway = businessApiGatewayFactory.CreateGateway(messageFromSender.Key);
+
+					foreach (var message in messageFromSender)
+					{
+						try
+						{
+							var response = await bapiGateway.SendMessageAsync(message, cancellationToken);
+							if (response.HasTooManyRequestsStatusCode())
+							{
+								sendStatus.AbortedDueToTooManyConnections();
+								return;
+							}
+
+							sendStatus.AddBusinessApiResponse(response, logger);
+							if (response.WasSuccessful)
+							{
+								await fileRepository.DeleteFileAsync(message.FilePath);
+							}
+						}
+						catch (Exception e)
+						{
+							sendStatus.AddFailure(message, e, logger);
+						}
+					}
+				}
+				catch (Exception ex) when (ex is NoUniqueCertificateException or MissingCertificateException)
+				{
+					foreach (var message in messageFromSender)
+					{
+						sendStatus.AddFailure(message, ex, logger);
+					}
 				}
 			}
 		}

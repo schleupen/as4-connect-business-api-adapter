@@ -7,10 +7,10 @@ public class FpFile(
 	EIC receiver,
 	byte[] content,
 	string fileName,
-	string path,
+	string filePath,
 	FpBDEWProperties fpBDEWProperties) : IFpFile
 {
-	public string Path { get; } = path;
+	public string FilePath { get; } = filePath;
 
 	public EIC Sender { get; } = sender;
 

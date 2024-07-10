@@ -8,6 +8,7 @@ public class FpOutboxMessage(
 	ReceivingParty receiver,
 	byte[] payload,
 	string filename,
+	string filePath,
 	FpBDEWProperties bdewProperties,
 	string? senderMessageId = null)
 {
@@ -41,4 +42,9 @@ public class FpOutboxMessage(
     /// The file name of the XML file.
     /// </summary>
     public string FileName { get; } = filename;
+
+    /// <summary>
+    /// The file path of the XML file.
+    /// </summary>
+    public string FilePath { get; } = filename;
 }

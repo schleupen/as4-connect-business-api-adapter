@@ -33,7 +33,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 
 			List<IEdifactFile> edifactFiles = edifactDirectoryResolver.GetEditfactFilesFrom(sendDirectoryPath).ToList();
 
-			Dictionary<string, IBusinessApiGateway> as4BusinessApiClients = new Dictionary<string, IBusinessApiGateway>();
+			Dictionary<string, IBusinessApiGateway> gatewaysBySenderId = new Dictionary<string, IBusinessApiGateway>();
 			int successfulMessageCount = 0;
 			int failedMessageCount = 0;
 			int configuredDeliveryLimit = sendOptions.MessageLimitCount;
@@ -63,12 +63,12 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 										continue;
 									}
 
-									if (!as4BusinessApiClients.TryGetValue(edifactFile.SenderIdentificationNumber, out IBusinessApiGateway? client))
+									if (!gatewaysBySenderId.TryGetValue(edifactFile.SenderIdentificationNumber, out IBusinessApiGateway? client))
 									{
 										try
 										{
 											client = businessApiGatewayFactory.CreateAs4BusinessApiClient(edifactFile.SenderIdentificationNumber);
-											as4BusinessApiClients.Add(edifactFile.SenderIdentificationNumber, client);
+											gatewaysBySenderId.Add(edifactFile.SenderIdentificationNumber, client);
 										}
 										catch (Exception e)
 										{
@@ -119,9 +119,9 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 			}
 			finally
 			{
-				foreach (KeyValuePair<string, IBusinessApiGateway> as4BusinessApiClient in as4BusinessApiClients)
+				foreach (KeyValuePair<string, IBusinessApiGateway> gateway in gatewaysBySenderId)
 				{
-					as4BusinessApiClient.Value.Dispose();
+					gateway.Value.Dispose();
 				}
 
 				string statusMessage = CreateStatusMessage(successfulMessageCount, initialEdifactFileCount, failedMessageCount, configuredDeliveryLimit,
