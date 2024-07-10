@@ -49,13 +49,13 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 
 			var messagesBySender = messagesToSend.GroupBy(m => m.Sender);
 
-			foreach (IGrouping<SendingParty, FpOutboxMessage> messageFromSender in messagesBySender)
+			foreach (IGrouping<SendingParty, FpOutboxMessage> messagesFromSender in messagesBySender)
 			{
 				try
 				{
-					using var bapiGateway = businessApiGatewayFactory.CreateGateway(messageFromSender.Key);
+					using var bapiGateway = businessApiGatewayFactory.CreateGateway(messagesFromSender.Key);
 
-					foreach (var message in messageFromSender)
+					foreach (var message in messagesFromSender)
 					{
 						try
 						{
@@ -80,7 +80,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 				}
 				catch (Exception ex) when (ex is NoUniqueCertificateException or MissingCertificateException)
 				{
-					foreach (var message in messageFromSender)
+					foreach (var message in messagesFromSender)
 					{
 						sendStatus.AddFailure(message, ex, logger);
 					}
