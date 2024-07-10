@@ -60,11 +60,11 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 
 				businessApiClientMock
 					.Setup(x => x.ReceiveMessageAsync(It.Is<MpMessage>(message => message.MessageId == "1")))
-					.Returns(Task.FromResult(new MessageResponse<InboxMpMessage>(true, CreateInboxMessage("1"))));
+					.Returns(Task.FromResult(new BusinessApiResponse<InboxMpMessage>(true, CreateInboxMessage("1"))));
 
 				businessApiClientMock
 					.Setup(x => x.ReceiveMessageAsync(It.Is<MpMessage>(message => message.MessageId == "2")))
-					.Returns(Task.FromResult(new MessageResponse<InboxMpMessage>(true, CreateInboxMessage("2"))));
+					.Returns(Task.FromResult(new BusinessApiResponse<InboxMpMessage>(true, CreateInboxMessage("2"))));
 
 				businessApiClientMock
 					.Setup(x => x.Dispose());
@@ -79,11 +79,11 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 
 				businessApiClientMock
 					.Setup(x => x.AcknowledgeReceivedMessageAsync(It.Is<InboxMpMessage>(message => message.MessageId == "1")))
-					.Returns(Task.FromResult(new MessageResponse<bool>(true, true)));
+					.Returns(Task.FromResult(new BusinessApiResponse<bool>(true, true)));
 
 				businessApiClientMock
 					.Setup(x => x.AcknowledgeReceivedMessageAsync(It.Is<InboxMpMessage>(message => message.MessageId == "2")))
-					.Returns(Task.FromResult(new MessageResponse<bool>(true, true)));
+					.Returns(Task.FromResult(new BusinessApiResponse<bool>(true, true)));
 			}
 
 			private InboxMpMessage CreateInboxMessage(string messageId)

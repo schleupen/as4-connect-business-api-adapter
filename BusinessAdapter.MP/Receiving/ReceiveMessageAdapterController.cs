@@ -161,7 +161,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 
 						try
 						{
-							MessageResponse<InboxMpMessage> result = await receiveContext.Value.ReceiveMessageAsync(availableMessages[i]);
+							BusinessApiResponse<InboxMpMessage> result = await receiveContext.Value.ReceiveMessageAsync(availableMessages[i]);
 							if (!result.WasSuccessful)
 							{
 								if (HandleTooManyRequestError(result.ResponseStatusCode!.Value))
@@ -189,7 +189,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 									continue;
 								}
 
-								MessageResponse<bool> ackResponse = await receiveContext.Value.AcknowledgeReceivedMessageAsync(result.Message);
+								BusinessApiResponse<bool> ackResponse = await receiveContext.Value.AcknowledgeReceivedMessageAsync(result.Message);
 								if (!ackResponse.WasSuccessful)
 								{
 									edifactDirectoryResolver.DeleteFile(fileName);

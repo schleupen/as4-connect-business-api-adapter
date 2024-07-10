@@ -17,7 +17,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		/// Adds an outgoing message including the EDIFACT content to be send to the foreign market partner.
 		/// </summary>
 		/// <returns>Contains information regarding the success of the sending process.</returns>
-		Task<MessageResponse<MpOutboxMessage>> SendMessageAsync(MpOutboxMessage message);
+		Task<BusinessApiResponse<MpOutboxMessage>> SendMessageAsync(MpOutboxMessage message);
 
 		/// <summary>
 		/// Queries the available messages ready to be received.
@@ -31,13 +31,13 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		/// </summary>
 		/// <param name="mpMessage">The Metadata of the message.</param>
 		/// <returns>The EDIFACT file.</returns>
-		Task<MessageResponse<InboxMpMessage>> ReceiveMessageAsync(MpMessage mpMessage);
+		Task<BusinessApiResponse<InboxMpMessage>> ReceiveMessageAsync(MpMessage mpMessage);
 
 		/// <summary>
 		/// Confirms that a message was successfully received.
 		/// </summary>
 		/// <param name="mpMessage">The received message that should be acknowledged.</param>
 		/// <returns>Whether the acknowledgement was successful.</returns>
-		Task<MessageResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMpMessage mpMessage);
+		Task<BusinessApiResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMpMessage mpMessage);
 	}
 }

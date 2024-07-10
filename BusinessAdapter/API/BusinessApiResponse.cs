@@ -8,11 +8,11 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	/// <summary>
 	/// Encapsulates the result of an API call and allows to see if the call was successful.
 	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class MessageResponse<T>(bool wasSuccessful, T message)
+	/// <typeparam name="TMessage"></typeparam>
+	public class BusinessApiResponse<TMessage>(bool wasSuccessful, TMessage message)
 	{
-		public MessageResponse(bool wasSuccessful, T message, HttpStatusCode responseStatusCode, Exception apiException)
-			: this(wasSuccessful, message)
+		public BusinessApiResponse(bool wasSuccessful, TMessage message, HttpStatusCode responseStatusCode, Exception apiException)
+		: this(wasSuccessful, message)
 		{
 			ResponseStatusCode = responseStatusCode;
 			ApiException = apiException;
@@ -26,7 +26,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		/// <summary>
 		/// The message provided by the result of the call.
 		/// </summary>
-		public T Message { get; } = message;
+		public TMessage Message { get; } = message;
 
 		/// <summary>
 		/// The HTTP response code of the result.

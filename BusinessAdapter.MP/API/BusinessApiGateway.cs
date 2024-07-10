@@ -47,7 +47,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			httpClient = InitializeHttpClient();
 		}
 
-		public async Task<MessageResponse<MpOutboxMessage>> SendMessageAsync(MpOutboxMessage message)
+		public async Task<BusinessApiResponse<MpOutboxMessage>> SendMessageAsync(MpOutboxMessage message)
 		{
 			using (MemoryStream compressedStream = new MemoryStream())
 			{
@@ -70,11 +70,11 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 						Guid.NewGuid(),
 						message.SenderMessageId);
 
-					return new MessageResponse<MpOutboxMessage>(true, message);
+					return new BusinessApiResponse<MpOutboxMessage>(true, message);
 				}
 				catch (ApiException ex)
 				{
-					return new MessageResponse<MpOutboxMessage>(false, message, (HttpStatusCode)ex.StatusCode, ex);
+					return new BusinessApiResponse<MpOutboxMessage>(false, message, (HttpStatusCode)ex.StatusCode, ex);
 				}
 			}
 		}
@@ -110,7 +110,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			return new MessageReceiveInfo(messages.ToArray());
 		}
 
-		public async Task<MessageResponse<InboxMpMessage>> ReceiveMessageAsync(MpMessage mpMessage)
+		public async Task<BusinessApiResponse<InboxMpMessage>> ReceiveMessageAsync(MpMessage mpMessage)
 		{
 			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			try
@@ -129,7 +129,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 						{
 							string edifactString = await decompressedReader.ReadToEndAsync();
 
-							return new MessageResponse<InboxMpMessage>(
+							return new BusinessApiResponse<InboxMpMessage>(
 								true,
 								new InboxMpMessage(
 									mpMessage.MessageId,
@@ -145,7 +145,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			}
 			catch (ApiException ex)
 			{
-				return new MessageResponse<InboxMpMessage>(true,
+				return new BusinessApiResponse<InboxMpMessage>(true,
 					new InboxMpMessage(mpMessage.MessageId,
 						mpMessage.CreatedAt,
 						mpMessage.BdewDocumentDate,
@@ -159,7 +159,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			}
 		}
 
-		public async Task<MessageResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMpMessage mpMessage)
+		public async Task<BusinessApiResponse<bool>> AcknowledgeReceivedMessageAsync(InboxMpMessage mpMessage)
 		{
 			string tokenString = jwtBuilder.CreateSignedToken(mpMessage);
 			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
@@ -172,11 +172,11 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 
 				await businessApiClient.V1MpMessagesInboxAcknowledgementAsync(Guid.Parse(mpMessage.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
 
-				return new MessageResponse<bool>(true, true);
+				return new BusinessApiResponse<bool>(true, true);
 			}
 			catch (ApiException ex)
 			{
-				return new MessageResponse<bool>(false, false, (HttpStatusCode)ex.StatusCode, ex);
+				return new BusinessApiResponse<bool>(false, false, (HttpStatusCode)ex.StatusCode, ex);
 			}
 		}
 

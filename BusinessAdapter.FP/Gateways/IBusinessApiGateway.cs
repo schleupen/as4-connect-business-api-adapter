@@ -8,6 +8,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 
 	public interface IBusinessApiGateway : IDisposable
 	{
-		Task<MessageResponse<FpOutboxMessage>> SendMessageAsync(FpOutboxMessage message, CancellationToken cancellationToken);
+		Task<BusinessApiResponse<FpOutboxMessage>> SendMessageAsync(FpOutboxMessage message, CancellationToken cancellationToken);
 	}
 }

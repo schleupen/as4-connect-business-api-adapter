@@ -120,7 +120,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 				as4BusinessApiClientMock
 					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(true, outboxMessage)));
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new BusinessApiResponse<MpOutboxMessage>(true, outboxMessage)));
 			}
 
 			private MpOutboxMessage CreateOutboxMessage()
@@ -223,7 +223,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 				as4BusinessApiClientMock
 					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(true, outboxMessage)));
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new BusinessApiResponse<MpOutboxMessage>(true, outboxMessage)));
 			}
 
 			public void SendAvailableMessagesAsyncWithApiExceptionForTooManyMessages()
@@ -259,7 +259,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 				as4BusinessApiClientMock
 					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(false, outboxMessage,
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new BusinessApiResponse<MpOutboxMessage>(false, outboxMessage,
 						HttpStatusCode.TooManyRequests,
 						new ApiException("Error from API", 429, "response", new Dictionary<string, IEnumerable<string>>(), null))));
 			}
@@ -316,7 +316,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 				as4BusinessApiClientMock
 					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(false, outboxMessage,
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new BusinessApiResponse<MpOutboxMessage>(false, outboxMessage,
 						HttpStatusCode.BadGateway, new ApiException("Error from API", 502, "response", new Dictionary<string, IEnumerable<string>>(), null))));
 			}
 
@@ -356,7 +356,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 				as4BusinessApiClientMock
 					.Setup(x => x.SendMessageAsync(It.Is<MpOutboxMessage>(outboxMessage => outboxMessage.SenderMessageId == SenderMessageId)))
-					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new MessageResponse<MpOutboxMessage>(true, outboxMessage)));
+					.Returns((MpOutboxMessage outboxMessage) => Task.FromResult(new BusinessApiResponse<MpOutboxMessage>(true, outboxMessage)));
 			}
 
 			public void VerifySecondMessageWasNotSend()

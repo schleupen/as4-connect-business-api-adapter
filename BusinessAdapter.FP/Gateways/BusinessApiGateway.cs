@@ -21,9 +21,14 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	{
 		private readonly HttpClient httpClient = httpClientFactory.CreateFor(client);
 
-		public async Task<MessageResponse<FpOutboxMessage>> SendMessageAsync(FpOutboxMessage message, CancellationToken cancellationToken)
+		public async Task<BusinessApiResponse<FpOutboxMessage>> SendMessageAsync(FpOutboxMessage message, CancellationToken cancellationToken)
 		{
-			logger.LogInformation("Sending {MessageId} from {Sender} to {Receiver}", message.MessageId, message.Sender, message.Receiver);
+			logger.LogInformation("Sending {FileName} from {Sender} to {Receiver} [MessageId:'{}']",
+				message.FileName,
+				message.Sender,
+				message.Receiver,
+				message.MessageId);
+
 			using (MemoryStream compressedStream = new MemoryStream())
 			{
 				using (MemoryStream payloadStream = new MemoryStream(message.Payload))
@@ -48,11 +53,11 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 						message.SenderMessageId,
 						cancellationToken);
 
-					return new MessageResponse<FpOutboxMessage>(true, message);
+					return new BusinessApiResponse<FpOutboxMessage>(true, message);
 				}
 				catch (ApiException ex)
 				{
-					return new MessageResponse<FpOutboxMessage>(false, message, (HttpStatusCode)ex.StatusCode, ex);
+					return new BusinessApiResponse<FpOutboxMessage>(false, message, (HttpStatusCode)ex.StatusCode, ex);
 				}
 			}
 		}

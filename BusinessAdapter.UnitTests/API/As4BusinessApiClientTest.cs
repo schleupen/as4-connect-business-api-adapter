@@ -44,7 +44,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			InboxMpMessage inboxMpMessage = fixture!.PrepareAcknowledgeReceivedMessage();
 			using (BusinessApiGateway testObject = fixture!.CreateTestObject())
 			{
-				MessageResponse<bool> isAcknowledgedResponse = await testObject.AcknowledgeReceivedMessageAsync(inboxMpMessage);
+				BusinessApiResponse<bool> isAcknowledgedResponse = await testObject.AcknowledgeReceivedMessageAsync(inboxMpMessage);
 
 				Assert.That(isAcknowledgedResponse.ApiException, Is.Null);
 				Assert.That(isAcknowledgedResponse.WasSuccessful, Is.True);
@@ -59,7 +59,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			InboxMpMessage inboxMpMessage = fixture!.PrepareAcknowledgeReceivedMessageFailed();
 			using (BusinessApiGateway testObject = fixture!.CreateTestObject())
 			{
-				MessageResponse<bool> isAcknowledgedResponse = await testObject.AcknowledgeReceivedMessageAsync(inboxMpMessage);
+				BusinessApiResponse<bool> isAcknowledgedResponse = await testObject.AcknowledgeReceivedMessageAsync(inboxMpMessage);
 
 				Assert.That(isAcknowledgedResponse.ApiException!.Message, Is.EqualTo("something failed\n\nStatus: 409\nResponse: \nThe response"));
 				Assert.That(isAcknowledgedResponse.WasSuccessful, Is.False);

@@ -6,12 +6,12 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using NUnit.Framework;
 
 	[TestFixture]
-	internal sealed class MessageResponseTest
+	internal sealed class BusinessApiResponseTest
 	{
 		[Test]
 		public void Ctor_ForUseCaseWithoutException_ShouldOnlySetPayloadAndSuccessFlag()
 		{
-			MessageResponse<bool> testObject = new MessageResponse<bool>(false, true);
+			BusinessApiResponse<bool> testObject = new BusinessApiResponse<bool>(false, true);
 
 			Assert.That(testObject.WasSuccessful, Is.False);
 			Assert.That(testObject.Message, Is.True);
@@ -22,7 +22,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		[Test]
 		public void Ctor_ForUseCaseWithException_ShouldSetAllProperties()
 		{
-			MessageResponse<bool> testObject = new MessageResponse<bool>(true, false, HttpStatusCode.BadGateway, new ApiException("message", (int)HttpStatusCode.BadGateway, "response", new Dictionary<string, IEnumerable<string>>(), null));
+			BusinessApiResponse<bool> testObject = new BusinessApiResponse<bool>(true, false, HttpStatusCode.BadGateway, new ApiException("message", (int)HttpStatusCode.BadGateway, "response", new Dictionary<string, IEnumerable<string>>(), null));
 
 			Assert.That(testObject.ApiException!.Message, Is.EqualTo("message\n\nStatus: 502\nResponse: \nresponse"));
 			Assert.That(testObject.Message, Is.False);
