@@ -7,15 +7,15 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 
 	public sealed class BusinessApiGatewayFactory(
-		IBusinessApiClientFactory businessApiClientFactory,
 		IHttpClientFactory httpClientFactory,
+		IBusinessApiClientFactory businessApiClientFactory,
 		IPartyIdTypeAssembler partyIdTypeAssembler,
 		ILogger<BusinessApiGateway> logger)
 		: IBusinessApiGatewayFactory
 	{
-		public IBusinessApiGateway CreateApiGateway(Party party)
+		public IBusinessApiGateway CreateGateway(Party party)
 		{
-			return new BusinessApiGateway(httpClientFactory.CreateHttpClientFor(party), businessApiClientFactory, partyIdTypeAssembler, logger);
+			return new BusinessApiGateway(party, httpClientFactory, businessApiClientFactory, partyIdTypeAssembler, logger);
 		}
 	}
 }

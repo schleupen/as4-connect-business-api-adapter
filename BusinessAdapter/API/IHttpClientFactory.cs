@@ -2,5 +2,5 @@
 
 public interface IHttpClientFactory
 {
-	HttpClient CreateHttpClientFor(Party party);
+	HttpClient CreateFor(Party party);
 }

@@ -5,7 +5,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	using System.IO;
 	using System.IO.Compression;
 	using System.Net;
-	using System.Net.Http;
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
 	using Schleupen.AS4.BusinessAdapter.API;
@@ -13,14 +12,18 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 	public sealed class BusinessApiGateway(
-		HttpClient httpClient,
+		Party client,
+		IHttpClientFactory httpClientFactory,
 		IBusinessApiClientFactory businessApiClientFactory,
 		IPartyIdTypeAssembler partyIdTypeAssembler,
-		ILogger<BusinessApiGateway> logger) : IBusinessApiGateway
+		ILogger<BusinessApiGateway> logger)
+		: IBusinessApiGateway
 	{
+		private readonly HttpClient httpClient = httpClientFactory.CreateFor(client);
+
 		public async Task<MessageResponse<FpOutboxMessage>> SendMessageAsync(FpOutboxMessage message)
 		{
-			logger.LogInformation("Sending {MessageId}", message.MessageId);
+			logger.LogInformation("Sending {MessageId} from {Sender} to {Receiver}", message.MessageId, message.Sender, message.Receiver);
 			using (MemoryStream compressedStream = new MemoryStream())
 			{
 				using (MemoryStream payloadStream = new MemoryStream(message.Payload))
@@ -30,9 +33,9 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 				}
 
 				compressedStream.Position = 0;
-				IBusinessApiClient businessApiClient = businessApiClientFactory.Create(httpClient.BaseAddress!, httpClient);
 				try
 				{
+					var businessApiClient = businessApiClientFactory.Create(httpClient.BaseAddress!, httpClient);
 					await businessApiClient.V1FpMessagesOutboxPostAsync(message.Receiver.Id,
 						partyIdTypeAssembler.ToPartyTypeDto(message.Receiver.Type),
 						new FileParameter(compressedStream, message.FileName),

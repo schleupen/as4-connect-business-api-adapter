@@ -10,7 +10,7 @@ using Schleupen.AS4.BusinessAdapter.Configuration;
 
 public class HttpClientFactory(IOptions<AdapterOptions> options, IClientCertificateProvider clientCertificateProvider) : IHttpClientFactory
 {
-	public HttpClient CreateHttpClientFor(Party party)
+	public HttpClient CreateFor(Party party)
 	{
 		var certificate = clientCertificateProvider.GetCertificate(party.Id);
 

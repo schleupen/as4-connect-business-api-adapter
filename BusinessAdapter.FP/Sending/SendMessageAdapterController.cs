@@ -35,14 +35,16 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 		{
 			logger.LogInformation("Sending '{FilesToSendCount}' FP files...", messagesToSend.Count);
 
-			var mpIds = messagesToSend.Select(m => m.SenderMessageId).Distinct();
+			var messagesBySender = messagesToSend.GroupBy(m => m.Sender);
 
-			throw new NotImplementedException();
+			foreach (IGrouping<SendingParty, FpOutboxMessage> sender in messagesBySender)
+			{
+				using var bapiGateway = businessApiGatewayFactory.CreateGateway(sender.Key);
+				foreach (var message in sender)
+				{
+					await bapiGateway.SendMessageAsync(message);
+				}
+			}
 		}
-	}
-
-	public interface IFpFileRepository
-	{
-		Task<List<FpFile>> GetFilesFromAsync(string sendOptionsDirectory, CancellationToken cancellationToken);
 	}
 }
