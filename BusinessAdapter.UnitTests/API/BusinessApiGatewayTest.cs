@@ -6,7 +6,6 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using NUnit.Framework;
 	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
-	using Schleupen.AS4.BusinessAdapter.Receiving;
 
 	[TestFixture]
 	internal sealed partial class BusinessApiGatewayTest : IDisposable
@@ -67,5 +66,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 				Assert.That(isAcknowledgedResponse.ResponseStatusCode, Is.EqualTo(HttpStatusCode.Conflict));
 			}
 		}
+
+		// TODO SendMessageAsync is untested
 	}
 }
