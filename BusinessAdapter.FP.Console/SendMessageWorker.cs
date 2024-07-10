@@ -6,11 +6,17 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.Extensions.Logging;
-	using Schleupen.AS4.BusinessAdapter.API;
+	using Microsoft.Extensions.Options;
+	using Schleupen.AS4.BusinessAdapter.Configuration;
 
-	public sealed class SendMessageWorker(ILogger<SendMessageWorker> logger, ISendMessageAdapterController sendController)
+	public sealed class SendMessageWorker(
+		ILogger<SendMessageWorker> logger,
+		ISendMessageAdapterController sendController,
+		IOptions<SendOptions> sendOptions)
 		: BackgroundService
 	{
+		private readonly SendOptions sendOptions = sendOptions.Value;
+
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)
@@ -29,7 +35,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 					logger.LogError(ex, "Error while sending messages");
 				}
 
-				await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken); // TODO: configure value [ Options ]
+				await Task.Delay(TimeSpan.FromSeconds(sendOptions.ScanInterval), stoppingToken);
 			}
 		}
 	}
