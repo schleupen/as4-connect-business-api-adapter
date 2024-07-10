@@ -21,7 +21,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	{
 		private readonly HttpClient httpClient = httpClientFactory.CreateFor(client);
 
-		public async Task<MessageResponse<FpOutboxMessage>> SendMessageAsync(FpOutboxMessage message)
+		public async Task<MessageResponse<FpOutboxMessage>> SendMessageAsync(FpOutboxMessage message, CancellationToken cancellationToken)
 		{
 			logger.LogInformation("Sending {MessageId} from {Sender} to {Receiver}", message.MessageId, message.Sender, message.Receiver);
 			using (MemoryStream compressedStream = new MemoryStream())
@@ -45,7 +45,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 						message.BDEWProperties.BDEWSubjectPartyId,
 						message.BDEWProperties.BDEWSubjectPartyRole,
 						message.MessageId,
-						message.SenderMessageId);
+						message.SenderMessageId,
+						cancellationToken);
 
 					return new MessageResponse<FpOutboxMessage>(true, message);
 				}

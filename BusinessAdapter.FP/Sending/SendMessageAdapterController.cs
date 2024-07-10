@@ -42,7 +42,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 				using var bapiGateway = businessApiGatewayFactory.CreateGateway(sender.Key);
 				foreach (var message in sender)
 				{
-					await bapiGateway.SendMessageAsync(message);
+					await bapiGateway.SendMessageAsync(message, cancellationToken);
 				}
 			}
 		}
