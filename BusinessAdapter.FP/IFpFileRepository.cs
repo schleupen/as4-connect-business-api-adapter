@@ -1,9 +1,11 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP;
 
+using System.Collections.Immutable;
 
 public interface IFpFileRepository
 {
-	Task<List<FpFile>> GetFilesFromAsync(string directory, CancellationToken cancellationToken);
-	Task DeleteFileAsync(string filePath);
+	IImmutableList<FpFile> GetFilesFrom(string path);
+
+	void DeleteFile(string filePath);
 }
 

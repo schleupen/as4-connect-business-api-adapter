@@ -2,6 +2,7 @@
 
 namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 {
+	using System.Collections.Immutable;
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
@@ -27,10 +28,10 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 		{
 			logger.LogDebug("Sending of available messages starting.");
 
-			var filesInSendDirectory = await fileRepository.GetFilesFromAsync(sendOptions.Directory, cancellationToken);
+			var filesInSendDirectory = fileRepository.GetFilesFrom(sendOptions.Directory);
 			var filesInDirectoryCount = filesInSendDirectory.Count;
-			filesInSendDirectory = filesInSendDirectory.Take(sendOptions.MessageLimitCount).ToList();
-			var messagesToSend = outboxMessageAssembler.ToFpOutboxMessages(filesInSendDirectory);
+			var selectedFilesToSend = filesInSendDirectory.Take(sendOptions.MessageLimitCount);
+			var messagesToSend = outboxMessageAssembler.ToFpOutboxMessages(selectedFilesToSend);
 
 			var sendStatus = new SendStatus(filesInDirectoryCount, sendOptions.MessageLimitCount);
 			try
@@ -63,7 +64,12 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 
 		private async Task SendFilesAsync(List<FpOutboxMessage> messagesToSend, SendStatus sendStatus, CancellationToken cancellationToken)
 		{
-			logger.LogInformation("Sending '{FilesToSendCount}' FP files [Iteration: {Iteration}]", messagesToSend.Count, sendStatus.Iteration);
+			if (messagesToSend.Count == 0)
+			{
+				return;
+			}
+
+			logger.LogInformation("Sending '{FilesToSendCount}' FP files [RetryIteration: {Iteration}]", messagesToSend.Count, sendStatus.Iteration);
 
 			var messagesBySender = messagesToSend.GroupBy(m => m.Sender);
 
@@ -87,7 +93,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 							sendStatus.AddBusinessApiResponse(response, logger);
 							if (response.WasSuccessful)
 							{
-								await fileRepository.DeleteFileAsync(message.FilePath);
+								fileRepository.DeleteFile(message.FilePath);
 							}
 						}
 						catch (Exception e)

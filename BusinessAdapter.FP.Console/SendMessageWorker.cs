@@ -36,6 +36,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 					logger.LogError(ex, "Error while sending messages");
 				}
 
+				logger.LogInformation("Next sending scheduled at '{ScheduleTime}'", DateTime.Now + sendOptions.ScanInterval);
 				await Task.Delay(sendOptions.ScanInterval, stoppingToken);
 			}
 		}

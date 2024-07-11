@@ -15,7 +15,7 @@ public class FpFileNameExtractor : IFpFileNameExtractor
 			Timestamp = mpMessage.BDEWProperties.BDEWFulfillmentDate, // TODO is this correct?
 			Date = mpMessage.BDEWProperties.BDEWFulfillmentDate, // TODO is this correct?
 			Version = "", // TODO parse?
-			Type = "" // TODO parse?
+			TypeHaendlerfahrplan = "" // TODO parse?
 		};
 	}
 
@@ -34,7 +34,7 @@ public class FpFileNameExtractor : IFpFileNameExtractor
 			case "A16":
 				return FpMessageType.Anomaly;
 			case "A??": // TODO: --> welcher Wert?
-				return FpMessageType.Status; 
+				return FpMessageType.Status;
 			default:
 				throw new NotSupportedException($"Document type {bdewDocumentType} is not supported.");
 		}

@@ -2,6 +2,7 @@
 
 public interface IFpOutboxMessageAssembler
 {
-	List<FpOutboxMessage> ToFpOutboxMessages(List<FpFile> filesToSend);
+	List<FpOutboxMessage> ToFpOutboxMessages(IEnumerable<FpFile> filesToSend);
+
 	FpOutboxMessage ToFpOutboxMessage(FpFile file);
 }

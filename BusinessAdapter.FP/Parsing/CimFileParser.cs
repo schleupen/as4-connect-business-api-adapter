@@ -6,7 +6,7 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public class CimFileParser : IFpFileSpecificParser
 {
-	public IFpFile Parse(XDocument document, string filename, string path)
+	public FpFile Parse(XDocument document, string filename, string path)
 	{
 		string xmlData = File.ReadAllText(path);
 		byte[] content = Encoding.UTF8.GetBytes(xmlData);

@@ -6,14 +6,14 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
 {
 	private readonly string ESS_NAMESPACE_STRING = "urn:entsoe.eu:wgedi:ess";
 
-    public IFpFile Parse(string path)
+    public FpFile Parse(string path)
     {
-         string filename = fileSystemWrapper.GetFileName(path);
+         string fileName = fileSystemWrapper.GetFileName(path);
 
          XDocument doc = XDocument.Load(path);
 
          var parser = this.CreateParserFor(doc);
-         return parser.Parse(doc, filename, path);
+         return parser.Parse(doc, fileName, path);
     }
 
     private IFpFileSpecificParser CreateParserFor(XDocument doc)

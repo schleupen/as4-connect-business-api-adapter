@@ -6,7 +6,7 @@ using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 // TODO Test
 public sealed class FpOutboxMessageAssembler(IOptions<EICMapping> eicMapping) : IFpOutboxMessageAssembler
 {
-	public List<FpOutboxMessage> ToFpOutboxMessages(List<FpFile> filesToSend)
+	public List<FpOutboxMessage> ToFpOutboxMessages(IEnumerable<FpFile> filesToSend)
 	{
 		return filesToSend.Select(ToFpOutboxMessage).ToList();
 	}

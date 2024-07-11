@@ -23,7 +23,7 @@ public record FpFileName
 	// Typen:
 	//        - TPS Trade-responsible Party Schedule BKV-Fahrplan
 	//        - PPS Production-responsible Party Schedule Erzeugerfahrplan
-	public string Type { get; init; }
+	public string TypeHaendlerfahrplan { get; init; }
 
 	public FpMessageType MessageType { get; init; }
 
@@ -89,7 +89,7 @@ public record FpFileName
 		return new FpFileName
 		{
 			Date = date,
-			Type = type,
+			TypeHaendlerfahrplan = type,
 			EicNameBilanzkreis = eicNameBilanzkreis,
 			EicNameTso = eicNameTso,
 			MessageType = messageType,
@@ -102,16 +102,16 @@ public record FpFileName
 	{
 		if (this.MessageType == FpMessageType.Schedule)
 		{
-			return $"{Date}_{Type}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
+			return $"{Date}_{TypeHaendlerfahrplan}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
 		}
 
 		var messageTypeString = ToMessageTypeValue();
 		if (!string.IsNullOrEmpty(Timestamp))
 		{
-			return $"{Date}_{Type}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{Timestamp}{XmlFileExtension}";
+			return $"{Date}_{TypeHaendlerfahrplan}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{Timestamp}{XmlFileExtension}";
 		}
 
-		return $"{Date}_{Type}_{EicNameBilanzkreis}_{EicNameTso}_{messageTypeString}{XmlFileExtension}";
+		return $"{Date}_{TypeHaendlerfahrplan}_{EicNameBilanzkreis}_{EicNameTso}_{messageTypeString}{XmlFileExtension}";
 	}
 
 	private string? ToMessageTypeValue()

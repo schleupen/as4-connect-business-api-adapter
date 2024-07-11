@@ -4,5 +4,5 @@ using System.Xml.Linq;
 
 public interface IFpFileSpecificParser
 {
-	IFpFile Parse(XDocument document, string filename, string path);
+	FpFile Parse(XDocument document, string filename, string path);
 }

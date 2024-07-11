@@ -72,7 +72,7 @@ public record SendStatus(int MessagesInSendDirectoryCount, int MessageLimitCount
 			logger.LogWarning(failedMessage.Value.Item2, "Failed to Send message for '{FilePath}'", failedMessage.Value.Item1.FilePath);
 		}
 
-		logger.LogInformation("Messages {SuccessfulMessagesCount}/{MessageInSendDirectoryCount} successful send. [Limit: {MessageLimitCount} Failed: {FailedMessagesCount}]",
+		logger.LogInformation("Messages [{SuccessfulMessagesCount}/{MessageInSendDirectoryCount}] successful send. [Limit: {MessageLimitCount} Failed: {FailedMessagesCount}]",
 			SuccessfulMessageCount,
 			MessagesInSendDirectoryCount,
 			MessageLimitCount,
