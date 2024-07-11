@@ -27,7 +27,7 @@ public class HostConfigurator
 			.AddHostedService<SendMessageWorker>()
 			.AddHostedService<ReceiveMessageWorker>()
 			.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>()
-			.AddTransient<ISendMessageAdapterController, SendMessageAdapterController>()
+			.AddTransient<IFpMessageSender, FpMessageSender>()
 			// Config
 			.Configure<EICMapping>(builder.Configuration.GetSection(EICMapping.SectionName))
 			.AddConfiguration(builder.Configuration);

@@ -8,10 +8,11 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
+	using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 	public sealed class SendMessageWorker(
 		ILogger<SendMessageWorker> logger,
-		ISendMessageAdapterController sendController,
+		IFpMessageSender sender,
 		IOptions<SendOptions> sendOptions)
 		: BackgroundService
 	{
@@ -23,7 +24,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 			{
 				try
 				{
-					await sendController.SendAvailableMessagesAsync(stoppingToken);
+					await sender.SendAvailableMessagesAsync(stoppingToken);
 				}
 				catch (CatastrophicException ex)
 				{
