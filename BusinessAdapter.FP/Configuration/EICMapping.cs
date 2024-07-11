@@ -1,7 +1,5 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
-using Schleupen.AS4.BusinessAdapter.API;
-
 public sealed class EICMapping : Dictionary<string, Party>
 {
 	public const string SectionName = nameof(EICMapping);

@@ -1,9 +1,10 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Sending.Assemblers;
 
+using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 // TODO Test
-public sealed class FpOutboxMessageAssembler(EICMapping eicMapping) : IFpOutboxMessageAssembler
+public sealed class FpOutboxMessageAssembler(IOptions<EICMapping> eicMapping) : IFpOutboxMessageAssembler
 {
 	public List<FpOutboxMessage> ToFpOutboxMessages(List<FpFile> filesToSend)
 	{
@@ -12,8 +13,8 @@ public sealed class FpOutboxMessageAssembler(EICMapping eicMapping) : IFpOutboxM
 
 	public FpOutboxMessage ToFpOutboxMessage(FpFile file)
 	{
-		var sendingParty = eicMapping.GetSendingParty(file.Sender);
-		var receivingParty = eicMapping.GetReceivingParty(file.Receiver);
+		var sendingParty = eicMapping.Value.GetSendingParty(file.Sender);
+		var receivingParty = eicMapping.Value.GetReceivingParty(file.Receiver);
 
 		return new FpOutboxMessage(
 			Guid.NewGuid(),
