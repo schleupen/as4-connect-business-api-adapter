@@ -44,7 +44,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 			try
 			{
 				PolicyResult policyResult = await Policy.Handle<Exception>()
-					.WaitAndRetryAsync(sendOptions.RetryCount, _ => TimeSpan.FromSeconds(10),
+					.WaitAndRetryAsync(sendOptions.Retry.Count, _ => sendOptions.Retry.SleepDuration,
 						(ex, _) => { logger.LogError(ex, "Error while sending messages"); })
 					.ExecuteAndCaptureAsync(
 						async () =>

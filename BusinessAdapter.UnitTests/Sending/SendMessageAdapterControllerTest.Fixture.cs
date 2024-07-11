@@ -41,7 +41,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 			public SendMessageAdapterController CreateTestObject()
 			{
-					return new SendMessageAdapterController(
+				return new SendMessageAdapterController(
 					businessApiClientFactory.Object,
 					edifactDirectoryResolverMock.Object,
 					sendOptionsMock.Object,
@@ -64,7 +64,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 			{
 				this.sendOptionsMock.Setup(x => x.Value).Returns(new SendOptions()
 				{
-					RetryCount = 0,
+					Retry = new RetryOption() { Count = 3 },
 					Directory = @"C:\Temp",
 					MessageLimitCount = sendLimit
 				});

@@ -37,7 +37,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 			{
 				await Policy.Handle<Exception>()
 					.WaitAndRetryAsync(
-						sendOptions.RetryCount,
+						sendOptions.Retry.Count,
 						x => TimeSpan.FromSeconds(RetrySleepDurationInSeconds),
 						(ex, ts) =>
 						{

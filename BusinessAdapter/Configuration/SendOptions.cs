@@ -2,9 +2,9 @@
 
 public record SendOptions
 {
-	public int RetryCount { get; init; } = 3;
+	public RetryOption Retry { get; init; } = new();
 
-	public int ScanInterval { get; init; } = 60; // TODO Configure as Timespan or Add +InSeconds postfix
+	public TimeSpan ScanInterval { get; init; } = TimeSpan.FromSeconds(60);
 
 	public int MessageLimitCount { get; init; } = 1000;
 
