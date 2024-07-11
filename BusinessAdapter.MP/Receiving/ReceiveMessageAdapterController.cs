@@ -204,6 +204,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 									{
 										exceptions.Add(ackResponse.ApiException);
 									}
+									continue;
 								}
 
 								receiveContext.Key.AddReceivedEdifactMessage(result.Message);
