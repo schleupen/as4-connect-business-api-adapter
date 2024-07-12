@@ -35,11 +35,11 @@ public sealed class EICMapping : Dictionary<string, Party>
 
 	private SendingParty ToSendingParty(Party sendingParty)
 	{
-		return new SendingParty(sendingParty.Id, sendingParty.Id);
+		return new SendingParty(sendingParty.Id, sendingParty.Type);
 	}
 
-	private ReceivingParty ToReceivingParty(Party sendingParty)
+	private ReceivingParty ToReceivingParty(Party receivingParty)
 	{
-		return new ReceivingParty(sendingParty.Id, sendingParty.Id);
+		return new ReceivingParty(receivingParty.Id, receivingParty.Type);
 	}
 }

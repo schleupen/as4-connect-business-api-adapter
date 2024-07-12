@@ -70,4 +70,24 @@ public partial class EICMappingTest
 		Assert.That(eicMapping, Is.Not.Null.Or.Empty);
 		Assert.That(eicMapping.GetPartyOrDefault(new EIC("10Y1001A1001A82H")), Is.EqualTo(new Party("1000000001", "BDEW")));
 	}
+
+	[Test]
+	public void GetSendingParty()
+	{
+		var eicMapping = fixture.CreateSimpleEicMapping();
+		var sendingParty = eicMapping.GetSendingParty(fixture.Data.Eic1);
+
+		Assert.That(sendingParty.Id, Is.EqualTo(fixture.Data.Party1.Id));
+		Assert.That(sendingParty.Type, Is.EqualTo(fixture.Data.Party1.Type));
+	}
+
+	[Test]
+	public void GetReceivingParty()
+	{
+		var eicMapping = fixture.CreateSimpleEicMapping();
+		var sendingParty = eicMapping.GetReceivingParty(fixture.Data.Eic2);
+
+		Assert.That(sendingParty.Id, Is.EqualTo(fixture.Data.Party2.Id));
+		Assert.That(sendingParty.Type, Is.EqualTo(fixture.Data.Party2.Type));
+	}
 }
