@@ -3,7 +3,6 @@
 namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 {
 	using System;
-	using Schleupen.AS4.BusinessAdapter.API;
 
 	/// <summary>
 	/// Incoming AS4 message with metadata and EDIFACT payload
