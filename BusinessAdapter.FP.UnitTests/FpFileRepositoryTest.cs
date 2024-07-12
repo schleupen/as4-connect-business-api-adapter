@@ -11,11 +11,13 @@ public partial class FpFileRepositoryTest
 	{
 		var repository = fixture.CreateTestObject();
 
-		var files = repository.GetFilesFrom("C:/path");
+		var path = "./notExistingPATH";
+		var directoryResult = repository.GetFilesFrom(path);
 
-		Assert.That(files, Is.Empty);
+		Assert.That(directoryResult.ValidFpFiles, Is.Empty);
+		Assert.That(directoryResult.DirectoryPath, Is.EqualTo(path));
 		fixture.VerifyLogMessageContainingText(LogLevel.Warning, "not found", Times.Once());
-		fixture.VerifyLogMessageContainingText(LogLevel.Warning, "C:/path", Times.Once());
+		fixture.VerifyLogMessageContainingText(LogLevel.Warning, path, Times.Once());
 	}
 
 	[Test]
@@ -26,10 +28,13 @@ public partial class FpFileRepositoryTest
 
 		var repository = fixture.CreateTestObject();
 
-		var filesPathsInDirectory = Directory.GetFiles(".");
-		var files = repository.GetFilesFrom(".");
+		string path = ".";
+		var filesPathsInDirectory = Directory.GetFiles(path);
+		var directoryResult = repository.GetFilesFrom(path);
 
-		Assert.That(files, Is.Empty);
+		Assert.That(directoryResult.ValidFpFiles, Is.Empty);
+		Assert.That(directoryResult.DirectoryPath, Is.EqualTo(path));
+		Assert.That(directoryResult.DirectoryPath, Is.EqualTo(path));
 		fixture.VerifyLogMessageContainingText(LogLevel.Warning, "parse", Times.Exactly(filesPathsInDirectory.Length));
 	}
 
@@ -40,10 +45,12 @@ public partial class FpFileRepositoryTest
 
 		var repository = fixture.CreateTestObject();
 
-		var files = repository.GetFilesFrom(".");
-		var filesPathsInDirectory = Directory.GetFiles(".");
+		string path = ".";
+		var directoryResult = repository.GetFilesFrom(path);
+		var filesPathsInDirectory = Directory.GetFiles(path);
 
-		Assert.That(files.Count, Is.EqualTo(filesPathsInDirectory.Length));
+		Assert.That(directoryResult.ValidFpFiles, Has.Exactly(filesPathsInDirectory.Length).Items);
+		Assert.That(directoryResult.DirectoryPath, Is.EqualTo(path));
 		fixture.VerifyLogMessageContainingText(LogLevel.Warning, "", Times.Never());
 	}
 }

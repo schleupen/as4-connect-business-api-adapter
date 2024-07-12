@@ -28,12 +28,12 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 		{
 			logger.LogDebug("Sending of available messages starting.");
 
-			var filesInSendDirectory = fileRepository.GetFilesFrom(sendOptions.Directory);
-			var filesInDirectoryCount = filesInSendDirectory.Count;
-			var selectedFilesToSend = filesInSendDirectory.Take(sendOptions.MessageLimitCount);
+			var directoryResult = fileRepository.GetFilesFrom(sendOptions.Directory);
+			var validFpFiles = directoryResult.ValidFpFiles;
+			var selectedFilesToSend = validFpFiles.Take(sendOptions.MessageLimitCount);
 			var messagesToSend = outboxMessageAssembler.ToFpOutboxMessages(selectedFilesToSend);
 
-			var sendStatus = new SendStatus(filesInDirectoryCount, sendOptions.MessageLimitCount);
+			var sendStatus = new SendStatus(directoryResult.TotalFileCount, sendOptions.MessageLimitCount, directoryResult);
 			try
 			{
 				await Policy.Handle<Exception>()
