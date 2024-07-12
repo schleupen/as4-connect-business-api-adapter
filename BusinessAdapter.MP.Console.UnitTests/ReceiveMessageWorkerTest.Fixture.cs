@@ -4,7 +4,6 @@ namespace Schleupen.AS4.BusinessAdapter;
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.MP;
 
 internal sealed partial class ReceiveMessageWorkerTest

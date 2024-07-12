@@ -5,6 +5,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Schleupen.AS4.BusinessAdapter.API;
+	using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 
@@ -13,7 +14,8 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		IJwtBuilder jwtBuilder,
 		IClientCertificateProvider clientCertificateProvider,
 		ILogger<BusinessApiGateway> clientLogger,
-		IBusinessApiClientFactory businessApiClientFactory)
+		IBusinessApiClientFactory businessApiClientFactory,
+		IPartyIdTypeAssembler partyIdTypeAssembler)
 		: IBusinessApiGatewayFactory
 	{
 		public IBusinessApiGateway CreateAs4BusinessApiClient(string marktpartnerId)
@@ -24,7 +26,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 				throw new CatastrophicException("The endpoint for AS4 connect is not configured.");
 			}
 
-			return new BusinessApiGateway(jwtBuilder, clientCertificateProvider, as4BusinessApiEndpoint, marktpartnerId, businessApiClientFactory, clientLogger);
+			return new BusinessApiGateway(jwtBuilder, clientCertificateProvider, as4BusinessApiEndpoint, marktpartnerId, businessApiClientFactory, partyIdTypeAssembler, clientLogger);
 		}
 	}
 }

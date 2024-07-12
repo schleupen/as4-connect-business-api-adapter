@@ -8,6 +8,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using Microsoft.Extensions.Logging;
 	using Moq;
 	using NUnit.Framework;
+	using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
@@ -25,6 +26,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			private readonly Mock<IBusinessApiClientFactory> clientWrapperFactoryMock;
 			private readonly Mock<IBusinessApiClient> clientWrapperMock;
 			private readonly Mock<IClientCertificate> certificateMock;
+			private readonly Mock<IPartyIdTypeAssembler> partyIdTypeAssembler;
 			private readonly X509Certificate2 certificate;
 
 			public Fixture()
@@ -36,6 +38,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 				clientWrapperMock = mockRepository.Create<IBusinessApiClient>();
 				certificateMock = mockRepository.Create<IClientCertificate>();
 				certificate = new X509Certificate2(Array.Empty<byte>());
+				partyIdTypeAssembler = mockRepository.Create<IPartyIdTypeAssembler>(MockBehavior.Loose);
 			}
 
 			public void Dispose()
@@ -51,7 +54,9 @@ namespace Schleupen.AS4.BusinessAdapter.API
 					marketpartnerCertificateProviderMock.Object,
 					"https://Dummy",
 					"12345",
-					clientWrapperFactoryMock.Object, loggerMock.Object);
+					clientWrapperFactoryMock.Object,
+					partyIdTypeAssembler.Object,
+					loggerMock.Object);
 			}
 
 			public void ValidateReceiveInfo(MessageReceiveInfo receiveInfo)

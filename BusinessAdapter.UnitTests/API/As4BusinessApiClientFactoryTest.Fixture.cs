@@ -6,6 +6,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Moq;
+	using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 	using Schleupen.AS4.BusinessAdapter.MP.API;
@@ -21,6 +22,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			private readonly Mock<ILogger<BusinessApiGateway>> clientLoggerMock;
 			private readonly Mock<IBusinessApiClientFactory> clientWrapperFactoryMock;
 			private readonly Mock<IClientCertificate> certificateMock;
+			private readonly Mock<IPartyIdTypeAssembler> partyIdTypeAssembler;
 			private readonly X509Certificate2 certificate = new(Array.Empty<byte>());
 
 			public Fixture()
@@ -31,6 +33,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 				clientLoggerMock = mockRepository.Create<ILogger<BusinessApiGateway>>();
 				clientWrapperFactoryMock = mockRepository.Create<IBusinessApiClientFactory>();
 				certificateMock = mockRepository.Create<IClientCertificate>(MockBehavior.Loose);
+				partyIdTypeAssembler = mockRepository.Create<IPartyIdTypeAssembler>(MockBehavior.Loose);
 			}
 
 			public BusinessApiGatewayFactory CreateTestObject()
@@ -40,7 +43,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
 					jwtHelperMock.Object,
 					marketpartnerCertificateProviderMock.Object,
 					clientLoggerMock.Object,
-					clientWrapperFactoryMock.Object);
+					clientWrapperFactoryMock.Object,
+					partyIdTypeAssembler.Object);
 			}
 
 			public void Dispose()

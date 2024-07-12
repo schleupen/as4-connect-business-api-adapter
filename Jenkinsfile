@@ -61,8 +61,12 @@ pipeline
                     docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
                     {
                         sh 'dotnet test ./BusinessAdapter.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.UnitTests.junit.xml\' -e HOME=/tmp'
-                        sh 'dotnet test ./BusinessAdapter.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.Console.UnitTests.junit.xml\' -e HOME=/tmp'
+                                                
                         sh 'dotnet test ./BusinessAdapter.FP.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.UnitTests.junit.xml\' -e HOME=/tmp'
+                        sh 'dotnet test ./BusinessAdapter.FP.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.Console.UnitTests.junit.xml\' -e HOME=/tmp'
+                        
+                        sh 'dotnet test ./BusinessAdapter.MP.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.MP.UnitTests.junit.xml\' -e HOME=/tmp'
+                        sh 'dotnet test ./BusinessAdapter.MP.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.MP.Console.UnitTests.junit.xml\' -e HOME=/tmp'
                     }
                     
                 }

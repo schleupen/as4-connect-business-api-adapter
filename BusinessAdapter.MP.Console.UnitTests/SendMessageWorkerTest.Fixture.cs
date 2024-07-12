@@ -5,7 +5,6 @@ namespace Schleupen.AS4.BusinessAdapter;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.Configuration;
 using Schleupen.AS4.BusinessAdapter.MP;
 

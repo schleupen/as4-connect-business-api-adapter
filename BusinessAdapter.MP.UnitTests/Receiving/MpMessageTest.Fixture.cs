@@ -3,7 +3,6 @@
 namespace Schleupen.AS4.BusinessAdapter.Receiving
 {
 	using NUnit.Framework;
-	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 	internal sealed partial class MpMessageTest

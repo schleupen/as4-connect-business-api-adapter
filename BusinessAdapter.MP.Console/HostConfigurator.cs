@@ -4,18 +4,16 @@ namespace Schleupen.AS4.BusinessAdapter.MP;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.API;
+using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 using Schleupen.AS4.BusinessAdapter.Certificates;
 using Schleupen.AS4.BusinessAdapter.Configuration;
-using Schleupen.AS4.BusinessAdapter.Configuration.Validation;
 using Schleupen.AS4.BusinessAdapter.MP.API;
 using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 public class HostConfigurator
 {
-	// TODO Test DI wiring with UnitTest
 	public IHost ConfigureHost(string[] args)
 	{
 		HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
@@ -35,6 +33,7 @@ public class HostConfigurator
 			.AddTransient<IEdifactDirectoryResolver, EdifactDirectoryResolver>()
 			.AddTransient<IEdifactFileNameExtractor, EdifactFileNameExtractor>()
 			.AddTransient<IEdifactFileParser, EdifactFileParser>()
+			.AddTransient<IPartyIdTypeAssembler, PartyIdTypeAssembler>()
 			.AddConfiguration(builder.Configuration);
 
 

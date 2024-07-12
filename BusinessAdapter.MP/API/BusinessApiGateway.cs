@@ -15,6 +15,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
 	using Schleupen.AS4.BusinessAdapter.API;
+	using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
@@ -29,17 +30,20 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		private readonly IBusinessApiClientFactory businessApiClientFactory;
 		private readonly HttpClient httpClient;
 		private readonly HttpClientHandler httpClientHandler;
+		private readonly IPartyIdTypeAssembler partyIdTypeAssembler;
 
 		public BusinessApiGateway(IJwtBuilder jwtBuilder,
 			IClientCertificateProvider clientCertificateProvider,
 			string as4BusinessApiEndpoint,
 			string marketpartnerIdentification,
 			IBusinessApiClientFactory businessApiClientFactory,
+			IPartyIdTypeAssembler partyIdTypeAssembler,
 			ILogger<BusinessApiGateway> logger)
 		{
 			this.jwtBuilder = jwtBuilder;
 			this.as4BusinessApiEndpoint = as4BusinessApiEndpoint;
 			this.logger = logger;
+			this.partyIdTypeAssembler = partyIdTypeAssembler;
 			this.businessApiClientFactory = businessApiClientFactory;
 
 			IClientCertificate resolvedMarketpartnerCertificate = clientCertificateProvider.GetCertificate(marketpartnerIdentification);
@@ -62,7 +66,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 				try
 				{
 					await businessApiClient.V1MpMessagesOutboxPostAsync(message.Receiver.Id,
-						ToPartyTypeDto(message.Receiver.Type),
+						partyIdTypeAssembler.ToPartyTypeDto(message.Receiver.Type),
 						new FileParameter(compressedStream, message.FileName),
 						message.BdewDocumentType,
 						message.BdewDocumentNumber,
@@ -184,24 +188,6 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		{
 			httpClient.Dispose();
 			httpClientHandler.Dispose();
-		}
-
-		// TODO use PartyIdTypeAssembler
-		private PartyIdTypeDto ToPartyTypeDto(string partyTypeValue)
-		{
-			var partyType = partyTypeValue.ToUpperInvariant();
-			switch (partyType)
-			{
-				case "BDEW":
-					return PartyIdTypeDto.BDEW;
-				case "DVGW":
-					return PartyIdTypeDto.DVGW;
-				case "GS1":
-				case "GS1GERMANY":
-					return PartyIdTypeDto.GS1;
-				default:
-					throw new NotSupportedException($"PartyType '{partyType}' is unsupported");
-			}
 		}
 
 		private HttpClient InitializeHttpClient()
