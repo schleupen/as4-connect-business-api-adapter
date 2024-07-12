@@ -1,6 +1,5 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.API.Assemblers;
 
-// TODO Test
 public class PartyIdTypeAssembler : IPartyIdTypeAssembler
 {
 	public PartyIdTypeDto ToPartyTypeDto(string partyTypeValue)
