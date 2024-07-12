@@ -9,13 +9,31 @@ public class FpFileRepository(IFpFileParser parser, ILogger<FpFileRepository> lo
 {
 	public IImmutableList<FpFile> GetFilesFrom(string path)
 	{
-		var result =  Directory.GetFiles(path)
-			.Select(parser.Parse)
-			.ToImmutableList();
+		var di = new DirectoryInfo(path);
+		if (!di.Exists)
+		{
+			logger.LogWarning("directory '{Directory}' not found", path);
+			return ImmutableList<FpFile>.Empty;
+		}
 
-		logger.LogInformation("found '{FileCount}' files in '{Directory}'", result.Count, path);
+		var filesInDirectory = Directory.GetFiles(path);
 
-		return result;
+		var fpFiles = filesInDirectory.Select(fp =>
+		{
+			try
+			{
+				var fpFile = parser.Parse(fp);
+				return fpFile;
+			}
+			catch (Exception e)
+			{
+				logger.LogWarning(e, "could not parse in '{FilePath}'", fp);
+				return null;
+			}
+		}).Where(x => x != null).ToImmutableList();
+
+		logger.LogInformation("found '{FileCount}' files in '{Directory}'", fpFiles.Count, path);
+		return fpFiles;
 	}
 
 	public void DeleteFile(string filePath)
