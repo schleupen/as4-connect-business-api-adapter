@@ -8,14 +8,14 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLim
 	private readonly List<FpOutboxMessage> successfulSendMessages = new();
 	private readonly Dictionary<Guid, Tuple<FpOutboxMessage, Exception>> failedSendMessages = new();
 	private bool abortedDueToTooManyConnections;
-	private int iteration = 0;
+	private int retryIteration = 0;
 
-	public void NewIteration()
+	public void NewRetry()
 	{
-		this.iteration++;
+		this.retryIteration++;
 	}
 
-	public int Iteration => this.iteration;
+	public int RetryIteration => this.retryIteration;
 
 	public void AddBusinessApiResponse(BusinessApiResponse<FpOutboxMessage> response, ILogger logger)
 	{
@@ -58,7 +58,7 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLim
 			return; // send retry will not fix this problem, so throwing the Exception for Retry doesn't make sense
 		}
 
-		if (this.FailedMessageCount != 0)
+		if (this.failedSendMessages.Count != 0)
 		{
 			throw new AggregateException("There was at least one error. Details can be found in the inner exceptions.",
 				this.failedSendMessages.Select(x => x.Value.Item2).ToArray());

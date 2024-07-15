@@ -17,7 +17,7 @@ public partial class SendStatusTest
 		Assert.That(status.TotalCountOfMessagesInSendDirectory, Is.EqualTo(100));
 		Assert.That(status.SuccessfulMessageCount, Is.EqualTo(0));
 		Assert.That(status.FailedMessageCount, Is.EqualTo(0));
-		Assert.That(status.Iteration, Is.EqualTo(0));
+		Assert.That(status.RetryIteration, Is.EqualTo(0));
 		Assert.DoesNotThrow(() => status.ThrowIfRetryIsNeeded());
 	}
 
@@ -43,10 +43,10 @@ public partial class SendStatusTest
 		var exception = new InvalidOperationException("");
 
 		status.AddFailure(fixture.Data.FailedOutboundMessage, exception, fixture.Mocks.LoggerMock.Object);
-		status.NewIteration();
+		status.NewRetry();
 		status.AddBusinessApiResponse(new BusinessApiResponse<FpOutboxMessage>(true, fixture.Data.FailedOutboundMessage), fixture.Mocks.LoggerMock.Object);
 
-		Assert.That(status.Iteration, Is.EqualTo(1));
+		Assert.That(status.RetryIteration, Is.EqualTo(1));
 		Assert.That(status.FailedMessageCount, Is.EqualTo(0));
 		Assert.That(status.SuccessfulMessageCount, Is.EqualTo(1));
 		Assert.That(status.GetUnsentMessagesForRetry(), Is.Empty);

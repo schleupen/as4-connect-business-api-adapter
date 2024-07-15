@@ -11,7 +11,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 	using Schleupen.AS4.BusinessAdapter.FP.Gateways;
 	using Schleupen.AS4.BusinessAdapter.FP.Sending.Assemblers;
 
-	// TODO Test
 	public sealed class FpMessageSender(
 		IOptions<SendOptions> sendOptions,
 		IFpFileRepository fileRepository,
@@ -38,11 +37,11 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 					.WaitAndRetryAsync(
 						sendOptions.Retry.Count,
 						x => sendOptions.Retry.SleepDuration,
-						(ex, ts) =>
+						(ex, ts, r, c) =>
 						{
-							sendStatus.NewIteration();
+							sendStatus.NewRetry();
 							messagesToSend = sendStatus.GetUnsentMessagesForRetry(); // use only unsent/failed message for next iteration
-							logger.LogWarning("Error while sending messages - executing retry with '{MessagesToSendCount}' messages", messagesToSend.Count);
+							logger.LogWarning("Error while sending messages - executing retry [{CurrentRetry}/{MaxRetryCount}] with '{MessagesToSendCount}' messages", r, sendOptions.Retry.Count, messagesToSend.Count);
 						})
 					.ExecuteAndCaptureAsync(
 						async () =>
@@ -67,7 +66,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 				return;
 			}
 
-			logger.LogInformation("Sending '{FilesToSendCount}' FP files [RetryIteration: {Iteration}]", messagesToSend.Count, sendStatus.Iteration);
+			logger.LogInformation("Sending '{FilesToSendCount}' FP files [RetryIteration: {Iteration}]", messagesToSend.Count, sendStatus.RetryIteration);
 
 			var messagesBySender = messagesToSend.GroupBy(m => m.Sender);
 
@@ -84,6 +83,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 							var response = await bapiGateway.SendMessageAsync(message, cancellationToken);
 							if (response.HasTooManyRequestsStatusCode())
 							{
+								sendStatus.AddBusinessApiResponse(response, logger);
 								sendStatus.AbortDueToTooManyConnections();
 								return;
 							}
