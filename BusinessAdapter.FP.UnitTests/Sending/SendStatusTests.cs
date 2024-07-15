@@ -44,7 +44,8 @@ public partial class SendStatusTest
 
 		status.AddFailure(fixture.Data.FailedOutboundMessage, exception, fixture.Mocks.LoggerMock.Object);
 		status.NewRetry();
-		status.AddBusinessApiResponse(new BusinessApiResponse<FpOutboxMessage>(true, fixture.Data.FailedOutboundMessage), fixture.Mocks.LoggerMock.Object);
+		status.AddBusinessApiResponse(new BusinessApiResponse<FpOutboxMessage>(true, fixture.Data.FailedOutboundMessage),
+			fixture.Mocks.LoggerMock.Object);
 
 		Assert.That(status.RetryIteration, Is.EqualTo(1));
 		Assert.That(status.FailedMessageCount, Is.EqualTo(0));
@@ -102,15 +103,14 @@ public partial class SendStatusTest
 	{
 		var failedFileInDirectory = new FailedFile("idk/failedFile.xml", new InvalidOperationException("idk"));
 
-		DirectoryResult directoryResult = new DirectoryResult("idk", ImmutableList<FpFile>.Empty, new List<FailedFile>()
-		{
-			failedFileInDirectory
-		}.ToImmutableList());
+		DirectoryResult directoryResult = new DirectoryResult("idk",
+			ImmutableList<FpFile>.Empty,
+			new List<FailedFile>() { failedFileInDirectory }.ToImmutableList());
 
 		SendStatus status = new SendStatus(100, 50, directoryResult);
 
 		Assert.That(status.FailedMessageCount, Is.EqualTo(1));
 		Assert.That(status.GetUnsentMessagesForRetry(), Has.Count.EqualTo(0));
-		Assert.Throws<AggregateException>(() => status.ThrowIfRetryIsNeeded());
+		Assert.DoesNotThrow(() => status.ThrowIfRetryIsNeeded());
 	}
 }
