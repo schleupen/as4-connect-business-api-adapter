@@ -45,7 +45,7 @@ public partial class FpMessageSenderTest
 		Assert.That(sendStatus.TotalCountOfMessagesInSendDirectory, Is.EqualTo(1));
 		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(0));
 
-		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom("./Send"), Times.Exactly(1));
+		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom(TestData.SendDir), Times.Exactly(1));
 		fixture.Mocks.FpFileRepository.VerifyNoOtherCalls();
 		fixture.VerifyLoggerContainsMessages(LogLevel.Information, "[0/1]", Times.Exactly(1));
 		for (int i = 1; i <= retryCount; i++)
@@ -71,7 +71,7 @@ public partial class FpMessageSenderTest
 		Assert.That(sendStatus.TotalCountOfMessagesInSendDirectory, Is.EqualTo(1));
 		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(0));
 
-		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom("./Send"), Times.Exactly(1));
+		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom(TestData.SendDir), Times.Exactly(1));
 		fixture.Mocks.FpFileRepository.VerifyNoOtherCalls();
 		fixture.VerifyLoggerContainsMessages(LogLevel.Information, "[0/1]", Times.Exactly(1));
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(1));
@@ -101,7 +101,7 @@ public partial class FpMessageSenderTest
 	}
 
 	[Test]
-	public async Task SendAvailableMessagesAsync_SendingIsSuccessful_ShouldTakeInCountMessageLimit()
+	public async Task SendAvailableMessagesAsync_MessageLimitIsLowerThanMessageInDirectory_ShouldOnlySendLimitedMessageCount()
 	{
 		var cancellationToken = new CancellationToken();
 
