@@ -2,7 +2,6 @@
 
 namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 {
-	using System.Collections.Immutable;
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
@@ -43,8 +42,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 						(ex, ts) =>
 						{
 							sendStatus.NewIteration();
-							messagesToSend = sendStatus.GetUnsentMessages(); // use only unsent/failed message for next iteration
-							logger.LogWarning("Error while sending messages");
+							messagesToSend = sendStatus.GetUnsentMessagesForRetry(); // use only unsent/failed message for next iteration
+							logger.LogWarning("Error while sending messages - executing retry with '{MessagesToSendCount}' messages", messagesToSend.Count);
 						})
 					.ExecuteAndCaptureAsync(
 						async () =>
@@ -86,7 +85,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 							var response = await bapiGateway.SendMessageAsync(message, cancellationToken);
 							if (response.HasTooManyRequestsStatusCode())
 							{
-								sendStatus.AbortedDueToTooManyConnections();
+								sendStatus.AbortDueToTooManyConnections();
 								return;
 							}
 

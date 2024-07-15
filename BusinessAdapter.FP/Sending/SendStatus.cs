@@ -3,7 +3,6 @@
 using Microsoft.Extensions.Logging;
 using Schleupen.AS4.BusinessAdapter.API;
 
-// TODO Test
 public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLimitCount, DirectoryResult DirectoryResult)
 {
 	private readonly List<FpOutboxMessage> successfulSendMessages = new();
@@ -43,20 +42,26 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLim
 		failedSendMessages[message.MessageId] = new Tuple<FpOutboxMessage, Exception>(message, exception);
 	}
 
-	public void AbortedDueToTooManyConnections()
+	public void AbortDueToTooManyConnections()
 	{
 		this.abortedDueToTooManyConnections = true;
 	}
 
-	public int FailedMessageCount => this.failedSendMessages.Count;
+	public int FailedMessageCount => this.failedSendMessages.Count + this.DirectoryResult.FailedFiles.Count;
 
 	public int SuccessfulMessageCount => this.successfulSendMessages.Count;
 
 	public void ThrowIfRetryIsNeeded()
 	{
+		if (this.abortedDueToTooManyConnections)
+		{
+			return; // send retry will not fix this problem, so throwing the Exception for Retry doesn't make sense
+		}
+
 		if (this.FailedMessageCount != 0)
 		{
-			throw new AggregateException("There was at least one error. Details can be found in the inner exceptions.", this.failedSendMessages.Select(x => x.Value.Item2).ToArray());
+			throw new AggregateException("There was at least one error. Details can be found in the inner exceptions.",
+				this.failedSendMessages.Select(x => x.Value.Item2).ToArray());
 		}
 	}
 
@@ -77,14 +82,15 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLim
 			logger.LogWarning(failedParsedFile.Exception, "Failed to parse file '{FilePath}'", failedParsedFile.Path);
 		}
 
-		logger.LogInformation("Messages [{SuccessfulMessagesCount}/{MessageInSendDirectoryCount}] successful send. [Limit: {MessageLimitCount} Failed: {FailedMessagesCount}]",
+		logger.LogInformation(
+			"Messages [{SuccessfulMessagesCount}/{MessageInSendDirectoryCount}] successful send. [Limit: {MessageLimitCount} Failed: {FailedMessagesCount}]",
 			SuccessfulMessageCount,
 			TotalCountOfMessagesInSendDirectory,
 			MessageLimitCount,
 			FailedMessageCount);
 	}
 
-	public List<FpOutboxMessage> GetUnsentMessages()
+	public List<FpOutboxMessage> GetUnsentMessagesForRetry()
 	{
 		return this.failedSendMessages.Select(x => x.Value.Item1).ToList();
 	}
