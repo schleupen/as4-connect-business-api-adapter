@@ -21,7 +21,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 		: IFpMessageSender
 	{
 		private readonly SendOptions sendOptions = sendOptions.Value;
-		private const uint RetrySleepDurationInSeconds = 10; // TODO Configure in SendOptions as Timespan
 
 		public async Task<SendStatus> SendAvailableMessagesAsync(CancellationToken cancellationToken)
 		{
@@ -38,7 +37,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 				await Policy.Handle<Exception>()
 					.WaitAndRetryAsync(
 						sendOptions.Retry.Count,
-						x => TimeSpan.FromSeconds(RetrySleepDurationInSeconds),
+						x => sendOptions.Retry.SleepDuration,
 						(ex, ts) =>
 						{
 							sendStatus.NewIteration();
