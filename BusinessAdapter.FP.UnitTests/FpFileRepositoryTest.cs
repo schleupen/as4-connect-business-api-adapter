@@ -41,7 +41,7 @@ public partial class FpFileRepositoryTest
 	[Test]
 	public void GetFilesFrom_ValidFile_ShouldReturn()
 	{
-		fixture.Mocks.FileParserMock.Setup(x => x.Parse(It.IsAny<string>())).Returns(new FpFile(new EIC("1"), new EIC("2"), new byte[0], "fileName", "path", null!));
+		fixture.Mocks.FileParserMock.Setup(x => x.Parse(It.IsAny<string>())).Returns(new FpFile(new EIC("1"), new EIC("2"), Array.Empty<byte>(), "fileName", "path", null!));
 
 		var repository = fixture.CreateTestObject();
 

@@ -20,7 +20,7 @@ public partial class FpOutboxMessageAssemblerTest
 	[TearDown]
 	public void Dispose()
 	{
-		fixture = null;
+		fixture = null!;
 	}
 
 	private sealed class Fixture

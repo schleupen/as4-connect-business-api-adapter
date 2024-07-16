@@ -23,13 +23,14 @@ public class AdapterOptionsTest
 		Assert.That(adapterOptions.Marketpartners!.Single(), Is.EqualTo("9984617000002"));
 
 		Assert.That(adapterOptions.Receive!.Directory, Is.EqualTo("./receive"));
-		Assert.That(adapterOptions.Receive.RetryCount, Is.EqualTo(3));
-		Assert.That(adapterOptions.Receive.MessageLimitCount, Is.EqualTo(4));
+		Assert.That(adapterOptions.Receive.Retry.Count, Is.EqualTo(22));
+		Assert.That(adapterOptions.Receive.MessageLimitCount, Is.EqualTo(22));
+		Assert.That(adapterOptions.Receive.SleepDuration, Is.EqualTo(TimeSpan.FromSeconds(22)));
 
 		Assert.That(adapterOptions.Send!.Directory, Is.EqualTo("./send"));
-		Assert.That(adapterOptions.Send.Retry.Count, Is.EqualTo(1));
-		Assert.That(adapterOptions.Send.Retry.SleepDuration, Is.EqualTo(TimeSpan.FromSeconds(59)));
-		Assert.That(adapterOptions.Send.MessageLimitCount, Is.EqualTo(2));
-		Assert.That(adapterOptions.Send.ScanInterval, Is.EqualTo(TimeSpan.FromSeconds(44)));
+		Assert.That(adapterOptions.Send.MessageLimitCount, Is.EqualTo(11));
+		Assert.That(adapterOptions.Send.SleepDuration, Is.EqualTo(TimeSpan.FromSeconds(11)));
+		Assert.That(adapterOptions.Send.Retry.Count, Is.EqualTo(11));
+		Assert.That(adapterOptions.Send.Retry.SleepDuration, Is.EqualTo(TimeSpan.FromSeconds(11)));
 	}
 }

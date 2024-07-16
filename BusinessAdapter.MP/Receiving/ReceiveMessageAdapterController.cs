@@ -149,7 +149,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 			MpMessage[] availableMessages = receiveContext.Key.GetAvailableMessages();
 
 			return await Policy.Handle<Exception>()
-				.WaitAndRetryAsync(receiveOptions.RetryCount, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
+				.WaitAndRetryAsync(receiveOptions.Retry.Count, _ => receiveOptions.Retry.SleepDuration, (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
 				.ExecuteAndCaptureAsync(async () =>
 				{
 					List<MpMessage> messagesForRetry = new List<MpMessage>();

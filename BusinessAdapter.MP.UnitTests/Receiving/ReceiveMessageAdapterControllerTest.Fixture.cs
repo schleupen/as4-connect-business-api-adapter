@@ -132,7 +132,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 				this.receiveOptionsMock.Setup(x => x.Value).Returns(new ReceiveOptions()
 				{
 					MessageLimitCount = messageLimit,
-					RetryCount = 0,
+					Retry = new RetryOption() { Count = 0 },
 					Directory = @"C:\Temp"
 				});
 			}

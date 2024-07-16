@@ -86,7 +86,7 @@ public partial class FpMessageSenderTest
 		var failedParsedFiles = 10;
 		var totalMessageCount = successfulParsedFiles + failedParsedFiles;
 
-		var gatewayMock = fixture.SetupSendingSuccessful(cancellationToken, successfulParsedFiles, failedParsedFiles);
+		var gatewayMock = fixture.SetupSendingSuccessful(successfulParsedFiles, failedParsedFiles, cancellationToken);
 
 		FpMessageSender sender = fixture.CreateFpMessageSender();
 		var sendStatus = await sender.SendAvailableMessagesAsync(cancellationToken);
@@ -110,7 +110,7 @@ public partial class FpMessageSenderTest
 		var totalMessageCount = successfulParsedFiles + failedParsedFiles;
 		var messageLimit = 10;
 
-		var gatewayMock = fixture.SetupSendingSuccessfulWithLimit(cancellationToken, successfulParsedFiles, failedParsedFiles, messageLimit);
+		var gatewayMock = fixture.SetupSendingSuccessfulWithLimit(successfulParsedFiles, failedParsedFiles, messageLimit, cancellationToken);
 
 		FpMessageSender sender = fixture.CreateFpMessageSender();
 		var sendStatus = await sender.SendAvailableMessagesAsync(cancellationToken);
@@ -127,7 +127,7 @@ public partial class FpMessageSenderTest
 	public async Task SendAvailableMessagesAsync_MultipleMessagesFromOneSender_ShouldInstantiateSenderSpecificGateway()
 	{
 		var cancellationToken = new CancellationToken();
-		var gatewayMock = fixture.SetupMultipleMessagesFromOnlyOneSender(cancellationToken, 23, 10);
+		var gatewayMock = fixture.SetupMultipleMessagesFromOnlyOneSender(23, 10, cancellationToken);
 
 		FpMessageSender sender = fixture.CreateFpMessageSender();
 		await sender.SendAvailableMessagesAsync(cancellationToken);

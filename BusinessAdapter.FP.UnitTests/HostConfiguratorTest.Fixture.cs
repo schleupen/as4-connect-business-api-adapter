@@ -18,7 +18,7 @@ public partial class HostConfiguratorTest
 	[TearDown]
 	public void Dispose()
 	{
-		fixture = null;
+		fixture = null!;
 	}
 
 	private sealed class Fixture

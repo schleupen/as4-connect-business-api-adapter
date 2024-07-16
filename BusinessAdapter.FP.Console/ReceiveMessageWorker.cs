@@ -5,11 +5,14 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 	using System;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.Extensions.Logging;
-	using Schleupen.AS4.BusinessAdapter.API;
+	using Microsoft.Extensions.Options;
+	using Schleupen.AS4.BusinessAdapter.Configuration;
 
-	public sealed class ReceiveMessageWorker(ILogger<ReceiveMessageWorker> logger, IReceiveMessageAdapterController receiveController)
+	public sealed class ReceiveMessageWorker(ILogger<ReceiveMessageWorker> logger, IReceiveMessageAdapterController receiveController, IOptions<ReceiveOptions> receiveOptions)
 		: BackgroundService
 	{
+		private ReceiveOptions options = receiveOptions.Value;
+
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)
@@ -28,7 +31,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 					logger.LogError(ex, "Exception during receive");
 				}
 
-				await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+				await Task.Delay(options.SleepDuration, stoppingToken);
 			}
 		}
 	}

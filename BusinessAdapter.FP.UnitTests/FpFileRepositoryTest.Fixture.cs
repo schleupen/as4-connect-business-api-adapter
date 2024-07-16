@@ -18,7 +18,7 @@ public partial class FpFileRepositoryTest
 	[TearDown]
 	public void Dispose()
 	{
-		fixture = null;
+		fixture = null!;
 	}
 
 	private sealed class Fixture
@@ -42,9 +42,9 @@ public partial class FpFileRepositoryTest
 			Mocks.LoggerMock.Verify(x =>
 					x.Log(logLevel,
 						It.IsAny<EventId>(),
-						It.Is<It.IsAnyType>((o, t) => o.ToString().Contains(text, StringComparison.InvariantCultureIgnoreCase)),
+						It.Is<It.IsAnyType>((o, t) => o.ToString()!.Contains(text, StringComparison.InvariantCultureIgnoreCase)),
 						It.IsAny<Exception?>(),
-						(Func<It.IsAnyType, Exception, string>) It.IsAny<object>()),
+						((Func<It.IsAnyType, Exception, string>) It.IsAny<object>())!),
 				times);
 		}
 	}

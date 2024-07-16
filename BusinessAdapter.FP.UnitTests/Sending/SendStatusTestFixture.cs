@@ -21,7 +21,7 @@ public partial class SendStatusTest
 	[TearDown]
 	public void Dispose()
 	{
-		fixture = null;
+		fixture = null!;
 	}
 
 	private sealed class Fixture
@@ -87,7 +87,7 @@ public partial class SendStatusTest
 			return new FpOutboxMessage(Guid.NewGuid(),
 				Sender,
 				Receiver,
-				new byte[0],
+				Array.Empty<byte>(),
 				$"{id}_name",
 				$"{id}_path",
 				BDEWProperties);

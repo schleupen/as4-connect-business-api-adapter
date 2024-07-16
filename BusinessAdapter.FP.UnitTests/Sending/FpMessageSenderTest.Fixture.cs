@@ -25,7 +25,7 @@ public partial class FpMessageSenderTest
 	[TearDown]
 	public void Dispose()
 	{
-		fixture = null;
+		fixture = null!;
 	}
 
 	private sealed class Fixture
@@ -71,11 +71,11 @@ public partial class FpMessageSenderTest
 					SleepDuration = TimeSpan.Zero
 				},
 				MessageLimitCount = messageLimitCount,
-				ScanInterval = TimeSpan.Zero
+				SleepDuration = TimeSpan.Zero
 			};
 		}
 
-		public Mock<IBusinessApiGateway> SetupSendingSuccessfulWithLimit(CancellationToken cancellationToken, int successfulParsedFiles, int failedParsedFiles, int messageLimit)
+		public Mock<IBusinessApiGateway> SetupSendingSuccessfulWithLimit(int successfulParsedFiles, int failedParsedFiles, int messageLimit, CancellationToken cancellationToken)
 		{
 			Mocks.SendOptions
 				.Setup(x => x.Value)
@@ -97,7 +97,7 @@ public partial class FpMessageSenderTest
 			return gatewayMock;
 		}
 
-		public Mock<IBusinessApiGateway> SetupSendingSuccessful(CancellationToken cancellationToken, int successfulParsedFiles, int failedParsedFiles)
+		public Mock<IBusinessApiGateway> SetupSendingSuccessful(int successfulParsedFiles, int failedParsedFiles, CancellationToken cancellationToken)
 		{
 			Mocks.SendOptions
 				.Setup(x => x.Value)
@@ -118,7 +118,8 @@ public partial class FpMessageSenderTest
 
 			return gatewayMock;
 		}
-		public Mock<IBusinessApiGateway> SetupMultipleMessagesFromOnlyOneSender(CancellationToken cancellationToken, int successfulParsedFiles, int failedParsedFiles)
+		public Mock<IBusinessApiGateway> SetupMultipleMessagesFromOnlyOneSender(int successfulParsedFiles, int failedParsedFiles,
+			CancellationToken cancellationToken)
 		{
 			Mocks.SendOptions
 				.Setup(x => x.Value)
@@ -253,7 +254,7 @@ public partial class FpMessageSenderTest
 				files.Add(new FpFile(
 					sameSender ? new EIC("same") : new EIC(i.ToString()),
 					new EIC(i + 1.ToString()),
-					new byte[0],
+					Array.Empty<byte>(),
 					$"fileName_{i}",
 					Path.Combine(SendDir,
 						$"fileName_{i}"),

@@ -3,7 +3,9 @@
 namespace Schleupen.AS4.BusinessAdapter;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
+using Schleupen.AS4.BusinessAdapter.Configuration;
 using Schleupen.AS4.BusinessAdapter.MP;
 
 internal sealed partial class ReceiveMessageWorkerTest
@@ -13,16 +15,19 @@ internal sealed partial class ReceiveMessageWorkerTest
 		private readonly MockRepository mockRepository = new(MockBehavior.Strict);
 		private readonly Mock<ILogger<ReceiveMessageWorker>> loggerMock;
 		private readonly Mock<IReceiveMessageAdapterController> receiveControllerMock;
+		private readonly Mock<IOptions<ReceiveOptions>> receiveOptionsMock;
 
 		public Fixture()
 		{
 			loggerMock = mockRepository.Create<ILogger<ReceiveMessageWorker>>();
 			receiveControllerMock = mockRepository.Create<IReceiveMessageAdapterController>();
+			receiveOptionsMock = mockRepository.Create<IOptions<ReceiveOptions>>();
+			receiveOptionsMock.SetupGet(o => o.Value).Returns(new ReceiveOptions());
 		}
 
 		public ReceiveMessageWorker CreateTestObject()
 		{
-			return new ReceiveMessageWorker(loggerMock.Object, receiveControllerMock.Object);
+			return new ReceiveMessageWorker(loggerMock.Object, receiveControllerMock.Object, receiveOptionsMock.Object);
 		}
 
 		public void Dispose()
