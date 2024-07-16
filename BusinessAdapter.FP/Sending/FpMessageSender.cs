@@ -41,7 +41,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 						{
 							sendStatus.NewRetry();
 							messagesToSend = sendStatus.GetUnsentMessagesForRetry(); // use only unsent/failed message for next iteration
-							logger.LogWarning("Error while sending messages - executing retry [{CurrentRetry}/{MaxRetryCount}] with '{MessagesToSendCount}' messages", r, sendOptions.Retry.Count, messagesToSend.Count);
+							logger.LogWarning("Error while sending messages - retry {CurrentRetry}/{MaxRetryCount} with '{MessagesToSendCount}' messages is scheduled in '{RetrySleepDuration}' at '{ScheduleTime}'", r, sendOptions.Retry.Count, messagesToSend.Count, ts, DateTime.Now + ts);
 						})
 					.ExecuteAndCaptureAsync(
 						async () =>
@@ -53,7 +53,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 			}
 			finally
 			{
-				sendStatus.LogTo(logger);
+				sendStatus.LogTo(logger, sendOptions);
 			}
 
 			return sendStatus;
@@ -66,7 +66,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 				return;
 			}
 
-			logger.LogInformation("Sending '{FilesToSendCount}' FP files [RetryIteration: {Iteration}]", messagesToSend.Count, sendStatus.RetryIteration);
+			logger.LogInformation("Sending '{FilesToSendCount}' FP files", messagesToSend.Count);
 
 			var messagesBySender = messagesToSend.GroupBy(m => m.Sender);
 

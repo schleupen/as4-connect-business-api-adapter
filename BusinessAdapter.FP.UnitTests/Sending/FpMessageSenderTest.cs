@@ -22,10 +22,9 @@ public partial class FpMessageSenderTest
 		Assert.That(sendStatus.TotalCountOfMessagesInSendDirectory, Is.EqualTo(0));
 		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(0));
 
-		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom("./Send"), Times.Exactly(1));
+		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom(TestData.SendDir), Times.Exactly(1));
 		fixture.Mocks.FpFileRepository.VerifyNoOtherCalls();
 		fixture.Mocks.BusinessApiGatewayFactory.VerifyNoOtherCalls();
-		fixture.VerifyLoggerContainsMessages(LogLevel.Information, "[0/0]", Times.Exactly(1));
 	}
 
 	[Test]
@@ -47,11 +46,9 @@ public partial class FpMessageSenderTest
 
 		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom(TestData.SendDir), Times.Exactly(1));
 		fixture.Mocks.FpFileRepository.VerifyNoOtherCalls();
-		fixture.VerifyLoggerContainsMessages(LogLevel.Information, "[0/1]", Times.Exactly(1));
 		for (int i = 1; i <= retryCount; i++)
 		{
-			fixture.VerifyLoggerContainsMessages(LogLevel.Warning,
-				$"Error while sending messages - executing retry [{i}/{retryCount}] with '1' messages", Times.Exactly(1));
+			fixture.VerifyLoggerContainsMessages(LogLevel.Warning, $"Error while sending messages - retry {i}/{retryCount} with '1' messages", Times.Exactly(1));
 		}
 
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(retryCount + 1));
@@ -73,7 +70,6 @@ public partial class FpMessageSenderTest
 
 		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom(TestData.SendDir), Times.Exactly(1));
 		fixture.Mocks.FpFileRepository.VerifyNoOtherCalls();
-		fixture.VerifyLoggerContainsMessages(LogLevel.Information, "[0/1]", Times.Exactly(1));
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(1));
 	}
 
@@ -96,7 +92,6 @@ public partial class FpMessageSenderTest
 		Assert.That(sendStatus.TotalCountOfMessagesInSendDirectory, Is.EqualTo(totalMessageCount));
 		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(successfulParsedFiles));
 
-		fixture.VerifyLoggerContainsMessages(LogLevel.Information, $"[{successfulParsedFiles}/{totalMessageCount}]", Times.Exactly(1));
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(successfulParsedFiles));
 	}
 

@@ -33,7 +33,7 @@ public class FpFileRepository(IFpFileParser parser, ILogger<FpFileRepository> lo
 			}
 		}).Where(x => x is not null).ToImmutableList();
 
-		logger.LogInformation("found '{ValidFileCount}' valid and '{InvalidFileCound}' files in '{Directory}'", fpFiles.Count, failedFiles.Count, path);
+		logger.LogInformation("found '{ValidFileCount}' valid and '{InvalidFileCount}' invalid files in '{Directory}'", fpFiles.Count, failedFiles.Count, path);
 
 		return new DirectoryResult(path, fpFiles!, failedFiles.ToImmutableList());
 	}

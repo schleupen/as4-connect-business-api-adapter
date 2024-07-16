@@ -2,6 +2,7 @@
 
 using Microsoft.Extensions.Logging;
 using Schleupen.AS4.BusinessAdapter.API;
+using Schleupen.AS4.BusinessAdapter.Configuration;
 
 public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLimitCount, DirectoryResult DirectoryResult)
 {
@@ -65,7 +66,7 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLim
 		}
 	}
 
-	public void LogTo(ILogger logger)
+	public void LogTo(ILogger logger, SendOptions sendOptions)
 	{
 		if (abortedDueToTooManyConnections)
 		{
@@ -74,7 +75,7 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLim
 
 		foreach (var failedMessage in this.failedSendMessages)
 		{
-			logger.LogWarning(failedMessage.Value.Item2, "Failed to Send message for '{FilePath}'", failedMessage.Value.Item1.FilePath);
+			logger.LogWarning(failedMessage.Value.Item2, "Failed to send message for '{FilePath}'", failedMessage.Value.Item1.FilePath);
 		}
 
 		foreach (var failedParsedFile in this.DirectoryResult.FailedFiles)
@@ -82,12 +83,18 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLim
 			logger.LogWarning(failedParsedFile.Exception, "Failed to parse file '{FilePath}'", failedParsedFile.Path);
 		}
 
-		logger.LogInformation(
-			"Messages [{SuccessfulMessagesCount}/{MessageInSendDirectoryCount}] successful send. [Limit: {MessageLimitCount} Failed: {FailedMessagesCount}]",
+		/*logger.LogInformation(
+			"Messages {SuccessfulMessagesCount}/{MessageInSendDirectoryCount} send successful. {{ Failed = {FailedMessagesCount} , MessageLimit = {MessageLimitCount} }}",
 			SuccessfulMessageCount,
 			TotalCountOfMessagesInSendDirectory,
 			MessageLimitCount,
-			FailedMessageCount);
+			FailedMessageCount);*/
+
+		logger.LogInformation(
+			"Messages {SuccessfulMessagesCount}/{MessageInSendDirectoryCount} send successful. {}",
+			SuccessfulMessageCount,
+			TotalCountOfMessagesInSendDirectory,
+			sendOptions);
 	}
 
 	public List<FpOutboxMessage> GetUnsentMessagesForRetry()
