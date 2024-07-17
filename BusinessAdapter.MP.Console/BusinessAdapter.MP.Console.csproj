@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<PublishSingleFile>true</PublishSingleFile>
-		<SelfContained>false</SelfContained>
+		<SelfContained>true</SelfContained>
 		<AssemblyName>Schleupen.AS4.BusinessAdapter.MP.Console</AssemblyName>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<RootNamespace>Schleupen.AS4.BusinessAdapter.MP</RootNamespace>

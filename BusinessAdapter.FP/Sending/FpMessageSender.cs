@@ -30,7 +30,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 			var selectedFilesToSend = validFpFiles.Take(sendOptions.MessageLimitCount);
 			var messagesToSend = outboxMessageAssembler.ToFpOutboxMessages(selectedFilesToSend);
 
-			var sendStatus = new SendStatus(directoryResult.TotalFileCount, sendOptions.MessageLimitCount, directoryResult);
+			var sendStatus = new SendStatus(directoryResult.TotalFileCount, directoryResult);
 			try
 			{
 				await Policy.Handle<Exception>()

@@ -13,7 +13,6 @@ public partial class SendStatusTest
 	{
 		SendStatus status = fixture.CreateSendStatusObject();
 
-		Assert.That(status.MessageLimitCount, Is.EqualTo(50));
 		Assert.That(status.TotalCountOfMessagesInSendDirectory, Is.EqualTo(100));
 		Assert.That(status.SuccessfulMessageCount, Is.EqualTo(0));
 		Assert.That(status.FailedMessageCount, Is.EqualTo(0));
@@ -107,7 +106,7 @@ public partial class SendStatusTest
 			ImmutableList<FpFile>.Empty,
 			new List<FailedFile>() { failedFileInDirectory }.ToImmutableList());
 
-		SendStatus status = new SendStatus(100, 50, directoryResult);
+		SendStatus status = new SendStatus(100, directoryResult);
 
 		Assert.That(status.FailedMessageCount, Is.EqualTo(1));
 		Assert.That(status.GetUnsentMessagesForRetry(), Has.Count.EqualTo(0));

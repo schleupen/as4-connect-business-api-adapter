@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.Configuration;
 
-public record SendStatus(int TotalCountOfMessagesInSendDirectory, int MessageLimitCount, DirectoryResult DirectoryResult)
+public record SendStatus(int TotalCountOfMessagesInSendDirectory, DirectoryResult DirectoryResult)
 {
 	private readonly List<FpOutboxMessage> successfulSendMessages = new();
 	private readonly Dictionary<Guid, Tuple<FpOutboxMessage, Exception>> failedSendMessages = new();

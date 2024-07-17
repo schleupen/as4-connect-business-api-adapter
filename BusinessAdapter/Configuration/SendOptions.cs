@@ -8,5 +8,5 @@ public record SendOptions
 
 	public TimeSpan SleepDuration { get; init; } = TimeSpan.FromSeconds(60);
 
-	public int MessageLimitCount { get; init; } = 1000;
+	public int MessageLimitCount { get; init; } = Int32.MaxValue;
 }
