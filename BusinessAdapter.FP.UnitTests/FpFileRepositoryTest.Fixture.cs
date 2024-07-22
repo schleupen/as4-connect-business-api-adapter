@@ -34,7 +34,7 @@ public partial class FpFileRepositoryTest
 
 		public FpFileRepository CreateTestObject()
 		{
-			return new FpFileRepository(Mocks.FileParserMock.Object, Mocks.LoggerMock.Object);
+			return new FpFileRepository(Mocks.FileParserMock.Object, Mocks.FpFileNameExctractor.Object, Mocks.LoggerMock.Object);
 		}
 
 		public void VerifyLogMessageContainingText(LogLevel logLevel, string text, Times times)
@@ -52,6 +52,8 @@ public partial class FpFileRepositoryTest
 	private sealed class Mocks
 	{
 		public Mock<IFpFileParser> FileParserMock { get; } = new();
+		
+		public Mock<IFpFileNameExtractor> FpFileNameExctractor { get; } = new();
 
 		public Mock<ILogger<FpFileRepository>> LoggerMock { get; } = new();
 	}

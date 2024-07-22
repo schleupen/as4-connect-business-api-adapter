@@ -6,16 +6,16 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 // TODO Test
 public class FpFileNameExtractor : IFpFileNameExtractor
 {
-	public FpFileName ExtractFileName(InboxFpMessage mpMessage)
+	public FpFileName ExtractFileName(InboxFpMessage fpMessage)
 	{
 		return new FpFileName()
 		{
-			MessageType = ToMessageType(mpMessage.BDEWProperties.BDEWDocumentType),
+			MessageType = ToMessageType(fpMessage.BDEWProperties.BDEWDocumentType),
 			EicNameBilanzkreis = "", // TODO Mapping,
 			EicNameTso = "", // TODO Mapping
-			Timestamp = mpMessage.BDEWProperties.BDEWFulfillmentDate, // TODO is this correct?
-			Date = mpMessage.BDEWProperties.BDEWFulfillmentDate, // TODO is this correct?
-			Version = "", // TODO parse?
+			Timestamp = fpMessage.BDEWProperties.BDEWFulfillmentDate, // TODO get this from file
+			Date = fpMessage.BDEWProperties.BDEWFulfillmentDate, // TODO get this from file
+			Version = fpMessage.BDEWProperties.BDEWDocumentNo,
 			TypeHaendlerfahrplan = "" // TODO parse?
 		};
 	}

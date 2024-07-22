@@ -5,5 +5,5 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public interface IFpFileNameExtractor
 {
-    FpFileName ExtractFileName(InboxFpMessage mpMessage);
+    FpFileName ExtractFileName(InboxFpMessage fpMessage);
 }

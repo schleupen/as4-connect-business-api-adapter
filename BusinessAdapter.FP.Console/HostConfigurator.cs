@@ -38,6 +38,7 @@ public class HostConfigurator
 			.AddTransient<IBusinessApiClientFactory, BusinessApiClientFactory>()
 			.AddTransient<IHttpClientFactory, HttpClientFactory>()
 			.AddTransient<IPartyIdTypeAssembler, PartyIdTypeAssembler>()
+			.AddTransient<IFpFileNameExtractor, FpFileNameExtractor>()
 			// Config
 			.Configure<EICMapping>(builder.Configuration.GetSection(EICMapping.SectionName))
 			.AddConfiguration(builder.Configuration);

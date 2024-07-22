@@ -3,6 +3,7 @@
 namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 {
 	using System.IO;
+	using System.Text;
 	using System.IO.Compression;
 	using System.Net;
 	using System.Threading.Tasks;
@@ -10,18 +11,24 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 	using Schleupen.AS4.BusinessAdapter.FP.Sending;
+	using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 	public sealed class BusinessApiGateway(
 		Party client,
 		IHttpClientFactory httpClientFactory,
 		IBusinessApiClientFactory businessApiClientFactory,
 		IPartyIdTypeAssembler partyIdTypeAssembler,
-		ILogger<BusinessApiGateway> logger)
+	    string as4BusinessApiEndpoint,
+		ILogger<BusinessApiGateway> logger,
+		IJwtBuilder jwtBuilder)
 		: IBusinessApiGateway
 	{
 		private readonly HttpClient httpClient = httpClientFactory.CreateFor(client);
+		private static readonly Encoding DefaultEncoding = Encoding.GetEncoding("ISO-8859-1");
 
-		public async Task<BusinessApiResponse<FpOutboxMessage>> SendMessageAsync(FpOutboxMessage message, CancellationToken cancellationToken)
+		public async Task<BusinessApiResponse<FpOutboxMessage>> SendMessageAsync(
+			FpOutboxMessage message, 
+			CancellationToken cancellationToken)
 		{
 			logger.LogInformation("Sending {FileName} from {Sender} to {Receiver} [MessageId:'{}']",
 				message.FileName,
@@ -62,6 +69,113 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			}
 		}
 
+		public async Task<MessageReceiveInfo> QueryAvailableMessagesAsync(int limit = 50)
+		{
+			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
+			QueryInboxFPMessagesResponseDto clientResponse = await businessApiClient.V1FpMessagesInboxGetAsync(limit);
+
+			List<As4FpMessage> messages = new List<As4FpMessage>();
+			
+			foreach (InboundFPMessageDto? message in clientResponse.Messages)
+			{
+				try
+				{
+					if (message.PartyInfo == null)
+					{
+						throw new ArgumentException($"The message with the identification {message.MessageId} has no party info.");
+					}
+
+					messages.Add(new As4FpMessage(
+						message.Created_at,
+						message.BdewFulfillmentDate!, // TODO fehlt hier das document date?
+						message.MessageId.ToString(),
+						new PartyInfo(new SendingParty(message.PartyInfo.Sender.Id, message.PartyInfo.Sender.Type.ToString()), new ReceivingParty(message.PartyInfo.Receiver.Id, message.PartyInfo.Receiver.Type.ToString())),
+						message.BdewDocumentNo!,
+						message.BdewFulfillmentDate!,
+						message.BdewSubjectPartyId,
+						message.BdewSubjectPartyRole!));
+				}
+				catch (Exception e)
+				{
+					logger.LogError(new EventId(0), e, "Error while querying available messages");
+				}
+			}
+
+			return new MessageReceiveInfo(messages.ToArray());
+		}
+
+		public async Task<BusinessApiResponse<InboxFpMessage>> ReceiveMessageAsync(As4FpMessage mpMessage)
+		{
+			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
+			try
+			{
+				FileResponse clientResponse = await businessApiClient.V1FpMessagesInboxPayloadAsync(Guid.Parse(mpMessage.MessageId));
+
+				using (MemoryStream ms = new MemoryStream())
+				{
+					await clientResponse.Stream.CopyToAsync(ms);
+					byte[] zippedContent = ms.ToArray();
+					ms.Position = 0;
+
+					using (GZipStream gZipStream = new GZipStream(ms, CompressionMode.Decompress, true))
+					{
+						using (StreamReader decompressedReader = new StreamReader(gZipStream, DefaultEncoding))
+						{
+							string xmlString = await decompressedReader.ReadToEndAsync();
+
+							return new BusinessApiResponse<InboxFpMessage>(
+								true,
+								new InboxFpMessage(
+									mpMessage.MessageId,
+									mpMessage.PartyInfo.Sender!,
+									mpMessage.PartyInfo.Receiver!,
+									xmlString,
+									zippedContent,
+									new FpBDEWProperties("TODODocType",
+										mpMessage.BdewDocumentNo,
+										mpMessage.BdewFulfillmentDate,
+										mpMessage.BdewSubjectPartyId,
+										mpMessage.BdewSubjectPartyRole)));
+						}
+					}
+				}
+			}
+			catch (ApiException ex)
+			{
+				return new BusinessApiResponse<InboxFpMessage>(false,
+					new InboxFpMessage(mpMessage.MessageId,
+						mpMessage.PartyInfo.Sender!,
+						mpMessage.PartyInfo.Receiver!,
+						null,
+						null,
+						null)
+					,
+					(HttpStatusCode)ex.StatusCode,
+					ex);
+			}
+		}
+		
+		public async Task<BusinessApiResponse<bool>> AcknowledgeReceivedMessageAsync(InboxFpMessage mpMessage)
+		{
+			string tokenString = jwtBuilder.CreateSignedToken(mpMessage);
+			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
+			try
+			{
+				if (mpMessage.MessageId == null)
+				{
+					throw new InvalidOperationException("The message does not have a MessageId.");
+				}
+
+				await businessApiClient.V1FpMessagesInboxAcknowledgementAsync(Guid.Parse(mpMessage.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
+
+				return new BusinessApiResponse<bool>(true, true);
+			}
+			catch (ApiException ex)
+			{
+				return new BusinessApiResponse<bool>(false, false, (HttpStatusCode)ex.StatusCode, ex);
+			}
+		}
+		
 		public void Dispose()
 		{
 			httpClient.Dispose();

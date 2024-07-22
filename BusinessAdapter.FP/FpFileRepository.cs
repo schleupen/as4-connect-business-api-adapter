@@ -3,8 +3,12 @@ namespace Schleupen.AS4.BusinessAdapter.FP;
 using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
-public class FpFileRepository(IFpFileParser parser, ILogger<FpFileRepository> logger) : IFpFileRepository
+public class FpFileRepository(
+	IFpFileParser parser,
+	IFpFileNameExtractor fileNameExtractor,
+	ILogger<FpFileRepository> logger) : IFpFileRepository
 {
 	public DirectoryResult GetFilesFrom(string path)
 	{
@@ -41,5 +45,18 @@ public class FpFileRepository(IFpFileParser parser, ILogger<FpFileRepository> lo
 	public void DeleteFile(string filePath)
 	{
 		File.Delete(filePath);
+	}
+
+	public string StoreXmlFileTo(InboxFpMessage fpMessage, string receiveDirectoryPath)
+	{
+		// TODO parse the xml to gather informations for the naming of the file
+		var fileName = fileNameExtractor.ExtractFileName(fpMessage);
+		string messagePath = Path.Combine(receiveDirectoryPath, fileName.ToFileName());
+		using (StreamWriter edifactStream = new StreamWriter(File.Open(messagePath, FileMode.Create))) // TODO encoding?
+		{
+			edifactStream.Write(fpMessage.Payload);
+		}
+
+		return messagePath;
 	}
 }
