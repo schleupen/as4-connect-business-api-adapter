@@ -66,7 +66,7 @@ public class CimFileParser : IFpFileSpecificParser
 		{
 			throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
 		}
-
+		
 		FpBDEWProperties bdewProperties = new FpBDEWProperties(fpFileName.MessageType.ToString(), documentNo, scheduleTimeInterval, senderIdentification, senderRole);
 		return new FpFile(
 			new EIC(senderIdentification),
@@ -75,6 +75,11 @@ public class CimFileParser : IFpFileSpecificParser
 			filename,
 			path,
 			bdewProperties);
+	}
+
+	public FpParsedPayload ParsePayload(XDocument document)
+	{
+		throw new NotImplementedException();
 	}
 
 	private string? ParseCIMDocumentNoForMessageType(

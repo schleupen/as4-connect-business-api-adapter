@@ -49,10 +49,9 @@ public class FpFileRepository(
 
 	public string StoreXmlFileTo(InboxFpMessage fpMessage, string receiveDirectoryPath)
 	{
-		// TODO parse the xml to gather informations for the naming of the file
 		var fileName = fileNameExtractor.ExtractFileName(fpMessage);
 		string messagePath = Path.Combine(receiveDirectoryPath, fileName.ToFileName());
-		using (StreamWriter edifactStream = new StreamWriter(File.Open(messagePath, FileMode.Create))) // TODO encoding?
+		using (StreamWriter edifactStream = new StreamWriter(File.Open(messagePath, FileMode.Create)))
 		{
 			edifactStream.Write(fpMessage.Payload);
 		}

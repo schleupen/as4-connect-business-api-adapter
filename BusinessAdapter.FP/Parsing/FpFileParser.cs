@@ -16,6 +16,14 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
          return parser.Parse(doc, fileName, path);
     }
 
+    public FpParsedPayload ParsePayload(byte[] payload)
+    {
+	    string responseText = System.Text.Encoding.ASCII.GetString(payload);
+	    XDocument doc = XDocument.Parse(responseText); 
+	    var parser = this.CreateParserFor(doc);
+	    return parser.ParsePayload(doc);
+    }
+
     private IFpFileSpecificParser CreateParserFor(XDocument doc)
     {
 	    if (IsEssDocument(doc))
@@ -30,7 +38,6 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
     {
 	    XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-	    // TODO maybe find a better way to determine the format
 	    if (ns!.NamespaceName.Contains(ESS_NAMESPACE_STRING))
 	    {
 		    return true;

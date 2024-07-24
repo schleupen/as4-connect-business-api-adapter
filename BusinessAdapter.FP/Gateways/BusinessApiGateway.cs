@@ -87,9 +87,14 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 
 					messages.Add(new As4FpMessage(
 						message.Created_at,
-						message.BdewFulfillmentDate!, // TODO fehlt hier das document date?
 						message.MessageId.ToString(),
-						new PartyInfo(new SendingParty(message.PartyInfo.Sender.Id, message.PartyInfo.Sender.Type.ToString()), new ReceivingParty(message.PartyInfo.Receiver.Id, message.PartyInfo.Receiver.Type.ToString())),
+						new PartyInfo(
+							new SendingParty(
+								message.PartyInfo.Sender.Id,
+								message.PartyInfo.Sender.Type.ToString()),
+							new ReceivingParty(
+								message.PartyInfo.Receiver.Id, 
+								message.PartyInfo.Receiver.Type.ToString())),
 						message.BdewDocumentNo!,
 						message.BdewFulfillmentDate!,
 						message.BdewSubjectPartyId,

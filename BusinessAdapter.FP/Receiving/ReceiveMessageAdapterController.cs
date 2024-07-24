@@ -54,7 +54,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 					{
 						IBusinessApiGateway gateway =
 							businessApiGatewayFactory.CreateGateway(
-								new Party(receiverIdentificationNumber, "TODO TYPE")); // TODO
+								new Party(receiverIdentificationNumber, "TODO TYPE")); // TODO mapping
 						int messageLimit = receiveOptions.MessageLimitCount;
 						MessageReceiveInfo receiveInfo = await gateway.QueryAvailableMessagesAsync(messageLimit);
 						as4BusinessApiClients.Add(receiveInfo, gateway);

@@ -7,7 +7,6 @@ public sealed class As4FpMessage
 {
     public As4FpMessage(
         DateTimeOffset createdAt, 
-        string bdewDocumentDate, 
         string messageId, 
         PartyInfo partyInfo, 
         string bdewDocumentNo,
@@ -16,7 +15,6 @@ public sealed class As4FpMessage
         string bdewSubjectPartyRole)
     {
         CreatedAt = createdAt;
-        BdewDocumentDate = bdewDocumentDate;
         MessageId = messageId;
         PartyInfo = partyInfo;
         BdewDocumentNo = bdewDocumentNo;
@@ -34,11 +32,6 @@ public sealed class As4FpMessage
     /// The timestamp of creation in AS4 Connect.
     /// </summary>
     public DateTimeOffset CreatedAt { get; }
-
-    /// <summary>
-    /// The document date of the XML message.
-    /// </summary>
-    public string BdewDocumentDate { get; }
     
     /// <summary>
     /// The document no of the xml message (in the context of FP the version of the message)
