@@ -32,6 +32,7 @@ pipeline
                 {             
                     docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
                     {
+                        sh 'dotnet --list-runtimes --list-sdks'
                         sh 'dotnet restore ./BusinessAdapter.sln'
                         sh 'dotnet build -c Release --no-restore ./BusinessAdapter.sln'
                     }
