@@ -1,8 +1,10 @@
 namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
 using System.Xml.Linq;
+using Microsoft.Extensions.Options;
+using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
-public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
+public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IOptions<EICMapping> eicMapping) : IFpFileParser
 {
 	private readonly string ESS_NAMESPACE_STRING = "urn:entsoe.eu:wgedi:ess";
 
@@ -28,10 +30,10 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
     {
 	    if (IsEssDocument(doc))
 	    {
-		    return new EssFileParser();
+		    return new EssFileParser(eicMapping);
 	    }
 
-	    return new CimFileParser();
+	    return new CimFileParser(eicMapping);
     }
 
     private bool IsEssDocument(XDocument document)

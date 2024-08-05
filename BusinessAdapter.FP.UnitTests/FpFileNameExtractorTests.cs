@@ -4,17 +4,20 @@ using NUnit.Framework;
 using Moq;
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
+using Schleupen.AS4.BusinessAdapter.FP.Configuration;
+using Microsoft.Extensions.Options;
 
 public class FpFileNameExtractorTests
 {
     private Mock<IFpFileParser> _mockParser;
     private FpFileNameExtractor _extractor;
+    private IOptions<EICMapping> eicMapping;
 
     [SetUp]
     public void Setup()
     {
         _mockParser = new Mock<Schleupen.AS4.BusinessAdapter.FP.Parsing.IFpFileParser>();
-        _extractor = new FpFileNameExtractor(_mockParser.Object);
+        _extractor = new FpFileNameExtractor(_mockParser.Object, eicMapping);
     }
 
     [Test]

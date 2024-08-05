@@ -2,6 +2,8 @@
 
 using NUnit.Framework;
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
+using Schleupen.AS4.BusinessAdapter.FP.Configuration;
+using Microsoft.Extensions.Options;
 
 [TestFixture]
 internal sealed partial class FpFileParserTests
@@ -9,12 +11,14 @@ internal sealed partial class FpFileParserTests
     private readonly Fixture fixture = new();
     private FpFileParser sut = default!;
     private IFileSystemWrapper fileSystemWrapperMock = default!;
+    private IOptions<EICMapping> eicMapping = default!;
 
     [SetUp]
     public void Setup()
     {
         fileSystemWrapperMock = new FileSystemWrapper();
-        sut = new FpFileParser(fileSystemWrapperMock);
+        
+        sut = new FpFileParser(fileSystemWrapperMock, eicMapping);
     }
 
     [Test]

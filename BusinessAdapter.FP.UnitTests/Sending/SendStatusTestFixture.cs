@@ -43,8 +43,8 @@ public partial class SendStatusTest
 
 	private sealed class TestData
 	{
-		public static SendingParty Sender = new SendingParty(PartyId1, PartyType);
-		public static ReceivingParty Receiver = new ReceivingParty(PartyId2, PartyType);
+		public static SendingFpParty Sender = new SendingFpParty(PartyId1, PartyType, "FpType", "Bilanzkrieis");
+		public static ReceivingFpParty Receiver = new ReceivingFpParty(PartyId2, PartyType, "FpType", "Bilanzkrieis");
 		public const string PartyType = "type";
 		public const string PartyId1 = "party_id_1";
 		public const string PartyId2 = "party_id_2";

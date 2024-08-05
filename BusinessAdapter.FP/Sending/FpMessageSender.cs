@@ -70,7 +70,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 
 			var messagesBySender = messagesToSend.GroupBy(m => m.Sender);
 
-			foreach (IGrouping<SendingParty, FpOutboxMessage> messagesFromSender in messagesBySender)
+			foreach (IGrouping<SendingFpParty, FpOutboxMessage> messagesFromSender in messagesBySender)
 			{
 				try
 				{

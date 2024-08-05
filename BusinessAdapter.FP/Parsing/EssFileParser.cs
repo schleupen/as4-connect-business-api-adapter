@@ -3,9 +3,18 @@
 using System.Text;
 using System.Xml.Linq;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
+using Microsoft.Extensions.Options;
+using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 public class EssFileParser : IFpFileSpecificParser
 {
+	private IOptions<EICMapping> eicMapping;
+
+	public EssFileParser(IOptions<EICMapping> eicMapping)
+	{
+		this.eicMapping = eicMapping;
+	}
+
 	public FpFile Parse(XDocument document, string filename, string path)
 	{
 		string xmlData = File.ReadAllText(path);
@@ -64,9 +73,10 @@ public class EssFileParser : IFpFileSpecificParser
 		FpBDEWProperties properties =
 			new FpBDEWProperties(fpFileName.MessageType.ToString(), documentNo, scheduleTimeInterval, senderIdentification, senderRole);
 
+		
 		return new FpFile(
-			new EIC(senderIdentification),
-			new EIC(receiverIdentification),
+			eicMapping.Value.GetEIC(senderIdentification),
+			eicMapping.Value.GetEIC(receiverIdentification),
 			content,
 			filename,
 			path,
@@ -116,8 +126,8 @@ public class EssFileParser : IFpFileSpecificParser
 		}
 
 		return new FpParsedPayload(
-			new EIC(senderIdentification),
-			new EIC(receiverIdentification),
+			eicMapping.Value.GetEIC(senderIdentification),
+			eicMapping.Value.GetEIC(receiverIdentification),
 			messageDateTime,
 			scheduleTimeInterval);
 	}

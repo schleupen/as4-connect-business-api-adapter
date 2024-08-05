@@ -21,7 +21,7 @@ public partial class EICMappingTest
 	{
 		var mapping = fixture.CreateSimpleEicMapping();
 
-		var result = mapping.GetEICOrDefault(new Party("na", "na"));
+		var result = mapping.GetEICOrDefault(new FpParty("na", "na", "na", "na"));
 
 		Assert.That(result, Is.Null);
 	}
@@ -31,7 +31,7 @@ public partial class EICMappingTest
 	{
 		var mapping = fixture.CreateSimpleEicMapping();
 
-		Assert.Throws<InvalidOperationException>(() => mapping.GetEIC(new Party("na", "na")));
+		Assert.Throws<InvalidOperationException>(() => mapping.GetEIC(new FpParty("na", "na", "na", "na")));
 	}
 
 	[Test]
@@ -68,7 +68,7 @@ public partial class EICMappingTest
 		var eicMapping = this.fixture.LoadFromAppSettings();
 
 		Assert.That(eicMapping, Is.Not.Null.Or.Empty);
-		Assert.That(eicMapping.GetPartyOrDefault(new EIC("10Y1001A1001A82H")), Is.EqualTo(new Party("1000000001", "BDEW")));
+		Assert.That(eicMapping.GetPartyOrDefault(new EIC("10Y1001A1001A82H")), Is.EqualTo(new FpParty("1000000001", "BDEW", "TPS", "bilanzkreis")));
 	}
 
 	[Test]

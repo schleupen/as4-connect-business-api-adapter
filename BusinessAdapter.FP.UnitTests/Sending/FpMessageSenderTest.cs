@@ -128,6 +128,6 @@ public partial class FpMessageSenderTest
 		await sender.SendAvailableMessagesAsync(cancellationToken);
 
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(23));
-		fixture.Mocks.BusinessApiGatewayFactory.Verify(f => f.CreateGateway(It.IsAny<Party>()), Times.Exactly(1));
+		fixture.Mocks.BusinessApiGatewayFactory.Verify(f => f.CreateGateway(It.IsAny<FpParty>()), Times.Exactly(1));
 	}
 }

@@ -14,7 +14,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 	public sealed class BusinessApiGateway(
-		Party client,
+		FpParty client,
 		IHttpClientFactory httpClientFactory,
 		IBusinessApiClientFactory businessApiClientFactory,
 		IPartyIdTypeAssembler partyIdTypeAssembler,
@@ -98,7 +98,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 						message.BdewDocumentNo!,
 						message.BdewFulfillmentDate!,
 						message.BdewSubjectPartyId,
-						message.BdewSubjectPartyRole!));
+						message.BdewSubjectPartyRole!,
+						message.BdewDocumentType!));
 				}
 				catch (Exception e)
 				{

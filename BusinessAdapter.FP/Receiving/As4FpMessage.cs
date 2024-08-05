@@ -12,7 +12,8 @@ public sealed class As4FpMessage
         string bdewDocumentNo,
         string bdewFulfillmentDate, 
         string bdewSubjectPartyId,
-        string bdewSubjectPartyRole)
+        string bdewSubjectPartyRole,
+        string bdewDocumentType)
     {
         CreatedAt = createdAt;
         MessageId = messageId;
@@ -21,6 +22,7 @@ public sealed class As4FpMessage
         BdewFulfillmentDate = bdewFulfillmentDate;
         BdewSubjectPartyId = bdewSubjectPartyId;
         BdewSubjectPartyRole = bdewSubjectPartyRole;
+        BDEWDocumentType = bdewDocumentType;
     }
     
     /// <summary>
@@ -52,6 +54,11 @@ public sealed class As4FpMessage
     /// Ein Code für die Senderrole, z. B. A08 (bei Schedule Messages) oder A04 (ACK, CNF oder ANO).
     /// </summary>
     public string BdewSubjectPartyRole { get; }
+    
+    /// <summary>
+    /// A01 für Fahrplananmeldungen. A17 für ACK. A16 für ANO. A07, A08 oder A09 für CNF.
+    /// </summary>
+    public string BDEWDocumentType { get; set; } = default!;
     
     /// <summary>
     /// Contains information about the sending and receiving party of the message.

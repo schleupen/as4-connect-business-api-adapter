@@ -11,13 +11,15 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.FP.Gateways;
+	using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 	public sealed class ReceiveMessageAdapterController(
 		ILogger<ReceiveMessageAdapterController> logger,
 		IOptions<ReceiveOptions> receiveOptions,
 		IOptions<AdapterOptions> adapterOptions,
 		IBusinessApiGatewayFactory businessApiGatewayFactory,
-		IFpFileRepository fpFileRepo) : IReceiveMessageAdapterController
+		IFpFileRepository fpFileRepo,
+		IOptions<EICMapping> eicMapping) : IReceiveMessageAdapterController
 	{
 		private readonly ReceiveOptions receiveOptions = receiveOptions.Value;
 
@@ -50,28 +52,9 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 			{
 				foreach (string receiverIdentificationNumber in ownMarketpartners)
 				{
-					try
-					{
-						IBusinessApiGateway gateway =
-							businessApiGatewayFactory.CreateGateway(
-								new Party(receiverIdentificationNumber, "TODO TYPE")); // TODO mapping
-						int messageLimit = receiveOptions.MessageLimitCount;
-						MessageReceiveInfo receiveInfo = await gateway.QueryAvailableMessagesAsync(messageLimit);
-						as4BusinessApiClients.Add(receiveInfo, gateway);
-					}
-					catch (MissingCertificateException certificateException)
-					{
-						marketPartnerWithoutCertificate.Add(certificateException.MarketpartnerIdentificationNumber);
-					}
-					catch (ApiException e)
-					{
-						logger.LogError("API Exception rethrown: '{Response}'", e.Response);
-						throw;
-					}
-					catch (Exception e)
-					{
-						exceptions.Add(e);
-					}
+					exceptions = await QueryMessagesAsync(receiverIdentificationNumber,
+						as4BusinessApiClients, 
+						marketPartnerWithoutCertificate);
 				}
 				long allAvailableMessageCount = as4BusinessApiClients.Sum(x => x.Key.GetAvailableMessages().Length);
 
@@ -111,7 +94,45 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 				logger.LogInformation("Receiving available messages finished: {StatusMessage}", statusMessage);
 			}
 		}
-		
+
+		private async Task<List<Exception>> QueryMessagesAsync(string receiverIdentificationNumber, 
+			Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients,
+			List<string> marketPartnerWithoutCertificate)
+		{
+			List<Exception> exceptions = new List<Exception>();
+			try
+			{
+				var partyReceiver = eicMapping.Value.GetParty(receiverIdentificationNumber);
+				if (partyReceiver == null)
+				{
+					logger.LogError("Receiving party {partyReceiver} mapping not configured", partyReceiver);
+					throw new InvalidOperationException($"Receiving party {partyReceiver} mapping not configured");
+
+				}
+				IBusinessApiGateway gateway =
+					businessApiGatewayFactory.CreateGateway(
+						partyReceiver);
+				int messageLimit = receiveOptions.MessageLimitCount;
+				MessageReceiveInfo receiveInfo = await gateway.QueryAvailableMessagesAsync(messageLimit);
+				as4BusinessApiClients.Add(receiveInfo, gateway);
+			}
+			catch (MissingCertificateException certificateException)
+			{
+				marketPartnerWithoutCertificate.Add(certificateException.MarketpartnerIdentificationNumber);
+			}
+			catch (ApiException e)
+			{
+				logger.LogError("API Exception rethrown: '{Response}'", e.Response);
+				throw;
+			}
+			catch (Exception e)
+			{
+				exceptions.Add(e);
+			}
+
+			return exceptions;
+		}
+
 		private string CreateSuccessStatusMessage(int successfulMessageCount, int totalMessageCount, int failedMessageCount, IReadOnlyCollection<string> marketPartnerWithoutCertificate, bool hasTooManyRequestsError)
 		{
 			string statusMessage = $"{successfulMessageCount}/{totalMessageCount} messages were received successfully.";

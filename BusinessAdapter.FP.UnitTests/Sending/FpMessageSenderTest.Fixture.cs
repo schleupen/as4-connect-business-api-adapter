@@ -91,7 +91,7 @@ public partial class FpMessageSenderTest
 				.Returns<FpOutboxMessage, CancellationToken>((x, y) => Task.FromResult(new BusinessApiResponse<FpOutboxMessage>(true, x)));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
+				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -113,7 +113,7 @@ public partial class FpMessageSenderTest
 				.Returns<FpOutboxMessage, CancellationToken>((x, y) => Task.FromResult(new BusinessApiResponse<FpOutboxMessage>(true, x)));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
+				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -135,7 +135,7 @@ public partial class FpMessageSenderTest
 				.Returns<FpOutboxMessage, CancellationToken>((x, y) => Task.FromResult(new BusinessApiResponse<FpOutboxMessage>(true, x)));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
+				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -161,7 +161,7 @@ public partial class FpMessageSenderTest
 						new InvalidOperationException("..."))));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
+				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -184,7 +184,7 @@ public partial class FpMessageSenderTest
 				.Returns<FpOutboxMessage, CancellationToken>((x, y) => Task.FromResult(new BusinessApiResponse<FpOutboxMessage>(false, x)));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
+				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -225,8 +225,8 @@ public partial class FpMessageSenderTest
 				.Returns<IEnumerable<FpFile>>(x => new List<FpOutboxMessage>(
 					x.Select(x => new FpOutboxMessage(
 						Guid.NewGuid(),
-						new SendingParty(x.Sender.Code, "type"),
-						new ReceivingParty(x.Receiver.Code, "type"),
+						new SendingFpParty(x.Sender.Code, "type", "FpType", "Bilanzkrieis"),
+						new ReceivingFpParty(x.Receiver.Code, "type", "FpType", "Bilanzkrieis"),
 						x.Content,
 						x.FileName,
 						x.FilePath,

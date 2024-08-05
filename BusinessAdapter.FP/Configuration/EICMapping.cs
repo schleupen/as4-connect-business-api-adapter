@@ -1,45 +1,61 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
-public sealed class EICMapping : Dictionary<string, Party>
+public sealed class EICMapping : Dictionary<string, FpParty>
 {
-	public const string SectionName = nameof(EICMapping);
+    public const string SectionName = nameof(EICMapping);
 
-	public EIC? GetEICOrDefault(Party party)
-	{
-		var partyToEic = this.ToDictionary(x => x.Value, y => y.Key);
-		var eicOrNull = partyToEic.GetValueOrDefault(party);
-		return eicOrNull is null ? null : new EIC(eicOrNull);
-	}
+    public EIC? GetEICOrDefault(FpParty party)
+    {
+        var partyToEic = this.ToDictionary(x => x.Value, y => y.Key);
+        var eicOrNull = partyToEic.GetValueOrDefault(party);
+        return eicOrNull is null ? null : new EIC(eicOrNull);
+    }
 
-	public Party? GetPartyOrDefault(EIC eic)
-	{
-		return this.GetValueOrDefault(eic.Code);
-	}
+    public EIC? GetEIC(string eicCode)
+    {
+        var eicCodeToEic = this.ToDictionary(x => x.Key);
+        var eicOrNull = eicCodeToEic.Where(x => x.Key == eicCode).FirstOrDefault();
+        return new EIC(eicOrNull.Key);
+    }
 
-	public EIC GetEIC(Party party)
-	{
-		return GetEICOrDefault(party) ?? throw new InvalidOperationException($"party '{party.AsKey()}' is not configured.");;
-	}
+    public FpParty? GetParty(string identifcationNumber)
+    {
+        return this.Where(i => i.Value.Id == identifcationNumber).FirstOrDefault().Value;
+    }
 
-	public SendingParty GetSendingParty(EIC eic)
-	{
-		var party = GetPartyOrDefault(eic) ?? throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
-		return ToSendingParty(party);
-	}
+    public FpParty? GetPartyOrDefault(EIC eic)
+    {
+        return this.GetValueOrDefault(eic.Code);
+    }
 
-	public ReceivingParty GetReceivingParty(EIC eic)
-	{
-		var party = GetPartyOrDefault(eic) ?? throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
-		return ToReceivingParty(party);
-	}
+    public EIC GetEIC(FpParty party)
+    {
+        return GetEICOrDefault(party) ??
+               throw new InvalidOperationException($"party '{party.AsKey()}' is not configured.");
+    }
 
-	private SendingParty ToSendingParty(Party sendingParty)
-	{
-		return new SendingParty(sendingParty.Id, sendingParty.Type);
-	}
+    public SendingFpParty GetSendingParty(EIC eic)
+    {
+        var party = GetPartyOrDefault(eic) ??
+                    throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
+        return ToSendingParty(party);
+    }
 
-	private ReceivingParty ToReceivingParty(Party receivingParty)
-	{
-		return new ReceivingParty(receivingParty.Id, receivingParty.Type);
-	}
+    public ReceivingFpParty GetReceivingParty(EIC eic)
+    {
+        var party = GetPartyOrDefault(eic) ??
+                    throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
+        return ToReceivingParty(party);
+    }
+
+    private SendingFpParty ToSendingParty(FpParty sendingParty)
+    {
+        return new SendingFpParty(sendingParty.Id, sendingParty.Type, sendingParty.FpType, sendingParty.Bilanzkreis);
+    }
+
+    private ReceivingFpParty ToReceivingParty(FpParty receivingParty)
+    {
+        return new ReceivingFpParty(receivingParty.Id, receivingParty.Type, receivingParty.FpType,
+            receivingParty.Bilanzkreis);
+    }
 }

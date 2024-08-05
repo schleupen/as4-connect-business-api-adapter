@@ -53,7 +53,7 @@ public partial class EICMappingTest
 	{
 		public readonly EIC Eic1 = new EIC("eic1");
 		public readonly EIC Eic2 = new EIC("eic2");
-		public readonly Party Party1 = new Party("id1", "type");
-		public readonly Party Party2 = new Party("id2", "type");
+		public readonly FpParty Party1 = new FpParty("id1", "type", "fpTyp", "Bilanzkreis");
+		public readonly FpParty Party2 = new FpParty("id2", "type", "fpTyp", "Bilanzkreis");
 	}
 }

@@ -18,7 +18,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 		: IBusinessApiGatewayFactory
 	{
 		private readonly string as4BusinessApiEndpoint = options.Value.As4ConnectEndpoint;
-		public IBusinessApiGateway CreateGateway(Party party)
+		public IBusinessApiGateway CreateGateway(FpParty party)
 		{
 			return new BusinessApiGateway(party, httpClientFactory, businessApiClientFactory, partyIdTypeAssembler, as4BusinessApiEndpoint, logger, jwtBuilder);
 		}

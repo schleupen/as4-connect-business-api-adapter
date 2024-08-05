@@ -47,8 +47,8 @@ public partial class FpOutboxMessageAssemblerTest
 
 	private sealed class TestData
 	{
-		public static SendingParty Sender = new SendingParty(PartyId1, PartyType);
-		public static ReceivingParty Receiver = new ReceivingParty(PartyId2, PartyType);
+		public static SendingFpParty Sender = new SendingFpParty(PartyId1, PartyType, "FpType", "Bilanzkreis");
+		public static ReceivingFpParty Receiver = new ReceivingFpParty(PartyId2, PartyType, "FpType", "Bilanzkreis");
 		public static readonly FpBDEWProperties BDEWProperties = new FpBDEWProperties("1", "2", "3", "4", "5");
 
 		public EICMapping Mapping = new EICMapping()
