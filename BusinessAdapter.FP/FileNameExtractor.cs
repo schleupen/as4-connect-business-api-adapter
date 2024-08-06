@@ -14,15 +14,15 @@ public class FpFileNameExtractor : IFpFileNameExtractor
 		IOptions<EICMapping> eicMapping)
 	{
 		this.fpFileParser = fpFileParser;
-		this.eicMapping = this.eicMapping;
+		this.eicMapping = eicMapping;
 	}
 	
 	public FpFileName ExtractFileName(InboxFpMessage fpMessage)
 	{
 		var parsedFile = fpFileParser.ParsePayload(fpMessage.Payload);
 
-		var mappedMessage = eicMapping.Value.GetEIC(parsedFile.Receiver.Code);
-		var mappedParty = eicMapping.Value.GetParty(mappedMessage.Code);
+		var mappedParty = eicMapping.Value.GetPartyOrDefault(parsedFile.Receiver);
+		// Error handling?
 		
 		return new FpFileName()
 		{

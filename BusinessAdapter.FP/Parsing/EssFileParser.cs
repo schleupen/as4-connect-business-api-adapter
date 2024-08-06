@@ -8,13 +8,6 @@ using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 public class EssFileParser : IFpFileSpecificParser
 {
-	private IOptions<EICMapping> eicMapping;
-
-	public EssFileParser(IOptions<EICMapping> eicMapping)
-	{
-		this.eicMapping = eicMapping;
-	}
-
 	public FpFile Parse(XDocument document, string filename, string path)
 	{
 		string xmlData = File.ReadAllText(path);
@@ -75,8 +68,8 @@ public class EssFileParser : IFpFileSpecificParser
 
 		
 		return new FpFile(
-			eicMapping.Value.GetEIC(senderIdentification),
-			eicMapping.Value.GetEIC(receiverIdentification),
+			new EIC(senderIdentification),
+			 new EIC(receiverIdentification),
 			content,
 			filename,
 			path,
@@ -126,8 +119,8 @@ public class EssFileParser : IFpFileSpecificParser
 		}
 
 		return new FpParsedPayload(
-			eicMapping.Value.GetEIC(senderIdentification),
-			eicMapping.Value.GetEIC(receiverIdentification),
+			new EIC(senderIdentification),
+			new EIC(receiverIdentification),
 			messageDateTime,
 			scheduleTimeInterval);
 	}

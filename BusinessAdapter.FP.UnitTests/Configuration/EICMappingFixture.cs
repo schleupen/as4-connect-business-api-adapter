@@ -29,8 +29,8 @@ public partial class EICMappingTest
 		{
 			EICMapping mapping = new EICMapping()
 			{
-				{ Data.Eic1.Code, Data.Party1 },
-				{ Data.Eic2.Code, Data.Party2 }
+				{ Data.Eic1.Code, Data.MappingParty1 },
+				{ Data.Eic2.Code, Data.MappingParty2 }
 			};
 			return mapping;
 		}
@@ -55,5 +55,27 @@ public partial class EICMappingTest
 		public readonly EIC Eic2 = new EIC("eic2");
 		public readonly FpParty Party1 = new FpParty("id1", "type", "fpTyp", "Bilanzkreis");
 		public readonly FpParty Party2 = new FpParty("id2", "type", "fpTyp", "Bilanzkreis");
+
+		public readonly List<EICMappingEntry> MappingParty1 = new List<EICMappingEntry>()
+		{
+			new EICMappingEntry()
+			{
+				Bilanzkreis = "Bilanzkreis",
+				EIC = "eic1",
+				FpType = "fpTyp",
+				MpType = "type"
+			}
+		};
+		
+		public readonly List<EICMappingEntry> MappingParty2 = new List<EICMappingEntry>()
+		{
+			new EICMappingEntry()
+			{
+				Bilanzkreis = "Bilanzkreis",
+				EIC = "eic2",
+				FpType = "fpTyp",
+				MpType = "type"
+			}
+		};
 	}
 }

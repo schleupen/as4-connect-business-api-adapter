@@ -9,15 +9,16 @@ using Microsoft.Extensions.Options;
 
 public class FpFileNameExtractorTests
 {
-    private Mock<IFpFileParser> _mockParser;
-    private FpFileNameExtractor _extractor;
+    private Mock<IFpFileParser> mockParser;
+    private FpFileNameExtractor extractor;
     private IOptions<EICMapping> eicMapping;
 
     [SetUp]
     public void Setup()
     {
-        _mockParser = new Mock<Schleupen.AS4.BusinessAdapter.FP.Parsing.IFpFileParser>();
-        _extractor = new FpFileNameExtractor(_mockParser.Object, eicMapping);
+        mockParser = new Mock<Schleupen.AS4.BusinessAdapter.FP.Parsing.IFpFileParser>();
+        eicMapping = Options.Create<EICMapping>(new EICMapping());
+        extractor = new FpFileNameExtractor(mockParser.Object, eicMapping);
     }
 
     [Test]
@@ -25,12 +26,13 @@ public class FpFileNameExtractorTests
     {
         // Arrange
         var payload = "sample payload";
-        var receiver = "ReceiverName";
+        var receiver = "ReceiverNameMpId";
+        var receiverEicCode = "eic1";
         var validityDate = "26-01-1993";
         var creationDate = "25-01-1993";
         var parsedFile = new FpParsedPayload(
             new EIC(""),
-            new EIC(receiver),
+            new EIC(receiverEicCode),
             creationDate,
             validityDate);
         var fpMessage = new InboxFpMessage(
@@ -47,19 +49,31 @@ public class FpFileNameExtractorTests
                 "subjectPartyRole"));
 
 
-        _mockParser.Setup(p => p.ParsePayload(System.Text.Encoding.ASCII.GetBytes(payload))).Returns(parsedFile);
-
+        List<EICMappingEntry>  mappedPartyMock = new List<EICMappingEntry>()
+        {
+            new EICMappingEntry()
+            {
+                Bilanzkreis = "FINGRID",
+                EIC = receiverEicCode,
+                FpType = "PPS",
+                MpType = "BDEW"
+            }
+        };
+        
+        mockParser.Setup(p => p.ParsePayload(System.Text.Encoding.ASCII.GetBytes(payload))).Returns(parsedFile);
+        eicMapping.Value.Add(fpMessage.Receiver.Id, mappedPartyMock);
+      
         // Act
-        var result = _extractor.ExtractFileName(fpMessage);
+        var result = extractor.ExtractFileName(fpMessage);
 
         // Assert
         Assert.That(result.MessageType, Is.EqualTo(FpMessageType.Schedule));
-        Assert.That(result.EicNameBilanzkreis, Is.Empty);
-        Assert.That(result.EicNameTso, Is.EqualTo(receiver));
+        Assert.That(result.EicNameBilanzkreis, Is.EqualTo(mappedPartyMock.First().Bilanzkreis));
+        Assert.That(result.EicNameTso, Is.EqualTo(receiverEicCode));
         Assert.That(result.Timestamp, Is.EqualTo(validityDate));
         Assert.That(result.Date, Is.EqualTo(creationDate));
         Assert.That(result.Version, Is.EqualTo("123"));
-        Assert.That(result.TypeHaendlerfahrplan, Is.Empty);
+        Assert.That(result.TypeHaendlerfahrplan, Is.EqualTo(mappedPartyMock.First().FpType));
     }
 
     [TestCase("A07", FpMessageType.Confirmation)]
@@ -75,7 +89,7 @@ public class FpFileNameExtractorTests
         var result = (FpMessageType)typeof(FpFileNameExtractor)
             .GetMethod("ToMessageType",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .Invoke(_extractor, new object[] { documentType });
+            .Invoke(extractor, new object[] { documentType });
 
         // Assert
         Assert.That(result, Is.EqualTo(expectedMessageType));

@@ -53,8 +53,8 @@ public partial class FpOutboxMessageAssemblerTest
 
 		public EICMapping Mapping = new EICMapping()
 		{
-			{ EICCodeSender, Sender },
-			{ EICCodeReceiver, Receiver }
+			{ PartyId1, MappingParty1  },
+			{ PartyId2 , MappingParty2 }
 		};
 
 		public const string EICCodeSender = "eic_1";
@@ -62,5 +62,27 @@ public partial class FpOutboxMessageAssemblerTest
 		public const string PartyId1 = "party_id_1";
 		public const string PartyId2 = "party_id_2";
 		public const string EICCodeReceiver = "eic_2";
+		
+		public static List<EICMappingEntry> MappingParty1 = new List<EICMappingEntry>()
+		{
+			new EICMappingEntry()
+			{
+				Bilanzkreis = Sender.Bilanzkreis,
+				EIC = EICCodeSender,
+				FpType = Sender.FpType,
+				MpType = Sender.Type
+			}
+		};
+		
+		public static List<EICMappingEntry> MappingParty2 = new List<EICMappingEntry>()
+		{
+			new EICMappingEntry()
+			{
+				Bilanzkreis = Receiver.Bilanzkreis,
+				EIC = EICCodeReceiver,
+				FpType = Receiver.FpType,
+				MpType = Receiver.Type
+			}
+		};
 	}
 }

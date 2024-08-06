@@ -1,4 +1,6 @@
-﻿namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Parsing;
+﻿using Microsoft.Extensions.Configuration;
+
+namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Parsing;
 
 using NUnit.Framework;
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
@@ -11,14 +13,13 @@ internal sealed partial class FpFileParserTests
     private readonly Fixture fixture = new();
     private FpFileParser sut = default!;
     private IFileSystemWrapper fileSystemWrapperMock = default!;
-    private IOptions<EICMapping> eicMapping = default!;
 
     [SetUp]
     public void Setup()
     {
         fileSystemWrapperMock = new FileSystemWrapper();
         
-        sut = new FpFileParser(fileSystemWrapperMock, eicMapping);
+        sut = new FpFileParser(fileSystemWrapperMock);
     }
 
     [Test]
@@ -139,6 +140,7 @@ internal sealed partial class FpFileParserTests
 
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
     }
-
+    
+    
     // TODO Unhappy paths are untested (missing values)...
 }

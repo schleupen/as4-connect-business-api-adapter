@@ -1,37 +1,40 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
-public sealed class EICMapping : Dictionary<string, FpParty>
+public class EICMapping : Dictionary<string, List<EICMappingEntry>>
 {
     public const string SectionName = nameof(EICMapping);
-
-    public EIC? GetEICOrDefault(FpParty party)
+    
+    public EIC? GetEICForEic(string eicCode)
     {
-        var partyToEic = this.ToDictionary(x => x.Value, y => y.Key);
-        var eicOrNull = partyToEic.GetValueOrDefault(party);
-        return eicOrNull is null ? null : new EIC(eicOrNull);
+        var entry = this.SelectMany(kvp => kvp.Value)
+            .FirstOrDefault(entry => entry.EIC == eicCode);
+        return entry == null ? null : new EIC(entry.EIC);
     }
-
-    public EIC? GetEIC(string eicCode)
+    
+    public EIC? GetEICForMpId(string mpId)
     {
-        var eicCodeToEic = this.ToDictionary(x => x.Key);
-        var eicOrNull = eicCodeToEic.Where(x => x.Key == eicCode).FirstOrDefault();
-        return new EIC(eicOrNull.Key);
+        var entry = this.FirstOrDefault(x => x.Key == mpId).Value?.FirstOrDefault();
+        return entry == null ? null : new EIC(entry.EIC);
     }
 
     public FpParty? GetParty(string identifcationNumber)
     {
-        return this.Where(i => i.Value.Id == identifcationNumber).FirstOrDefault().Value;
+        var kvp = this.SelectMany(kvp => kvp.Value, 
+                (kvp, entry) => new { Key = kvp.Key, Entry = entry })
+            .Where(kvp => kvp.Key == identifcationNumber)
+            .Select(kvp => new KeyValuePair<string, EICMappingEntry>(kvp.Key, kvp.Entry))
+            .ToList(); 
+        
+        var entry = kvp.FirstOrDefault();
+        return ToFpParty(entry.Value, entry.Key);
     }
 
     public FpParty? GetPartyOrDefault(EIC eic)
     {
-        return this.GetValueOrDefault(eic.Code);
-    }
+        var entry = this.SelectMany(kvp => kvp.Value, (kvp, entry) => new { Key = kvp.Key, Entry = entry })
+            .FirstOrDefault(kvp => kvp.Entry.EIC == eic.Code);
 
-    public EIC GetEIC(FpParty party)
-    {
-        return GetEICOrDefault(party) ??
-               throw new InvalidOperationException($"party '{party.AsKey()}' is not configured.");
+        return entry == null ? null : ToFpParty(entry.Entry, entry.Key);
     }
 
     public SendingFpParty GetSendingParty(EIC eic)
@@ -57,5 +60,10 @@ public sealed class EICMapping : Dictionary<string, FpParty>
     {
         return new ReceivingFpParty(receivingParty.Id, receivingParty.Type, receivingParty.FpType,
             receivingParty.Bilanzkreis);
+    }
+
+    private FpParty ToFpParty(EICMappingEntry entry, string mpId)
+    {
+        return new FpParty(mpId, entry.MpType, entry.FpType, entry.Bilanzkreis);
     }
 }
