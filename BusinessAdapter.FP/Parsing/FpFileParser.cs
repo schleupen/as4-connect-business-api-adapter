@@ -1,5 +1,7 @@
 namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
+using System.IO.Compression;
+using System.Text;
 using System.Xml.Linq;
 using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.FP.Configuration;
@@ -20,8 +22,17 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
 
     public FpParsedPayload ParsePayload(byte[] payload)
     {
-	    string responseText = System.Text.Encoding.ASCII.GetString(payload);
-	    XDocument doc = XDocument.Parse(responseText); 
+	    string xml = "";
+	    using (var compressedStream = new MemoryStream(payload))
+	    using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
+	    using (var resultStream = new MemoryStream())
+	    {
+		    zipStream.CopyTo(resultStream);
+		    xml = Encoding.UTF8.GetString(resultStream.ToArray());
+
+	    }
+		string responseText = System.Text.Encoding.ASCII.GetString(payload);
+		XDocument doc = XDocument.Parse(xml); 
 	    var parser = this.CreateParserFor(doc);
 	    return parser.ParsePayload(doc);
     }

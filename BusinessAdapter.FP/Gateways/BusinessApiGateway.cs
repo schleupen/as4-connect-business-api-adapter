@@ -137,7 +137,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 									mpMessage.PartyInfo.Receiver!,
 									xmlString,
 									zippedContent,
-									new FpBDEWProperties("TODODocType",
+									new FpBDEWProperties(mpMessage.BDEWDocumentType,
 										mpMessage.BdewDocumentNo,
 										mpMessage.BdewFulfillmentDate,
 										mpMessage.BdewSubjectPartyId,
@@ -161,18 +161,18 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			}
 		}
 		
-		public async Task<BusinessApiResponse<bool>> AcknowledgeReceivedMessageAsync(InboxFpMessage mpMessage)
+		public async Task<BusinessApiResponse<bool>> AcknowledgeReceivedMessageAsync(InboxFpMessage fpMessage)
 		{
-			string tokenString = jwtBuilder.CreateSignedToken(mpMessage);
+			string tokenString = jwtBuilder.CreateSignedToken(fpMessage);
 			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			try
 			{
-				if (mpMessage.MessageId == null)
+				if (fpMessage.MessageId == null)
 				{
 					throw new InvalidOperationException("The message does not have a MessageId.");
 				}
 
-				await businessApiClient.V1FpMessagesInboxAcknowledgementAsync(Guid.Parse(mpMessage.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
+				await businessApiClient.V1FpMessagesInboxAcknowledgementAsync(Guid.Parse(fpMessage.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
 
 				return new BusinessApiResponse<bool>(true, true);
 			}

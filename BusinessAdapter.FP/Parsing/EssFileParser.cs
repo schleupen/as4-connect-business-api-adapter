@@ -105,18 +105,18 @@ public class EssFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve receiver role from payload.");
 		}
 		
-		var messageDateTime = document.Descendants(ns + "MessageDateTime").FirstOrDefault()?.Attribute("v")?.Value;
-		if (messageDateTime == null)
-		{
-			throw new ArgumentException($"Could not retrieve message date time from payload.");
-		}
+		var messageDateTime = document.Descendants(ns + "CreationDateTime").FirstOrDefault()?.Attribute("v")?.Value;
+		//if (messageDateTime == null)
+		//{
+		//	throw new ArgumentException($"Could not retrieve message date time from payload.");
+		//}
 
 		// TODO how do we get the scheduletimeinterval for acks and status messages?
 		string? scheduleTimeInterval  = document.Descendants(ns + "ScheduleTimeInterval").FirstOrDefault()?.Attribute("v")?.Value;
-		if (scheduleTimeInterval == null)
-		{
-			throw new ArgumentException($"Could not retrieve fulfillment date from payload.");
-		}
+		//if (scheduleTimeInterval == null)
+		//{
+		//	throw new ArgumentException($"Could not retrieve fulfillment date from payload.");
+		//}
 
 		return new FpParsedPayload(
 			new EIC(senderIdentification),

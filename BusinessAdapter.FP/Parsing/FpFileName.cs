@@ -100,18 +100,20 @@ public record FpFileName
 
 	public string ToFileName()
 	{
+		DateTime dateTimeStamp = DateTime.Parse(Date);
+
 		if (this.MessageType == FpMessageType.Schedule)
 		{
-			return $"{Date}_{TypeHaendlerfahrplan}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
+			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{TypeHaendlerfahrplan}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
 		}
 
 		var messageTypeString = ToMessageTypeValue();
 		if (!string.IsNullOrEmpty(Timestamp))
 		{
-			return $"{Date}_{TypeHaendlerfahrplan}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{Timestamp}{XmlFileExtension}";
+			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{TypeHaendlerfahrplan}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{XmlFileExtension}";
 		}
 
-		return $"{Date}_{TypeHaendlerfahrplan}_{EicNameBilanzkreis}_{EicNameTso}_{messageTypeString}{XmlFileExtension}";
+		return $"{dateTimeStamp.ToString("yyyyMMdd")}_{TypeHaendlerfahrplan}_{EicNameBilanzkreis}_{EicNameTso}_{messageTypeString}{XmlFileExtension}";
 	}
 
 	private string? ToMessageTypeValue()

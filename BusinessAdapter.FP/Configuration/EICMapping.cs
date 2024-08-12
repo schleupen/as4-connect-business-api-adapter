@@ -26,7 +26,7 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
             .ToList(); 
         
         var entry = kvp.FirstOrDefault();
-        return ToFpParty(entry.Value, entry.Key);
+        return entry.Key == null ? null : ToFpParty(entry.Value, entry.Key);
     }
 
     public FpParty? GetPartyOrDefault(EIC eic)

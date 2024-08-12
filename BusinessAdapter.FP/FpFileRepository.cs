@@ -1,6 +1,8 @@
 namespace Schleupen.AS4.BusinessAdapter.FP;
 
 using System.Collections.Immutable;
+using System.IO.Compression;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
@@ -50,10 +52,18 @@ public class FpFileRepository(
 	public string StoreXmlFileTo(InboxFpMessage fpMessage, string receiveDirectoryPath)
 	{
 		var fileName = fileNameExtractor.ExtractFileName(fpMessage);
-		string messagePath = Path.Combine(receiveDirectoryPath, fileName.ToFileName());
-		using (StreamWriter edifactStream = new StreamWriter(File.Open(messagePath, FileMode.Create)))
+		var finalFileName = fileName.ToFileName();
+		string messagePath = Path.Combine(receiveDirectoryPath, finalFileName);
+		using (StreamWriter xmlStream = new StreamWriter(File.Open(messagePath, FileMode.Create)))
 		{
-			edifactStream.Write(fpMessage.Payload);
+			using (var compressedStream = new MemoryStream(fpMessage.Payload))
+			using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
+			using (var resultStream = new MemoryStream())
+			{
+				zipStream.CopyTo(resultStream);
+				xmlStream.Write(Encoding.UTF8.GetString(resultStream.ToArray()));
+			}
+			
 		}
 
 		return messagePath;
