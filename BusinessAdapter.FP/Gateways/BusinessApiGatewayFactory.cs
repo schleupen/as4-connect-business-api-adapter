@@ -12,15 +12,14 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 		IHttpClientFactory httpClientFactory,
 		IBusinessApiClientFactory businessApiClientFactory,
 		IPartyIdTypeAssembler partyIdTypeAssembler,
-		ILogger<BusinessApiGateway> logger, 
+		ILogger<BusinessApiGateway> logger,
 		IOptions<AdapterOptions> options,
 		IJwtBuilder jwtBuilder)
 		: IBusinessApiGatewayFactory
 	{
-		private readonly string as4BusinessApiEndpoint = options.Value.As4ConnectEndpoint;
 		public IBusinessApiGateway CreateGateway(FpParty party)
 		{
-			return new BusinessApiGateway(party, httpClientFactory, businessApiClientFactory, partyIdTypeAssembler, as4BusinessApiEndpoint, logger, jwtBuilder);
+			return new BusinessApiGateway(party, httpClientFactory, businessApiClientFactory, partyIdTypeAssembler, options.Value.As4ConnectEndpoint, logger, jwtBuilder);
 		}
 	}
 }

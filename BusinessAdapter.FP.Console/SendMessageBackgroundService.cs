@@ -10,8 +10,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 	using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
-	public sealed class SendMessageWorker(
-		ILogger<SendMessageWorker> logger,
+	public sealed class SendMessageBackgroundService(
+		ILogger<SendMessageBackgroundService> logger,
 		IFpMessageSender sender,
 		IOptions<SendOptions> sendOptions)
 		: BackgroundService

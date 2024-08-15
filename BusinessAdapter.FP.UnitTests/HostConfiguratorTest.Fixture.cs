@@ -5,7 +5,7 @@ using Moq;
 using NUnit.Framework;
 
 
-public partial class HostConfiguratorTest
+public partial class ServiceConfiguratorTest
 {
 	private Fixture fixture = default!;
 

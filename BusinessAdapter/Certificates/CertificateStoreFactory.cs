@@ -11,16 +11,14 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	/// </summary>
 	public sealed class CertificateStoreFactory(IOptions<AdapterOptions> options) : ICertificateStoreFactory
 	{
-		private readonly AdapterOptions options = options.Value;
-
 		/// <summary>
 		/// Creates a new certificate store and opens it.
 		/// </summary>
 		/// <returns>A certificate store.</returns>
 		public IClientCertificateStore CreateAndOpen()
 		{
-			StoreName storeName = options.CertificateStoreName;
-			StoreLocation storeLocation = options.CertificateStoreLocation;
+			StoreName storeName = options.Value.CertificateStoreName;
+			StoreLocation storeLocation = options.Value.CertificateStoreLocation;
 
 			X509Store store = new X509Store(storeName, storeLocation);
 			store.Open(OpenFlags.ReadOnly);

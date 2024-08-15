@@ -8,7 +8,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 	using Microsoft.Extensions.Options;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 
-	public sealed class ReceiveMessageWorker(ILogger<ReceiveMessageWorker> logger, IReceiveMessageAdapterController receiveController, IOptions<ReceiveOptions> receiveOptions)
+	public sealed class ReceiveMessageBackgroundService(ILogger<ReceiveMessageBackgroundService> logger, IReceiveMessageAdapterController receiveController, IOptions<ReceiveOptions> receiveOptions)
 		: BackgroundService
 	{
 		private ReceiveOptions options = receiveOptions.Value;

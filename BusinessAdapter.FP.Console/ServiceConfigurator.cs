@@ -2,8 +2,8 @@
 
 namespace Schleupen.AS4.BusinessAdapter.FP;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 using Schleupen.AS4.BusinessAdapter.Certificates;
@@ -15,23 +15,15 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 using Schleupen.AS4.BusinessAdapter.FP.Sending;
 using Schleupen.AS4.BusinessAdapter.FP.Sending.Assemblers;
 
-public class HostConfigurator
+public class ServiceConfigurator
 {
-	public IHost ConfigureHost(string[] args)
+	private void ConfigureDefaults(IServiceCollection collection, IConfiguration configuration)
 	{
-		HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
-		builder.Services
-			// Common
-			.AddTransient<IJwtBuilder, JwtBuilder>()
+		collection.AddTransient<IJwtBuilder, JwtBuilder>()
 			.AddTransient<IClientCertificateProvider, ClientCertificateProvider>()
 			.AddTransient<ICertificateStoreFactory, CertificateStoreFactory>()
 			.AddTransient<IFileSystemWrapper, FileSystemWrapper>()
-			// FP
-			.AddHostedService<SendMessageWorker>()
-			.AddHostedService<ReceiveMessageWorker>()
 			.AddTransient<IFpFileParser, FpFileParser>()
-			.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>()
-			.AddTransient<IFpMessageSender, FpMessageSender>()
 			.AddTransient<IFpOutboxMessageAssembler, FpOutboxMessageAssembler>()
 			.AddTransient<IFpFileRepository, FpFileRepository>()
 			.AddTransient<IBusinessApiGatewayFactory, BusinessApiGatewayFactory>()
@@ -39,11 +31,29 @@ public class HostConfigurator
 			.AddTransient<IHttpClientFactory, HttpClientFactory>()
 			.AddTransient<IPartyIdTypeAssembler, PartyIdTypeAssembler>()
 			.AddTransient<IFpFileNameExtractor, FpFileNameExtractor>()
-			// Config
-			.Configure<EICMapping>(builder.Configuration.GetSection(EICMapping.SectionName))
-			.AddConfiguration(builder.Configuration);
+			.Configure<EICMapping>(configuration.GetSection(EICMapping.SectionName))
+			.AddConfiguration(configuration);
+	}
 
-		IHost host = builder.Build();
-		return host;
+	public void ConfigureSending(IServiceCollection collection, IConfiguration configuration)
+	{
+		ConfigureDefaults(collection, configuration);
+		collection.AddTransient<IFpMessageSender, FpMessageSender>();
+	}
+
+	public void ConfigureReceiving(IServiceCollection collection, IConfiguration configuration)
+	{
+		ConfigureDefaults(collection, configuration);
+		collection.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>();
+	}
+
+	public void ConfigureService(IServiceCollection collection, IConfiguration configuration)
+	{
+		ConfigureDefaults(collection, configuration);
+		ConfigureSending(collection, configuration);
+		ConfigureReceiving(collection, configuration);
+
+		collection.AddHostedService<SendMessageBackgroundService>();
+		collection.AddHostedService<ReceiveMessageBackgroundService>();
 	}
 }

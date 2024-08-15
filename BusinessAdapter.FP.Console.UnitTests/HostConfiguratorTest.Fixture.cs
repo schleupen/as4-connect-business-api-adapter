@@ -4,13 +4,13 @@ namespace Schleupen.AS4.BusinessAdapter;
 
 using Schleupen.AS4.BusinessAdapter.FP;
 
-internal sealed partial class HostConfiguratorTest
+internal sealed partial class ServiceConfiguratorTest
 {
 	private sealed class Fixture
 	{
-		public HostConfigurator CreateTestObject()
+		public ServiceConfigurator CreateTestObject()
 		{
-			return new HostConfigurator();
+			return new ServiceConfigurator();
 		}
 	}
 }
