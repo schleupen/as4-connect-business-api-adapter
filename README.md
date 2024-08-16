@@ -82,7 +82,13 @@ A full example:
 {
   "Adapter": {
     "As4ConnectEndpoint": "https://as4.connect.api",
-    "Send": {
+    "Marketpartners": [
+      "9984617000002"
+    ],
+    "CertificateStoreLocation": "LocalMachine",
+    "CertificateStoreName": "My"
+  },
+  "Send": {
       "Directory": "C:\\Send",
       "Retry": {
         "Count": 3,
@@ -90,8 +96,8 @@ A full example:
       },
       "MessageLimitCount": 1000,
       "SleepDuration" :  "00:01:00"
-    },
-    "Receive": {
+  },
+  "Receive": {
       "Directory": "C:\\Receive",
       "Retry": {
         "Count": 3,
@@ -99,34 +105,28 @@ A full example:
       },
       "SleepDuration" :  "00:01:00",
       "MessageLimitCount": 1000
-    },
-    "Marketpartners": [
-      "9984617000002"
-    ],
-    "CertificateStoreLocation": "LocalMachine",
-    "CertificateStoreName": "My"
   }
 }
 ```
 
 | Key                         | .NET type                                                                                                                               | Default value  | Description                                                                                                                                                            |
 |-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| As4ConnectEndpoint          | [string](https://learn.microsoft.com/en-us/dotnet/api/system.string?view=net-8.0)                                                       | \<null\>       | The endpoint from [AS4 Connect - API](https://developer-campus.de/tracks/integration/as4-connect-api/)                                                                 |
-| Marketpartners              | [string](https://learn.microsoft.com/en-us/dotnet/api/system.string?view=net-8.0)[]                                                     | \<null\>       | An array with the identification numbers of your own market partners for which the adapter should send and receive messages.                                           |
-| CertificateStoreLocation    | [StoreLocation ](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storelocation?view=net-8.0) | CurrentUser    | The [location](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storelocation?view=net-8.0) of the certificate store to use. |
-| CertificateStoreName        | [StoreName](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storename?view=net-8.0)          | My             | The name of the [certificate store](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storename?view=net-8.0) to use.         |
+| Adapter:As4ConnectEndpoint  | [string](https://learn.microsoft.com/en-us/dotnet/api/system.string?view=net-8.0)                                                       | \<null\>       | The endpoint from [AS4 Connect - API](https://developer-campus.de/tracks/integration/as4-connect-api/)                                                                 |
+| Adapter:Marketpartners              | [string](https://learn.microsoft.com/en-us/dotnet/api/system.string?view=net-8.0)[]                                                     | \<null\>       | An array with the identification numbers of your own market partners for which the adapter should send and receive messages.                                           |
+| Adapter:CertificateStoreLocation    | [StoreLocation ](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storelocation?view=net-8.0) | CurrentUser    | The [location](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storelocation?view=net-8.0) of the certificate store to use. |
+| Adapter:CertificateStoreName        | [StoreName](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storename?view=net-8.0)          | My             | The name of the [certificate store](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storename?view=net-8.0) to use.         |
 |                             |                                                                                                                                         |
 | Send:Directory              | [string](https://learn.microsoft.com/en-us/dotnet/api/system.string?view=net-8.0)                                                       | \<null\>       | Specifies where the messages that you want to send out are located.                                                                                                    |
 | Send:SleepDuration          | [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-8.0)                                                   | 00:01:00       | The sleep duration before the next send iteration.                                                                                                                     |
 | Send:MessageLimitCount      | [int](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types?redirectedfrom=MSDN)      | Int32.MaxValue | The maximum number of messages to send in one iteration.                                                                                                               |
 | Send:Retry:Count            | [int](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types?redirectedfrom=MSDN)      | 3              | The maximum number of retries to perform per iteration for each message when sending messages.                                                                         |
-| Send:Retry:SleepDuration    | [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-8.0)                                                   | 00:00:10       | The sleep duration between each retry.                                                                                                                                 |
+| Send:Retry:SleepDuration    | [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-8.0)                                                   | 00:00:10       | The sleep duration between each retry. [only for service usage]                                                                                                       |
 |                             |                                                                                                                                         |
 | Receive:Directory           | [string](https://learn.microsoft.com/en-us/dotnet/api/system.string?view=net-8.0)                                                       | \<null\>       | Specifies where received where the messages should be stored.                                                                                                          |
 | Receive:SleepDuration       | [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-8.0)                                                   | 00:01:00       | The sleep duration before the next receive iteration.                                                                                                                  |
 | Receive:MessageLimitCount   | [int](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types?redirectedfrom=MSDN)      | 0              | The maximum number of messages to receive in one iteration. The default is 0 and means there is no limit.                                                              |
 | Receive:Retry:Count         | [int](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types?redirectedfrom=MSDN)      | 3              | The maximum number of retries to perform per iteration for each message when receiving messages.                                                                       |
-| Receive:Retry:SleepDuration | [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-8.0)                                                   | 00:00:10       | The sleep duration between each retry.                                                                                                                                 |
+| Receive:Retry:SleepDuration | [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-8.0)                                                   | 00:00:10       | The sleep duration between each retry. [only for service usage]                                                                                                                               |
 
 ### FP configuration
 
@@ -135,8 +135,8 @@ This maps the EIC-Code (eg. "11XYYYYYY-V----V") to the AS4 specific Party-Id (eg
 
 ```
 {
-  "Adapter": {
-  },
+  // Adapter,Send,Receive
+  
   "EICMapping": {
     "11XYYYYYY-V----V": {
       "Id": "1000000001",

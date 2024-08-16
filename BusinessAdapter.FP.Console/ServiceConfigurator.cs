@@ -31,19 +31,20 @@ public class ServiceConfigurator
 			.AddTransient<IHttpClientFactory, HttpClientFactory>()
 			.AddTransient<IPartyIdTypeAssembler, PartyIdTypeAssembler>()
 			.AddTransient<IFpFileNameExtractor, FpFileNameExtractor>()
-			.Configure<EICMapping>(configuration.GetSection(EICMapping.SectionName))
-			.AddConfiguration(configuration);
+			.Configure<EICMapping>(configuration.GetSection(EICMapping.SectionName));
 	}
 
 	public void ConfigureSending(IServiceCollection collection, IConfiguration configuration)
 	{
 		ConfigureDefaults(collection, configuration);
+		collection.AddSendConfiguration(configuration);
 		collection.AddTransient<IFpMessageSender, FpMessageSender>();
 	}
 
 	public void ConfigureReceiving(IServiceCollection collection, IConfiguration configuration)
 	{
 		ConfigureDefaults(collection, configuration);
+		collection.AddReceiveConfiguration(configuration);
 		collection.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>();
 	}
 

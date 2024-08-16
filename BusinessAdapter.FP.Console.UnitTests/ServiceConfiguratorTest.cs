@@ -20,7 +20,7 @@ internal sealed partial class ServiceConfiguratorTest
 	[SetUp]
 	public void Setup()
 	{
-		config = new ConfigurationBuilder().Build();
+		config = new ConfigurationBuilder().AddJsonFile("appsettings.unittests.json").Build();
 		serviceCollection = new ServiceCollection();
 	}
 

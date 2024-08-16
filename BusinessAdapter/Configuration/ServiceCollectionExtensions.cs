@@ -6,13 +6,43 @@ using Schleupen.AS4.BusinessAdapter.Configuration.Validation;
 
 public static class ServiceCollectionExtensions
 {
-	public static IServiceCollection AddConfiguration(this IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration)
+	private static IServiceCollection AddAdapterConfiguration(this IServiceCollection services,
+		Microsoft.Extensions.Configuration.IConfiguration configuration)
 	{
 		services.Configure<Configuration.AdapterOptions>(configuration.GetSection(Configuration.AdapterOptions.SectionName))
-			.Configure<SendOptions>(configuration.GetSection(Configuration.AdapterOptions.SendSectionName))
-			.Configure<ReceiveOptions>(configuration.GetSection(Configuration.AdapterOptions.ReceiveSectionName))
 			.AddSingleton<IValidateOptions<Configuration.AdapterOptions>, AdapterOptionsValidator>()
 			.AddOptionsWithValidateOnStart<Configuration.AdapterOptions>();
+		return services;
+	}
+
+
+	public static IServiceCollection AddSendConfiguration(this IServiceCollection services,
+		Microsoft.Extensions.Configuration.IConfiguration configuration)
+	{
+		services.AddAdapterConfiguration(configuration);
+
+		services
+			.Configure<SendOptions>(configuration.GetSection(Configuration.SendOptions.SendSectionName))
+			.AddSingleton<IValidateOptions<Configuration.SendOptions>, SendOptionsValidator>()
+			.AddOptionsWithValidateOnStart<Configuration.SendOptions>();
+		return services;
+	}
+
+	public static IServiceCollection AddReceiveConfiguration(this IServiceCollection services,
+		Microsoft.Extensions.Configuration.IConfiguration configuration)
+	{
+		services.AddAdapterConfiguration(configuration);
+		services.Configure<ReceiveOptions>(configuration.GetSection(Configuration.ReceiveOptions.ReceiveSectionName));
+		services.AddSingleton<IValidateOptions<Configuration.ReceiveOptions>, ReceiveOptionsValidator>();
+		services.AddOptionsWithValidateOnStart<Configuration.ReceiveOptions>();
+		return services;
+	}
+
+	public static IServiceCollection AddSendAndReceiveConfiguration(this IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration)
+	{
+		services.AddAdapterConfiguration(configuration);
+		services.AddSendConfiguration(configuration);
+		services.AddReceiveConfiguration(configuration);
 
 		return services;
 	}

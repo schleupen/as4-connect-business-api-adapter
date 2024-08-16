@@ -4,6 +4,7 @@ using System.CommandLine;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 public class SendCommand : Command
@@ -19,6 +20,9 @@ public class SendCommand : Command
 	private async Task Send(FileInfo configFile)
 	{
 		var serviceProvider = CreateServiceProvider(configFile);
+
+		var startUpValidator = serviceProvider.GetRequiredService<IStartupValidator>();
+		startUpValidator.Validate();
 
 		var sender = serviceProvider.GetRequiredService<IFpMessageSender>();
 		await sender.SendMessagesAsync(CancellationToken.None);

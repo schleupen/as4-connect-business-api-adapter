@@ -3,6 +3,7 @@
 using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
@@ -22,6 +23,8 @@ public class ReceiveCommand : Command
 	private async Task Receive(FileInfo configFile)
 	{
 		var serviceProvider = CreateServiceProvider(configFile);
+		var startUpValidator = serviceProvider.GetRequiredService<IStartupValidator>();
+		startUpValidator.Validate();
 		var sender = serviceProvider.GetRequiredService<IReceiveMessageAdapterController>();
 
 		await sender.ReceiveAvailableMessagesAsync(CancellationToken.None);

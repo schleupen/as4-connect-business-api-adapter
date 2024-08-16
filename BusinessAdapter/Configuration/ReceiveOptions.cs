@@ -2,6 +2,8 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration;
 
 public record ReceiveOptions
 {
+	public const string ReceiveSectionName = "Receive";
+
 	public string Directory { get; init; } = default!;
 
 	public RetryOption Retry { get; init; } = new();

@@ -34,7 +34,7 @@ public class HostConfigurator
 			.AddTransient<IEdifactFileNameExtractor, EdifactFileNameExtractor>()
 			.AddTransient<IEdifactFileParser, EdifactFileParser>()
 			.AddTransient<IPartyIdTypeAssembler, PartyIdTypeAssembler>()
-			.AddConfiguration(builder.Configuration);
+			.AddSendAndReceiveConfiguration(builder.Configuration);
 
 
 		IHost host = builder.Build();

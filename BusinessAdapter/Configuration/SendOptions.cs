@@ -2,6 +2,8 @@
 
 public record SendOptions
 {
+	public const string SendSectionName = "Send";
+
 	public string Directory { get; init; } = default!;
 
 	public RetryOption Retry { get; init; } = new();

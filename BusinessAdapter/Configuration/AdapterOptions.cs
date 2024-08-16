@@ -7,12 +7,6 @@ namespace Schleupen.AS4.BusinessAdapter.Configuration
 	public record AdapterOptions
 	{
 		public const string SectionName = "Adapter";
-		public const string ReceiveSectionName = SectionName + ":" + nameof(Receive);
-		public const string SendSectionName = SectionName + ":" + nameof(Send);
-
-		public SendOptions? Send { get; set; }
-
-		public ReceiveOptions? Receive { get; set; }
 
 		public StoreName CertificateStoreName { get; set; } = StoreName.My;
 

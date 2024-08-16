@@ -10,43 +10,9 @@ public class AdapterOptionsValidator : IValidateOptions<Configuration.AdapterOpt
 
 		builder.AddResult(this.ValidateMarketpartner(options));
 		builder.AddResult(this.ValidateEndpoint(options));
-
-		builder.AddResult(this.ValidateSend(options.Send));
-		builder.AddResult(this.ValidateReceive(options.Receive));
 		builder.AddResult(this.ValidateCertificateOptions(options));
 
 		return builder.Build();
-	}
-
-	private ValidateOptionsResult ValidateSend(SendOptions? sendOptions)
-	{
-		if (string.IsNullOrEmpty(sendOptions?.Directory))
-		{
-			return ValidateOptionsResult.Fail("The send directory is not configured.");
-		}
-
-		if (!Directory.Exists(sendOptions.Directory))
-		{
-			return ValidateOptionsResult.Fail($"The send directory {sendOptions.Directory} does not exist.");
-		}
-
-		return ValidateOptionsResult.Success;
-	}
-
-	private ValidateOptionsResult ValidateReceive(ReceiveOptions? receiveOptions)
-	{
-		if (string.IsNullOrEmpty(receiveOptions?.Directory))
-		{
-			return ValidateOptionsResult.Fail("The receive directory is not configured.");
-		}
-
-		if (!Directory.Exists(receiveOptions.Directory))
-		{
-			return ValidateOptionsResult.Fail($"The send directory {receiveOptions.Directory} does not exist.");
-		}
-
-
-		return ValidateOptionsResult.Success;
 	}
 
 	private ValidateOptionsResult ValidateCertificateOptions(Configuration.AdapterOptions receiveOptions)

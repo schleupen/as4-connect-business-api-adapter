@@ -32,31 +32,7 @@ public partial class AdapterOptionsValidatorTest
 	}
 
 	[Test]
-	public void Validate_SendNotConfigured_ReturnsFailed()
-	{
-		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
-
-		options.Send = null;
-
-		var result = ExecuteValidation(options);
-
-		Assert.That(result.Failed, Is.True);
-	}
-
-	[Test]
-	public void Validate_ReceiveNotConfigured_ReturnsFailed()
-	{
-		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
-
-		options.Receive = null;
-
-		var result = ExecuteValidation(options);
-
-		Assert.That(result.Failed, Is.True);
-	}
-
-	[Test]
-	public void Validate_MarktpartnerNotConfigured_Emptry_ReturnsFailed()
+	public void Validate_MarktpartnerNotConfigured_Empty_ReturnsFailed()
 	{
 		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
 
@@ -73,29 +49,6 @@ public partial class AdapterOptionsValidatorTest
 		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
 
 		options.Marketpartners = null;
-
-		var result = ExecuteValidation(options);
-
-		Assert.That(result.Failed, Is.True);
-	}
-
-	[Test]
-	public void Validate_ReceiveDirectoryNotExists_ReturnsFailed()
-	{
-		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
-
-		options.Receive = options.Receive! with { Directory = "NA" };
-		var result = ExecuteValidation(options);
-
-		Assert.That(result.Failed, Is.True);
-	}
-
-	[Test]
-	public void Validate_SendDirectoryNotExists_ReturnsFailed()
-	{
-		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
-
-		options.Send = options.Send! with { Directory = "NA" };
 
 		var result = ExecuteValidation(options);
 
