@@ -4,11 +4,13 @@ namespace Schleupen.AS4.BusinessAdapter.FP;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 using Schleupen.AS4.BusinessAdapter.Certificates;
 using Schleupen.AS4.BusinessAdapter.Configuration;
 using Schleupen.AS4.BusinessAdapter.FP.Configuration;
+using Schleupen.AS4.BusinessAdapter.FP.Configuration.Validation;
 using Schleupen.AS4.BusinessAdapter.FP.Gateways;
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
@@ -31,7 +33,8 @@ public class ServiceConfigurator
 			.AddTransient<IHttpClientFactory, HttpClientFactory>()
 			.AddTransient<IPartyIdTypeAssembler, PartyIdTypeAssembler>()
 			.AddTransient<IFpFileNameExtractor, FpFileNameExtractor>()
-			.Configure<EICMapping>(configuration.GetSection(EICMapping.SectionName));
+			.Configure<EICMapping>(configuration.GetSection(EICMapping.SectionName))
+			.AddSingleton<IValidateOptions<Configuration.EICMapping>, EICMappingOptionsValidator>();
 	}
 
 	public void ConfigureSending(IServiceCollection collection, IConfiguration configuration)
