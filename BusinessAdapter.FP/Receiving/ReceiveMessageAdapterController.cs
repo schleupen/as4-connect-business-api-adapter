@@ -28,19 +28,19 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 		public async Task ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
 		{
 			logger.LogDebug("Receiving of available messages starting.");
-			
+
 			string receiveDirectoryPath = receiveOptions.Directory;
 			if (string.IsNullOrEmpty(receiveDirectoryPath))
 			{
 				throw new CatastrophicException("The receive directory is not configured.");
 			}
-			
+
 			IReadOnlyCollection<string> ownMarketpartners = adapterOptions.Value.Marketpartners!;
 			if (ownMarketpartners.Count == 0)
 			{
 				throw new CatastrophicException("No valid own market partners were found.");
 			}
-			
+
 			Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients = new Dictionary<MessageReceiveInfo, Gateways.IBusinessApiGateway>();
 			int successfulMessageCount = 0;
 			int failedMessageCount = 0;
@@ -53,7 +53,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 				foreach (string receiverIdentificationNumber in ownMarketpartners)
 				{
 					exceptions = await QueryMessagesAsync(receiverIdentificationNumber,
-						as4BusinessApiClients, 
+						as4BusinessApiClients,
 						marketPartnerWithoutCertificate);
 				}
 				long allAvailableMessageCount = as4BusinessApiClients.Sum(x => x.Key.GetAvailableMessages().Length);
@@ -95,7 +95,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 			}
 		}
 
-		private async Task<List<Exception>> QueryMessagesAsync(string receiverIdentificationNumber, 
+		private async Task<List<Exception>> QueryMessagesAsync(string receiverIdentificationNumber,
 			Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients,
 			List<string> marketPartnerWithoutCertificate)
 		{
@@ -202,7 +202,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 								if (!ackResponse.WasSuccessful)
 								{
 									fpFileRepo.DeleteFile(fileName);
-										
+
 									if (HandleTooManyRequestError(ackResponse.ResponseStatusCode!.Value))
 									{
 										receiveContext.Key.HasTooManyRequestsError = true;
@@ -240,7 +240,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 				})
 				.WithCancellation(cancellationToken);
 		}
-		
+
 		private bool HandleTooManyRequestError(HttpStatusCode httpStatusCode)
 		{
 			if (httpStatusCode != HttpStatusCode.TooManyRequests)
