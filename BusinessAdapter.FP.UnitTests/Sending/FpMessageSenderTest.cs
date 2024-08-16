@@ -15,7 +15,7 @@ public partial class FpMessageSenderTest
 
 		FpMessageSender sender = fixture.CreateFpMessageSender();
 
-		var sendStatus = await sender.SendAvailableMessagesAsync(CancellationToken.None);
+		var sendStatus = await sender.SendMessagesAsync(CancellationToken.None);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(0));
 		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(0));
@@ -37,7 +37,7 @@ public partial class FpMessageSenderTest
 		Mock<IBusinessApiGateway> gatewayMock = fixture.SetupSendingFailed(retryCount);
 
 		FpMessageSender sender = fixture.CreateFpMessageSender();
-		var sendStatus = await sender.SendAvailableMessagesAsync(cancellationToken);
+		var sendStatus = await sender.SendMessagesAsync(cancellationToken);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(retryCount));
 		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(1));
@@ -61,7 +61,7 @@ public partial class FpMessageSenderTest
 		var gatewayMock = fixture.SetupTooManyConnection(cancellationToken);
 
 		FpMessageSender sender = fixture.CreateFpMessageSender();
-		var sendStatus = await sender.SendAvailableMessagesAsync(cancellationToken);
+		var sendStatus = await sender.SendMessagesAsync(cancellationToken);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(0));
 		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(1));
@@ -85,7 +85,7 @@ public partial class FpMessageSenderTest
 		var gatewayMock = fixture.SetupSendingSuccessful(successfulParsedFiles, failedParsedFiles, cancellationToken);
 
 		FpMessageSender sender = fixture.CreateFpMessageSender();
-		var sendStatus = await sender.SendAvailableMessagesAsync(cancellationToken);
+		var sendStatus = await sender.SendMessagesAsync(cancellationToken);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(0));
 		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(failedParsedFiles));
@@ -108,7 +108,7 @@ public partial class FpMessageSenderTest
 		var gatewayMock = fixture.SetupSendingSuccessfulWithLimit(successfulParsedFiles, failedParsedFiles, messageLimit, cancellationToken);
 
 		FpMessageSender sender = fixture.CreateFpMessageSender();
-		var sendStatus = await sender.SendAvailableMessagesAsync(cancellationToken);
+		var sendStatus = await sender.SendMessagesAsync(cancellationToken);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(0));
 		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(failedParsedFiles));
@@ -125,7 +125,7 @@ public partial class FpMessageSenderTest
 		var gatewayMock = fixture.SetupMultipleMessagesFromOnlyOneSender(23, 10, cancellationToken);
 
 		FpMessageSender sender = fixture.CreateFpMessageSender();
-		await sender.SendAvailableMessagesAsync(cancellationToken);
+		await sender.SendMessagesAsync(cancellationToken);
 
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(23));
 		fixture.Mocks.BusinessApiGatewayFactory.Verify(f => f.CreateGateway(It.IsAny<FpParty>()), Times.Exactly(1));

@@ -21,10 +21,10 @@ public class SendCommand : Command
 		var serviceProvider = CreateServiceProvider(configFile);
 
 		var sender = serviceProvider.GetRequiredService<IFpMessageSender>();
-		await sender.SendAvailableMessagesAsync(CancellationToken.None);
+		await sender.SendMessagesAsync(CancellationToken.None);
 	}
 
-	public ServiceProvider CreateServiceProvider(FileInfo fileInfo)
+	private ServiceProvider CreateServiceProvider(FileInfo fileInfo)
 	{
 		var config = new ConfigurationBuilder()
 			.AddJsonFile(fileInfo.FullName, optional: true, reloadOnChange: true)

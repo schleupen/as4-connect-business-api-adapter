@@ -24,7 +24,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 			{
 				try
 				{
-					await sender.SendAvailableMessagesAsync(stoppingToken);
+					await sender.SendMessagesAsync(stoppingToken);
 				}
 				catch (CatastrophicException ex)
 				{

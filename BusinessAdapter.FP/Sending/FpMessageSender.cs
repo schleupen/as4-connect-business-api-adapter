@@ -21,7 +21,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 	{
 		private readonly SendOptions sendOptions = sendOptions.Value;
 
-		public async Task<SendStatus> SendAvailableMessagesAsync(CancellationToken cancellationToken)
+		public async Task<SendStatus> SendMessagesAsync(CancellationToken cancellationToken)
 		{
 			logger.LogDebug("Sending of available messages starting.");
 
