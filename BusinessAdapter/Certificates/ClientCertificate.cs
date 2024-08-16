@@ -57,7 +57,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		public bool IsCertificateFor(string marketpartnerIdentificationNumber)
 		{
 			string? identificationNumberFromCertificate = ResolveFromOrganizationalUnitField();
-			return string.Equals(identificationNumberFromCertificate, marketpartnerIdentificationNumber, StringComparison.OrdinalIgnoreCase);
+				return string.Equals(identificationNumberFromCertificate, marketpartnerIdentificationNumber, StringComparison.OrdinalIgnoreCase);
 		}
 
 		private string? ResolveFromOrganizationalUnitField()

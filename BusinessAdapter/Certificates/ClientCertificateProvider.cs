@@ -21,6 +21,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 			{
 				List<IClientCertificate> candidates = store.Certificates.Where(certificate => certificate.IsCertificateFor(marketpartnerIdentificationNumber)).ToList();
 
+				var s = store.Certificates;
 				if (candidates.Count > 1)
 				{
 					throw new NoUniqueCertificateException(marketpartnerIdentificationNumber);
@@ -32,6 +33,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					throw new MissingCertificateException(marketpartnerIdentificationNumber);
 				}
 
+				var m = certificate.AsX509Certificate();
 				return certificate;
 			}
 		}

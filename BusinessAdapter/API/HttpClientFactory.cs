@@ -13,7 +13,7 @@ public class HttpClientFactory(IOptions<AdapterOptions> options, IClientCertific
 	public HttpClient CreateFor(Party party)
 	{
 		var certificate = clientCertificateProvider.GetCertificate(party.Id);
-
+		
 #pragma warning disable CA5386 // Hartcodierung des SecurityProtocolType-Werts vermeiden
 		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 #pragma warning restore CA5386 // Hartcodierung des SecurityProtocolType-Werts vermeiden

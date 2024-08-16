@@ -6,7 +6,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 	using System.Threading.Tasks;
 	using Schleupen.AS4.BusinessAdapter.FP.Commands;
 
-	public static class Program
+	public partial class Program
 	{
 		public static async Task Main(string[] args)
 		{

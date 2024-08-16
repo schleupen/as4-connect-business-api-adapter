@@ -22,6 +22,7 @@ public sealed class FpOutboxMessageAssembler(IOptions<EICMapping> eicMapping) : 
 			file.Content,
 			file.FileName,
 			file.FilePath,
-			file.BDEWProperties);
+			file.BDEWProperties,
+			sendingParty.Id); // TODO müssen wir setzen?
 	}
 }

@@ -16,11 +16,14 @@
 	  <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\BusinessAdapter.FP\BusinessAdapter.FP.csproj" />
-	  <ProjectReference Include="..\BusinessAdapter\BusinessAdapter.csproj" />
+	    <ProjectReference Include="..\BusinessAdapter.FP\BusinessAdapter.FP.csproj" />
+		<ProjectReference Include="..\BusinessAdapter\BusinessAdapter.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="appsettings.Development.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="appsettings.Integration.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>

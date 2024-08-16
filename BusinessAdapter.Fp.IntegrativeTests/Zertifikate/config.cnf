@@ -1,0 +1,20 @@
+# unnamed section of generic options
+default_md = md5
+
+# default section for "req" command options
+[req]
+input_password     = test
+prompt             = no
+distinguished_name = my_req_dn_prompt
+
+[my_req_dn_prompt]
+
+# Addtional DN fields
+
+dnQualifier         = AS4
+CN					= Schleupen SE
+O					= IT
+L					= Moers
+#S					= Nordrhein-Westfalen
+C					= DE
+OU 					= 4045458000000@BDEW
