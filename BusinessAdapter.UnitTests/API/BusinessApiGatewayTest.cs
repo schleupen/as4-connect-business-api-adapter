@@ -66,7 +66,5 @@ namespace Schleupen.AS4.BusinessAdapter.API
 				Assert.That(isAcknowledgedResponse.ResponseStatusCode, Is.EqualTo(HttpStatusCode.Conflict));
 			}
 		}
-
-		// TODO SendMessageAsync is untested
 	}
 }

@@ -33,7 +33,6 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					throw new MissingCertificateException(marketpartnerIdentificationNumber);
 				}
 
-				var m = certificate.AsX509Certificate();
 				return certificate;
 			}
 		}

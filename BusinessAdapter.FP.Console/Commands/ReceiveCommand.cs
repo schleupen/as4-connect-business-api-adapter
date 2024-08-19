@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.FP.Configuration;
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 public class ReceiveCommand : Command

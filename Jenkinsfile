@@ -88,10 +88,15 @@ pipeline
                 withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
                     powershellFile(filename: "../BusinessAdapter.FP.IntegrativeTests/Start-As4ConnectFakeServer.ps1")  
                
-                    powershellFile filename: "./BusinessAdapter.FP.IntegrativeTests/Enable-As4ConnectFakeServer.ps1"
                 }
                 script 
                 {
+                    sh 'mkdir -p ./Tests/unit/results'
+                
+                    docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
+                    {
+                        sh 'dotnet test ./BusinessAdapter.FP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.IntegrativeTests.junit.xml\' -e HOME=/tmp'
+                    }
                 }
             }
         }

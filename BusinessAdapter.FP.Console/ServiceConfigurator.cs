@@ -48,7 +48,7 @@ public class ServiceConfigurator
 	{
 		ConfigureDefaults(collection, configuration);
 		collection.AddReceiveConfiguration(configuration);
-		collection.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>();
+		collection.AddTransient<IFpMessageReceiver, FpMessageReceiver>();
 	}
 
 	public void ConfigureService(IServiceCollection collection, IConfiguration configuration)

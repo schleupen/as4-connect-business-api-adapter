@@ -13,19 +13,19 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 	using Schleupen.AS4.BusinessAdapter.FP.Gateways;
 	using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
-	public sealed class ReceiveMessageAdapterController(
-		ILogger<ReceiveMessageAdapterController> logger,
+	public sealed class FpMessageReceiver(
+		ILogger<FpMessageReceiver> logger,
 		IOptions<ReceiveOptions> receiveOptions,
 		IOptions<AdapterOptions> adapterOptions,
 		IBusinessApiGatewayFactory businessApiGatewayFactory,
 		IFpFileRepository fpFileRepo,
-		IOptions<EICMapping> eicMapping) : IReceiveMessageAdapterController
+		IOptions<EICMapping> eicMapping) : IFpMessageReceiver
 	{
 		private readonly ReceiveOptions receiveOptions = receiveOptions.Value;
 
 		private const string TooManyRequestsMessage = "A 429 TooManyRequests status code was encountered while receiving the EDIFACT messages which caused the receiving to end before all messages could be received.";
 
-		public async Task ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
+		public async Task<ReceiveStatus> ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
 		{
 			logger.LogDebug("Receiving of available messages starting.");
 
@@ -48,6 +48,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 			List<Exception> exceptions = new List<Exception>();
 			List<string> marketPartnerWithoutCertificate = new List<string>();
 
+			ReceiveStatus receiveStatus;
 			try
 			{
 				foreach (string receiverIdentificationNumber in ownMarketpartners)
@@ -56,7 +57,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 						as4BusinessApiClients,
 						marketPartnerWithoutCertificate);
 				}
-				long allAvailableMessageCount = as4BusinessApiClients.Sum(x => x.Key.GetAvailableMessages().Length);
+				int allAvailableMessageCount = as4BusinessApiClients.Sum(x => x.Key.GetAvailableMessages().Length);
+				receiveStatus = new ReceiveStatus(allAvailableMessageCount);
 
 				logger.LogInformation("Receiving {AllAvailableMessageCount} messages.", allAvailableMessageCount);
 
@@ -65,6 +67,12 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 					PolicyResult policyResult = await ReceiveMessagesAsync(receiveDirectoryPath, as4BusinessApiClient, allAvailableMessageCount, successfulMessageCount, failedMessageCount, cancellationToken);
 					successfulMessageCount += as4BusinessApiClient.Key.ConfirmableMessages.Count;
 					failedMessageCount += as4BusinessApiClient.Key.GetAvailableMessages().Length - as4BusinessApiClient.Key.ConfirmableMessages.Count;
+					
+					as4BusinessApiClient.Key.ConfirmableMessages
+						.ToList()
+						.ForEach(receiveStatus.AddSuccessfulReceivedMessage);
+					receiveStatus.AddFailure(failedMessageCount);
+					
 					if (policyResult.FinalException != null)
 					{
 						exceptions.Add(policyResult.FinalException);
@@ -93,6 +101,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 				string statusMessage = CreateSuccessStatusMessage(successfulMessageCount, totalNumberOfMessages, failedMessageCount, marketPartnerWithoutCertificate, hasTooManyRequestsError);
 				logger.LogInformation("Receiving available messages finished: {StatusMessage}", statusMessage);
 			}
+
+			return receiveStatus;
 		}
 
 		private async Task<List<Exception>> QueryMessagesAsync(string receiverIdentificationNumber,
