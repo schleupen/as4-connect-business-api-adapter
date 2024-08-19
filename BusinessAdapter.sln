@@ -35,7 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FP", "FP", "{74A93D20-7C7A-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.MP.UnitTests", "BusinessAdapter.MP.UnitTests\BusinessAdapter.MP.UnitTests.csproj", "{333F0A0A-374E-41A7-ABDA-DDE73187F187}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.Fp.IntegrativeTests", "BusinessAdapter.Fp.IntegrativeTests\BusinessAdapter.Fp.IntegrativeTests.csproj", "{84749248-5A8F-454A-B91E-2C823228840B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.FP.IntegrativeTests", "BusinessAdapter.FP.IntegrativeTests\BusinessAdapter.FP.IntegrativeTests.csproj", "{84749248-5A8F-454A-B91E-2C823228840B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
