@@ -86,7 +86,7 @@ pipeline
             steps 
             {
                 withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                    powershellFile(filename: ".\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1")  
+                    PowerShell(". '.\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1'")  
                 }
                 script 
                 {
@@ -113,4 +113,9 @@ pipeline
             notifyBuildFailed()
         }
     }
+}
+
+def PowerShell(psCmd) {
+    psCmd=psCmd.replaceAll("%", "%%")
+    bat "powershell.exe -NonInteractive -ExecutionPolicy Bypass -Command \"\$ErrorActionPreference='Stop';[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;$psCmd;EXIT \$global:LastExitCode\""
 }
