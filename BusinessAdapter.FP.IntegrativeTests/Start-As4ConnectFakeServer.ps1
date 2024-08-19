@@ -52,9 +52,8 @@ Write-Output "Entpacke ZIP..."
 Expand-Archive -Path "C:\GitHubDownload\FakeServer.zip" -DestinationPath "C:\GitHubDownload\FakeServer" -Force
 
 Write-Output "Installiere Zertifikate..."
-Import-PfxCertificate -FilePath "C:\Jenkins\workspace\as4-connect-business-api-adapter\BusinessAdapter.Fp.IntegrativeTests\Zertifikate\client.pfx" -CertStoreLocation "Cert:\LocalMachine\My" -Password (ConvertTo-SecureString -String test -AsPlainText -Force) | Out-Null
-Import-Certificate -FilePath "C:\Jenkins\workspace\as4-connect-business-api-adapter\BusinessAdapter.Fp.IntegrativeTests\Zertifikate\fakeserver_ca.crt" -CertStoreLocation "Cert:\LocalMachine\Root" | Out-Null
-
+Import-PfxCertificate -FilePath "C:\GitHubDownload\FakeServer\Certificates\client.pfx" -CertStoreLocation "Cert:\LocalMachine\My" -Password (ConvertTo-SecureString -String test -AsPlainText -Force) | Out-Null
+Import-Certificate -FilePath "C:\GitHubDownload\FakeServer\Certificates\fakeserver_ca.crt" -CertStoreLocation "Cert:\LocalMachine\Root" | Out-Null
 Write-Output "Installiere Entwicklungszertifikate..."
 dotnet dev-certs https
 Get-ChildItem -Path Cert:\CurrentUser\My | Where-Object -Property Subject -eq "CN=localhost" | Export-PfxCertificate -FilePath C:\dotnetdevcert.pfx -Password (ConvertTo-SecureString -AsPlainText -Force "test")

@@ -21,7 +21,7 @@ pipeline
 
     agent
     {
-        label 'linux-docker'
+        label 'hv24-entflochten-windows-sqlserver'
     }
 
     environment
@@ -41,14 +41,60 @@ pipeline
             {
                 script
                 {             
-                    docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
-                    {
-                        sh 'dotnet restore ./BusinessAdapter.sln'
-                        sh 'dotnet build -c Release --no-restore ./BusinessAdapter.sln'
-                    }
+                    bat  'dotnet restore ./BusinessAdapter.sln'
+                    bat  'dotnet build -c Release ./BusinessAdapter.sln'
                 }
             }
         }
+
+        stage('Installationen') {
+            parallel {
+                stage('Updateinstallation durchführen') {
+
+                    stages {
+                        stage('Installation') {
+                            steps {
+                                timeout(time: 3, unit: 'HOURS') {
+                                    dir('update') {
+                                          withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                                              powershellFile(filename: "..\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1")  
+                                          }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Tests') {
+                            steps {
+                                timeout(time: 3, unit: 'HOURS') {
+                                   script {
+                               //      bat 'mkdir -p ./Tests/unit/results'
+                                                                       
+                                    bat  'dotnet restore ./BusinessAdapter.sln'
+                                    bat  'dotnet build -c Release ./BusinessAdapter.sln'
+
+                                    bat "dotnet test -c Release BusinessAdapter.FP.IntegrativeTests/BusinessAdapter.FP.IntegrativeTests.csproj --logger \"trx;LogFileName=unit_tests.xml\" --no-build"
+                                  }
+                                }                          
+                            }
+                        }
+                    }                    
+                    post {
+                        success {
+                            processBuildSucceeded()
+                        }
+                        unstable {
+                            processBuildUnstable()
+                        }
+                        failure {
+                            processBuildUnstable()
+                        }
+                        aborted {
+                            processBuildUnstable()
+                        }
+                    }
+                }                
+            }
+        }      
 
         stage('unittests')
         {
@@ -56,18 +102,18 @@ pipeline
             {
                 script
                 {
-                    sh 'mkdir -p ./Tests/unit/results'
+                  //      bat 'mkdir -p ./Tests/unit/results'
 
-                    docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
-                    {
-                        sh 'dotnet test ./BusinessAdapter.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.UnitTests.junit.xml\' -e HOME=/tmp'
+                  //  docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
+                  //  {
+                        bat  'dotnet test ./BusinessAdapter.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.UnitTests.junit.xml\' -e HOME=/tmp'
                                                 
-                        sh 'dotnet test ./BusinessAdapter.FP.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.UnitTests.junit.xml\' -e HOME=/tmp'
-                        sh 'dotnet test ./BusinessAdapter.FP.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.Console.UnitTests.junit.xml\' -e HOME=/tmp'
+                        bat  'dotnet test ./BusinessAdapter.FP.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.UnitTests.junit.xml\' -e HOME=/tmp'
+                        bat  'dotnet test ./BusinessAdapter.FP.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.Console.UnitTests.junit.xml\' -e HOME=/tmp'
                         
-                        sh 'dotnet test ./BusinessAdapter.MP.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.MP.UnitTests.junit.xml\' -e HOME=/tmp'
-                        sh 'dotnet test ./BusinessAdapter.MP.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.MP.Console.UnitTests.junit.xml\' -e HOME=/tmp'
-                    }
+                        bat  'dotnet test ./BusinessAdapter.MP.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.MP.UnitTests.junit.xml\' -e HOME=/tmp'
+                        bat  'dotnet test ./BusinessAdapter.MP.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.MP.Console.UnitTests.junit.xml\' -e HOME=/tmp'
+                 //   }
                     
                 }
             }
@@ -79,26 +125,7 @@ pipeline
                     junit skipPublishingChecks: true, testResults: '*/unit/results/*.junit.xml'
                 }
             }
-        }
-        
-        stage('integrative tests')
-        {
-            steps 
-            {
-                withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                    PowerShell(". '.\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1'")  
-                }
-                script 
-                {
-                    sh 'mkdir -p ./Tests/unit/results'
-                
-                    docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
-                    {
-                        sh 'dotnet test ./BusinessAdapter.FP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.IntegrativeTests.junit.xml\' -e HOME=/tmp'
-                    }
-                }
-            }
-        }
+        }             
     }
 
     post {
@@ -113,9 +140,4 @@ pipeline
             notifyBuildFailed()
         }
     }
-}
-
-def PowerShell(psCmd) {
-    psCmd=psCmd.replaceAll("%", "%%")
-    bat "powershell.exe -NonInteractive -ExecutionPolicy Bypass -Command \"\$ErrorActionPreference='Stop';[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;$psCmd;EXIT \$global:LastExitCode\""
 }
