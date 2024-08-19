@@ -98,31 +98,31 @@ public partial class SendAndReceiveTests
 		        Adapter = new
 		        {
 			        As4ConnectEndpoint = "https://localhost:8043",
-			        Send = new
-			        {
-				        Directory = sendDirectory,
-				        Retry = new
-				        {
-					        Count = 3,
-					        SleepDuration = "00:00:05"
-				        },
-				        MessageLimitCount = 2,
-				        SleepDuration = "00:00:10"
-			        },
-			        Receive = new
-			        {
-				        Directory = receiveDirectory,
-				        Retry = new
-				        {
-					        Count = 1,
-					        SleepDuration = "00:00:10"
-				        },
-				        SleepDuration = "00:01:00",
-				        MessageLimitCount = 2
-			        },
 			        Marketpartners = marketpartners,
 			        CertificateStoreLocation = "LocalMachine",
 			        CertificateStoreName = "My"
+		        },
+		        Send = new
+		        {
+			        Directory = sendDirectory,
+			        Retry = new
+			        {
+				        Count = 3,
+				        SleepDuration = "00:00:05"
+			        },
+			        MessageLimitCount = 2,
+			        SleepDuration = "00:00:10"
+		        },
+		        Receive = new
+		        {
+			        Directory = receiveDirectory,
+			        Retry = new
+			        {
+				        Count = 1,
+				        SleepDuration = "00:00:10"
+			        },
+			        SleepDuration = "00:01:00",
+			        MessageLimitCount = 2
 		        },
 		        EICMapping = eicMapping
 	        };
@@ -145,7 +145,7 @@ public partial class SendAndReceiveTests
 	        var serviceProvider = CreateServiceProvider(configFile);
 
 	        var sender = serviceProvider.GetRequiredService<IFpMessageSender>();
-	        return await sender.SendAvailableMessagesAsync(CancellationToken.None);
+	        return await sender.SendMessagesAsync(CancellationToken.None);
         }
 
         private ServiceProvider CreateServiceProvider(FileInfo fileInfo)
