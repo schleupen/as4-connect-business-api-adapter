@@ -86,7 +86,7 @@ pipeline
             steps 
             {
                 withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                    powershellFile(filename: "../BusinessAdapter.FP.IntegrativeTests/Start-As4ConnectFakeServer.ps1")  
+                    powershellFile(filename: "BusinessAdapter.FP.IntegrativeTests/Start-As4ConnectFakeServer.ps1")  
                
                 }
                 script 
