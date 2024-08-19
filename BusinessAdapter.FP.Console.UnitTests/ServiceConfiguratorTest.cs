@@ -44,7 +44,7 @@ internal sealed partial class ServiceConfiguratorTest
 		configurator.ConfigureReceiving(serviceCollection, config);
 		serviceCollection.AddLogging((b) => b.AddConsole());
 
-		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<IReceiveMessageAdapterController>();
+		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<Schleupen.AS4.BusinessAdapter.FP.Receiving.IFpMessageReceiver>();
 		Assert.That(sender, Is.Not.Null);
 	}
 
