@@ -18,9 +18,6 @@ public class EICMappingOptionsValidator : IValidateOptions<Configuration.EICMapp
 			return ValidateOptionsResult.Fail("Empty EIC-Mapping.");
 		}
 
-		// TODO add validation of entries
-		// TODO add EICMapping Validation Tests
-
 		return builder.Build();
 	}
 }

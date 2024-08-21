@@ -25,9 +25,7 @@ pipeline
     }
 
     environment
-    {
-        DOCKER_BUILDKIT = 1
-        
+    { 
         HTTPS_PROXY = "${SchleupenInternetProxyUrl}"
         HTTP_PROXY = "${SchleupenInternetProxyUrl}"
         NO_PROXY = "127.0.0.0/8,10.0.0.0/8,localhost,.schleupen-ag.de"
@@ -47,51 +45,32 @@ pipeline
             }
         }
 
-        stage('Installationen') {
+        stage('IntegrativeTests') {
             parallel {
-                stage('Updateinstallation durchführen') {
-
+                stage('Installation') {
                     stages {
-                        stage('Installation') {
+                        stage('FakeServer') {
                             steps {
                                 timeout(time: 3, unit: 'HOURS') {
-                                    dir('update') {
-                                          withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                                              powershellFile(filename: "..\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1")  
-                                          }
-                                    }
+                                    withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                                        powershellFile(filename: ".\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1")  
+                                    }                                 
                                 }
                             }
                         }
                         stage('Tests') {
                             steps {
                                 timeout(time: 3, unit: 'HOURS') {
-                                   script {
-                               //      bat 'mkdir -p ./Tests/unit/results'
-                                                                       
+                                   script {                                                                          
                                     bat  'dotnet restore ./BusinessAdapter.sln'
                                     bat  'dotnet build -c Release ./BusinessAdapter.sln'
 
-                                    bat "dotnet test -c Release BusinessAdapter.FP.IntegrativeTests/BusinessAdapter.FP.IntegrativeTests.csproj --logger \"trx;LogFileName=unit_tests.xml\" --no-build"
+                                    bat "dotnet test -c Release BusinessAdapter.FP.IntegrativeTests/BusinessAdapter.FP.IntegrativeTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
                                   }
                                 }                          
                             }
                         }
-                    }                    
-                    post {
-                        success {
-                            processBuildSucceeded()
-                        }
-                        unstable {
-                            processBuildUnstable()
-                        }
-                        failure {
-                            processBuildUnstable()
-                        }
-                        aborted {
-                            processBuildUnstable()
-                        }
-                    }
+                    }                               
                 }                
             }
         }      
@@ -102,27 +81,21 @@ pipeline
             {
                 script
                 {
-                  //      bat 'mkdir -p ./Tests/unit/results'
-
-                  //  docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
-                  //  {
-                        bat  'dotnet test ./BusinessAdapter.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.UnitTests.junit.xml\' -e HOME=/tmp'
+                        bat  'dotnet test -c Release BusinessAdapter.UnitTests/BusinessAdapter.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.UnitTests.junit.xml\" -e HOME=/tmp'
                                                 
-                        bat  'dotnet test ./BusinessAdapter.FP.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.UnitTests.junit.xml\' -e HOME=/tmp'
-                        bat  'dotnet test ./BusinessAdapter.FP.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.FP.Console.UnitTests.junit.xml\' -e HOME=/tmp'
+                        bat  'dotnet test -c Release BusinessAdapter.FP.UnitTests/BusinessAdapter.FP.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.UnitTests.junit.xml\" -e HOME=/tmp'
+                        bat  'dotnet test -c Release BusinessAdapter.FP.Console.UnitTests/BusinessAdapter.FP.Console.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.Console.UnitTests.junit.xml\" -e HOME=/tmp'
                         
-                        bat  'dotnet test ./BusinessAdapter.MP.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.MP.UnitTests.junit.xml\' -e HOME=/tmp'
-                        bat  'dotnet test ./BusinessAdapter.MP.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.MP.Console.UnitTests.junit.xml\' -e HOME=/tmp'
-                 //   }
-                    
+                        bat  'dotnet test -c Release BusinessAdapter.MP.UnitTests/BusinessAdapter.MP.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.MP.UnitTests.junit.xml\" -e HOME=/tmp'
+                        bat  'dotnet test -c Release BusinessAdapter.MP.Console.UnitTests/BusinessAdapter.MP.Console.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.MP.Console.UnitTests.junit.xml\" -e HOME=/tmp'
                 }
             }
             post
             {
                 always
                 {
-                    archiveArtifacts allowEmptyArchive: false, artifacts: '*/unit/results/*.junit.xml'
-                    junit skipPublishingChecks: true, testResults: '*/unit/results/*.junit.xml'
+                    archiveArtifacts allowEmptyArchive: false, artifacts: '*/*.junit.xml'
+                    junit skipPublishingChecks: true, testResults: '*/*.junit.xml'
                 }
             }
         }             
