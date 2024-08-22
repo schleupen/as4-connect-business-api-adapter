@@ -25,7 +25,7 @@ pipeline
     }
 
     environment
-    { 
+    {        
         HTTPS_PROXY = "${SchleupenInternetProxyUrl}"
         HTTP_PROXY = "${SchleupenInternetProxyUrl}"
         NO_PROXY = "127.0.0.0/8,10.0.0.0/8,localhost,.schleupen-ag.de"
@@ -74,7 +74,6 @@ pipeline
                 }                
             }
         }      
-
         stage('unittests')
         {
             steps
@@ -104,13 +103,5 @@ pipeline
     post {
         success {
             setBuildStatus("Build succeeded", "SUCCESS")
-            notifyBuildSuccessful()
-        }
-        unstable {
-            notifyBuildUnstable()
-        }
-        failure {
-            notifyBuildFailed()
-        }
-    }
+
 }
