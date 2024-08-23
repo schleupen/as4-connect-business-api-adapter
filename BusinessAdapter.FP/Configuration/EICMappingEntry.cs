@@ -3,7 +3,7 @@
 public class EICMappingEntry
 {
     public string EIC { get; set; }
-    public string MpType { get; set; }
+    public string MarktpartnerTyp { get; set; }
     public string Bilanzkreis { get; set; }
-    public string FpType { get; set; }
+    public string FahrplanHaendlertyp { get; set; }
 }

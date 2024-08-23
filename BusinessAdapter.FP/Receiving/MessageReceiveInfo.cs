@@ -5,10 +5,10 @@
 /// </summary>
 public sealed class MessageReceiveInfo
 {
-    private readonly As4FpMessage[] availableMessages;
+    private readonly FpInboxMessage[] availableMessages;
     private readonly HashSet<InboxFpMessage> confirmableMessages = [];
 
-    public MessageReceiveInfo(As4FpMessage[] availableMessages)
+    public MessageReceiveInfo(FpInboxMessage[] availableMessages)
     {
         this.availableMessages = availableMessages;
     }
@@ -26,7 +26,7 @@ public sealed class MessageReceiveInfo
     /// <summary>
     /// Returns the available messages.
     /// </summary>
-    public As4FpMessage[] GetAvailableMessages()
+    public FpInboxMessage[] GetAvailableMessages()
     {
         return availableMessages;
     }

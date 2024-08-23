@@ -174,13 +174,13 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 		{
 			int configuredLimit = this.receiveOptions.MessageLimitCount;
 			int messageLimit = Math.Min(receiveContext.Key.GetAvailableMessages().Length, configuredLimit);
-			As4FpMessage[] availableMessages = receiveContext.Key.GetAvailableMessages();
+			FpInboxMessage[] availableMessages = receiveContext.Key.GetAvailableMessages();
 
 			return await Policy.Handle<Exception>()
 				.WaitAndRetryAsync(receiveOptions.Retry.Count, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
 				.ExecuteAndCaptureAsync(async () =>
 				{
-					List<As4FpMessage> messagesForRetry = new List<As4FpMessage>();
+					List<FpInboxMessage> messagesForRetry = new List<FpInboxMessage>();
 					List<Exception> exceptions = new List<Exception>();
 					for (int i = 0; i < messageLimit; i++)
 					{

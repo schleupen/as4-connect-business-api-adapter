@@ -69,8 +69,8 @@ public partial class FpOutboxMessageAssemblerTest
 			{
 				Bilanzkreis = Sender.Bilanzkreis,
 				EIC = EICCodeSender,
-				FpType = Sender.FpType,
-				MpType = Sender.Type
+				FahrplanHaendlertyp = Sender.FpType,
+				MarktpartnerTyp = Sender.Type
 			}
 		};
 		
@@ -80,8 +80,8 @@ public partial class FpOutboxMessageAssemblerTest
 			{
 				Bilanzkreis = Receiver.Bilanzkreis,
 				EIC = EICCodeReceiver,
-				FpType = Receiver.FpType,
-				MpType = Receiver.Type
+				FahrplanHaendlertyp = Receiver.FpType,
+				MarktpartnerTyp = Receiver.Type
 			}
 		};
 	}

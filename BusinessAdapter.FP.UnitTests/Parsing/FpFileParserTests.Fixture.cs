@@ -10,7 +10,7 @@ internal sealed partial class FpFileParserTests
         public string CreateExampleESSConfirmationReport()
         {
             string dir = TestContext.CurrentContext.TestDirectory;
-            return dir + "/../../../Parsing/20240126_TPS_0X1001A1001A264_FINGRID_002_CNF_01-26T08-2344Z.xml";
+            return Path.Combine(dir, "/../../../Parsing/20240126_TPS_0X1001A1001A264_FINGRID_002_CNF_01-26T08-2344Z.xml");
         }
         
         public string CreateExampleESSAcknowledgeMessage()

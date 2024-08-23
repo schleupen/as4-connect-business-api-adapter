@@ -1,4 +1,6 @@
-﻿namespace Schleupen.AS4.BusinessAdapter.FP.Configuration.Validation;
+﻿using Microsoft.IdentityModel.Tokens;
+
+namespace Schleupen.AS4.BusinessAdapter.FP.Configuration.Validation;
 
 using Microsoft.Extensions.Options;
 
@@ -18,6 +20,32 @@ public class EICMappingOptionsValidator : IValidateOptions<Configuration.EICMapp
 			return ValidateOptionsResult.Fail("Empty EIC-Mapping.");
 		}
 
+		foreach (var keyValuePair in options)
+		{
+			if (keyValuePair.Value.IsNullOrEmpty())
+			{
+				return ValidateOptionsResult.Fail("Empty EIC-Mapping.");
+			}
+			foreach (var mappingEntry in keyValuePair.Value)
+			{
+				if (mappingEntry.Bilanzkreis.IsNullOrEmpty())
+				{
+					return ValidateOptionsResult.Fail($"Empty Bilanzkreis for {keyValuePair.Key}.");
+				}
+				if (mappingEntry.EIC.IsNullOrEmpty())
+				{
+					return ValidateOptionsResult.Fail($"Empty EIC for {keyValuePair.Key}.");
+				}
+				if (mappingEntry.FahrplanHaendlertyp.IsNullOrEmpty())
+				{
+					return ValidateOptionsResult.Fail($"Empty FahrplanHaendlertyp for {keyValuePair.Key}.");
+				}
+				if (mappingEntry.MarktpartnerTyp.IsNullOrEmpty())
+				{
+					return ValidateOptionsResult.Fail($"Empty MarktpartnerTyp for {keyValuePair.Key}.");
+				}
+			}
+		}
 		return builder.Build();
 	}
 }

@@ -21,15 +21,15 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 		/// <summary>
 		/// Queries XML files for the given AS4 message..
 		/// </summary>
-		/// <param name="mpMessage">The Metadata of the message.</param>
+		/// <param name="fpInboxMessage">The Metadata of the message.</param>
 		/// <returns>The XML file.</returns>
-		Task<BusinessApiResponse<InboxFpMessage>> ReceiveMessageAsync(As4FpMessage mpMessage);
+		Task<BusinessApiResponse<InboxFpMessage>> ReceiveMessageAsync(FpInboxMessage fpInboxMessage);
 
 		/// <summary>
 		/// Confirms that a message was successfully received.
 		/// </summary>
 		/// <param name="fpMessage">The received message that should be acknowledged.</param>
 		/// <returns>Whether the acknowledgement was successful.</returns>
-		Task<BusinessApiResponse<bool>> AcknowledgeReceivedMessageAsync(InboxFpMessage mpMessage);
+		Task<BusinessApiResponse<bool>> AcknowledgeReceivedMessageAsync(InboxFpMessage fpMessage);
 	}
 }

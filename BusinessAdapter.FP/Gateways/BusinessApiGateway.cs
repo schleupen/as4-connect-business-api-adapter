@@ -74,7 +74,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			QueryInboxFPMessagesResponseDto clientResponse = await businessApiClient.V1FpMessagesInboxGetAsync(limit);
 
-			List<As4FpMessage> messages = new List<As4FpMessage>();
+			List<FpInboxMessage> messages = new List<FpInboxMessage>();
 			
 			foreach (InboundFPMessageDto? message in clientResponse.Messages)
 			{
@@ -85,7 +85,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 						throw new ArgumentException($"The message with the identification {message.MessageId} has no party info.");
 					}
 
-					messages.Add(new As4FpMessage(
+					messages.Add(new FpInboxMessage(
 						message.Created_at,
 						message.MessageId.ToString(),
 						new PartyInfo(
@@ -110,12 +110,12 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			return new MessageReceiveInfo(messages.ToArray());
 		}
 
-		public async Task<BusinessApiResponse<InboxFpMessage>> ReceiveMessageAsync(As4FpMessage mpMessage)
+		public async Task<BusinessApiResponse<InboxFpMessage>> ReceiveMessageAsync(FpInboxMessage fpInboxMessage)
 		{
 			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			try
 			{
-				FileResponse clientResponse = await businessApiClient.V1FpMessagesInboxPayloadAsync(Guid.Parse(mpMessage.MessageId));
+				FileResponse clientResponse = await businessApiClient.V1FpMessagesInboxPayloadAsync(Guid.Parse(fpInboxMessage.MessageId));
 
 				using (MemoryStream ms = new MemoryStream())
 				{
@@ -132,16 +132,12 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 							return new BusinessApiResponse<InboxFpMessage>(
 								true,
 								new InboxFpMessage(
-									mpMessage.MessageId,
-									mpMessage.PartyInfo.Sender!,
-									mpMessage.PartyInfo.Receiver!,
+									fpInboxMessage.MessageId,
+									fpInboxMessage.PartyInfo.Sender!,
+									fpInboxMessage.PartyInfo.Receiver!,
 									xmlString,
 									zippedContent,
-									new FpBDEWProperties(mpMessage.BDEWDocumentType,
-										mpMessage.BdewDocumentNo,
-										mpMessage.BdewFulfillmentDate,
-										mpMessage.BdewSubjectPartyId,
-										mpMessage.BdewSubjectPartyRole)));
+								    fpInboxMessage.BDEWProperties));
 						}
 					}
 				}
@@ -149,9 +145,9 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			catch (ApiException ex)
 			{
 				return new BusinessApiResponse<InboxFpMessage>(false,
-					new InboxFpMessage(mpMessage.MessageId,
-						mpMessage.PartyInfo.Sender!,
-						mpMessage.PartyInfo.Receiver!,
+					new InboxFpMessage(fpInboxMessage.MessageId,
+						fpInboxMessage.PartyInfo.Sender!,
+						fpInboxMessage.PartyInfo.Receiver!,
 						null,
 						null,
 						null)
