@@ -24,7 +24,7 @@ public partial class SendAndReceiveTests
 
 	    var receiveStatus = await this.fixture.Receive(configFileOption);
 
-	    Assert.That(receiveStatus.FailedMessageCount, Is.Zero);
-	    Assert.That(receiveStatus.SuccessfulMessageCount, Is.EqualTo(4));
+	    Assert.That(receiveStatus.FailedMessages, Is.Zero);
+	    Assert.That(receiveStatus.SuccessfulMessages, Is.EqualTo(4));
 	}
 }

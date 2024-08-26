@@ -1,265 +1,301 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
+using System.Net;
+using Polly;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Schleupen.AS4.BusinessAdapter.Configuration;
+using Schleupen.AS4.BusinessAdapter.Certificates;
+using Schleupen.AS4.BusinessAdapter.API;
+using Schleupen.AS4.BusinessAdapter.FP.Gateways;
+using Schleupen.AS4.BusinessAdapter.FP.Configuration;
+
 namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 {
-	using System.Net;
-	using Polly;
-	using System.Threading.Tasks;
-	using Microsoft.Extensions.Logging;
-	using Microsoft.Extensions.Options;
-	using Schleupen.AS4.BusinessAdapter.Configuration;
-	using Schleupen.AS4.BusinessAdapter.Certificates;
-	using Schleupen.AS4.BusinessAdapter.API;
-	using Schleupen.AS4.BusinessAdapter.FP.Gateways;
-	using Schleupen.AS4.BusinessAdapter.FP.Configuration;
+    public sealed class FpMessageReceiver : IFpMessageReceiver
+    {
+        private readonly ILogger<FpMessageReceiver> logger;
+        private readonly ReceiveOptions receiveOptions;
+        private readonly AdapterOptions adapterOptions;
+        private readonly IBusinessApiGatewayFactory businessApiGatewayFactory;
+        private readonly IFpFileRepository fpFileRepo;
+        private readonly EICMapping eicMapping;
 
-	public sealed class FpMessageReceiver(
-		ILogger<FpMessageReceiver> logger,
-		IOptions<ReceiveOptions> receiveOptions,
-		IOptions<AdapterOptions> adapterOptions,
-		IBusinessApiGatewayFactory businessApiGatewayFactory,
-		IFpFileRepository fpFileRepo,
-		IOptions<EICMapping> eicMapping) : IFpMessageReceiver
-	{
-		private readonly ReceiveOptions receiveOptions = receiveOptions.Value;
+        private const string TooManyRequestsMessage =
+            "A 429 TooManyRequests status code was encountered while receiving the EDIFACT messages which caused the receiving to end before all messages could be received.";
 
-		private const string TooManyRequestsMessage = "A 429 TooManyRequests status code was encountered while receiving the EDIFACT messages which caused the receiving to end before all messages could be received.";
+        public FpMessageReceiver(
+            ILogger<FpMessageReceiver> logger,
+            IOptions<ReceiveOptions> receiveOptions,
+            IOptions<AdapterOptions> adapterOptions,
+            IBusinessApiGatewayFactory businessApiGatewayFactory,
+            IFpFileRepository fpFileRepo,
+            IOptions<EICMapping> eicMapping)
+        {
+            this.logger = logger;
+            this.receiveOptions = receiveOptions.Value;
+            this.adapterOptions = adapterOptions.Value;
+            this.businessApiGatewayFactory = businessApiGatewayFactory;
+            this.fpFileRepo = fpFileRepo;
+            this.eicMapping = eicMapping.Value;
+        }
 
-		public async Task<ReceiveStatus> ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
-		{
-			logger.LogDebug("Receiving of available messages starting.");
+        public async Task<ReceiveStatus> ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
+        {
+            ValidateConfiguration();
 
-			string receiveDirectoryPath = receiveOptions.Directory;
-			if (string.IsNullOrEmpty(receiveDirectoryPath))
-			{
-				throw new CatastrophicException("The receive directory is not configured.");
-			}
+            var marketPartnersWithoutCertificate = new List<string>();
+            var exceptions = new List<Exception>();
 
-			IReadOnlyCollection<string> ownMarketpartners = adapterOptions.Value.Marketpartners!;
-			if (ownMarketpartners.Count == 0)
-			{
-				throw new CatastrophicException("No valid own market partners were found.");
-			}
+            var as4BusinessApiClients = await QueryAllMessagesAsync(marketPartnersWithoutCertificate, exceptions);
 
-			Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients = new Dictionary<MessageReceiveInfo, Gateways.IBusinessApiGateway>();
-			int successfulMessageCount = 0;
-			int failedMessageCount = 0;
-			bool hasTooManyRequestsError = false;
-			List<Exception> exceptions = new List<Exception>();
-			List<string> marketPartnerWithoutCertificate = new List<string>();
+            var receiveStatus = await ProcessAllMessagesAsync(as4BusinessApiClients, exceptions);
 
-			ReceiveStatus receiveStatus;
-			try
-			{
-				foreach (string receiverIdentificationNumber in ownMarketpartners)
-				{
-					exceptions = await QueryMessagesAsync(receiverIdentificationNumber,
-						as4BusinessApiClients,
-						marketPartnerWithoutCertificate);
-				}
-				int allAvailableMessageCount = as4BusinessApiClients.Sum(x => x.Key.GetAvailableMessages().Length);
-				receiveStatus = new ReceiveStatus(allAvailableMessageCount);
+            LogFinalStatus(receiveStatus, as4BusinessApiClients, marketPartnersWithoutCertificate);
 
-				logger.LogInformation("Receiving {AllAvailableMessageCount} messages.", allAvailableMessageCount);
+            return receiveStatus;
+        }
 
-				foreach (KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClient in as4BusinessApiClients)
-				{
-					PolicyResult policyResult = await ReceiveMessagesAsync(receiveDirectoryPath, as4BusinessApiClient, allAvailableMessageCount, successfulMessageCount, failedMessageCount, cancellationToken);
-					successfulMessageCount += as4BusinessApiClient.Key.ConfirmableMessages.Count;
-					failedMessageCount += as4BusinessApiClient.Key.GetAvailableMessages().Length - as4BusinessApiClient.Key.ConfirmableMessages.Count;
-					
-					as4BusinessApiClient.Key.ConfirmableMessages
-						.ToList()
-						.ForEach(receiveStatus.AddSuccessfulReceivedMessage);
-					receiveStatus.AddFailure(failedMessageCount);
-					
-					if (policyResult.FinalException != null)
-					{
-						exceptions.Add(policyResult.FinalException);
-					}
+        private void ValidateConfiguration()
+        {
+            logger.LogDebug("Receiving of available messages starting.");
 
-					if (as4BusinessApiClient.Key.HasTooManyRequestsError)
-					{
-						hasTooManyRequestsError = true;
-						break;
-					}
-				}
+            if (string.IsNullOrEmpty(receiveOptions.Directory))
+            {
+                throw new CatastrophicException("The receive directory is not configured.");
+            }
 
-				if (exceptions.Count != 0)
-				{
-					throw new AggregateException("At least one error occured. Details can be found in the inner exceptions.", exceptions);
-				}
-			}
-			finally
-			{
-				foreach (KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClient in as4BusinessApiClients)
-				{
-					as4BusinessApiClient.Value.Dispose();
-				}
+            if (adapterOptions.Marketpartners!.Length == 0)
+            {
+                throw new CatastrophicException("No valid own market partners were found.");
+            }
+        }
 
-				int totalNumberOfMessages = as4BusinessApiClients.Keys.Sum(x => x.GetAvailableMessages().Length);
-				string statusMessage = CreateSuccessStatusMessage(successfulMessageCount, totalNumberOfMessages, failedMessageCount, marketPartnerWithoutCertificate, hasTooManyRequestsError);
-				logger.LogInformation("Receiving available messages finished: {StatusMessage}", statusMessage);
-			}
+        private async Task<Dictionary<MessageReceiveInfo, IBusinessApiGateway>> QueryAllMessagesAsync(
+            List<string> marketPartnersWithoutCertificate,
+            List<Exception> exceptions)
+        {
+            var as4BusinessApiClients = new Dictionary<MessageReceiveInfo, IBusinessApiGateway>();
 
-			return receiveStatus;
-		}
+            foreach (var receiverIdentificationNumber in adapterOptions.Marketpartners)
+            {
+                var queryExceptions = await QueryMessagesAsync(receiverIdentificationNumber, as4BusinessApiClients,
+                    marketPartnersWithoutCertificate);
+                exceptions.AddRange(queryExceptions);
+            }
 
-		private async Task<List<Exception>> QueryMessagesAsync(string receiverIdentificationNumber,
-			Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients,
-			List<string> marketPartnerWithoutCertificate)
-		{
-			List<Exception> exceptions = new List<Exception>();
-			try
-			{
-				var partyReceiver = eicMapping.Value.GetParty(receiverIdentificationNumber);
-				if (partyReceiver == null)
-				{
-					logger.LogError("Receiving party {partyReceiver} mapping not configured", partyReceiver);
-					throw new InvalidOperationException($"Receiving party {partyReceiver} mapping not configured");
+            return as4BusinessApiClients;
+        }
 
-				}
-				IBusinessApiGateway gateway =
-					businessApiGatewayFactory.CreateGateway(
-						partyReceiver);
-				int messageLimit = receiveOptions.MessageLimitCount;
-				MessageReceiveInfo receiveInfo = await gateway.QueryAvailableMessagesAsync(messageLimit);
-				as4BusinessApiClients.Add(receiveInfo, gateway);
-			}
-			catch (MissingCertificateException certificateException)
-			{
-				marketPartnerWithoutCertificate.Add(certificateException.MarketpartnerIdentificationNumber);
-			}
-			catch (ApiException e)
-			{
-				logger.LogError("API Exception rethrown: '{Response}'", e.Response);
-				throw;
-			}
-			catch (Exception e)
-			{
-				exceptions.Add(e);
-			}
+        private async Task<List<Exception>> QueryMessagesAsync(
+            string receiverIdentificationNumber,
+            Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients,
+            List<string> marketPartnersWithoutCertificate)
+        {
+            var exceptions = new List<Exception>();
+            try
+            {
+                var partyReceiver = eicMapping.GetParty(receiverIdentificationNumber);
+                if (partyReceiver == null)
+                {
+                    var errorMessage = $"Receiving party {receiverIdentificationNumber} mapping not configured";
+                    logger.LogError(errorMessage);
+                    throw new InvalidOperationException(errorMessage);
+                }
 
-			return exceptions;
-		}
+                var gateway = businessApiGatewayFactory.CreateGateway(partyReceiver);
+                var messageLimit = receiveOptions.MessageLimitCount;
+                var receiveInfo = await gateway.QueryAvailableMessagesAsync(messageLimit);
+                as4BusinessApiClients.Add(receiveInfo, gateway);
+            }
+            catch (MissingCertificateException certificateException)
+            {
+                marketPartnersWithoutCertificate.Add(certificateException.MarketpartnerIdentificationNumber);
+                exceptions.Add(certificateException);
+            }
+            catch (ApiException e)
+            {
+                logger.LogError("API Exception rethrown: '{Response}'", e.Response);
+                throw;
+            }
+            catch (Exception e)
+            {
+                exceptions.Add(e);
+            }
 
-		private string CreateSuccessStatusMessage(int successfulMessageCount, int totalMessageCount, int failedMessageCount, IReadOnlyCollection<string> marketPartnerWithoutCertificate, bool hasTooManyRequestsError)
-		{
-			string statusMessage = $"{successfulMessageCount}/{totalMessageCount} messages were received successfully.";
-			if (failedMessageCount > 0)
-			{
-				statusMessage += $" There were {failedMessageCount} messages with errors.";
-			}
+            return exceptions;
+        }
 
-			if (marketPartnerWithoutCertificate.Count > 0)
-			{
-				string noCertificateMessage = $" The following market partner does not have a certificate: {string.Join(", ", marketPartnerWithoutCertificate.Distinct())}";
-				statusMessage += noCertificateMessage;
-			}
+        private async Task<ReceiveStatus> ProcessAllMessagesAsync(
+            Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients,
+            List<Exception> exceptions)
+        {
+            var receiveStatus = new ReceiveStatus();
 
-			if (hasTooManyRequestsError)
-			{
-				statusMessage += TooManyRequestsMessage;
-			}
+            foreach (var as4BusinessApiClient in as4BusinessApiClients)
+            {
+                var policyResult = await ReceiveMessagesWithRetryAsync(as4BusinessApiClient, receiveStatus);
 
-			return statusMessage;
-		}
+                if (policyResult.FinalException != null)
+                {
+                    exceptions.Add(policyResult.FinalException);
+                }
 
-		private async Task<PolicyResult> ReceiveMessagesAsync(string receiveDirectoryPath,
-			KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> receiveContext,
-			long allAvailableMessageCount,
-			int successfulMessageCountBase,
-			int failedMessageCountBase,
-			CancellationToken cancellationToken)
-		{
-			int configuredLimit = this.receiveOptions.MessageLimitCount;
-			int messageLimit = Math.Min(receiveContext.Key.GetAvailableMessages().Length, configuredLimit);
-			FpInboxMessage[] availableMessages = receiveContext.Key.GetAvailableMessages();
+                if (as4BusinessApiClient.Key.HasTooManyRequestsError)
+                {
+                    break;
+                }
+            }
 
-			return await Policy.Handle<Exception>()
-				.WaitAndRetryAsync(receiveOptions.Retry.Count, _ => TimeSpan.FromSeconds(10), (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
-				.ExecuteAndCaptureAsync(async () =>
-				{
-					List<FpInboxMessage> messagesForRetry = new List<FpInboxMessage>();
-					List<Exception> exceptions = new List<Exception>();
-					for (int i = 0; i < messageLimit; i++)
-					{
-						int currentMessageCount = i + 1 + successfulMessageCountBase + failedMessageCountBase;
-						logger.LogInformation("Receiving message {CurrentMessageCount}/{AllAvailableMessageCount}", currentMessageCount, allAvailableMessageCount);
+            if (exceptions.Count > 0)
+            {
+                throw new AggregateException(
+                    "At least one error occurred. Details can be found in the inner exceptions.", exceptions);
+            }
 
-						try
-						{
-							BusinessApiResponse<InboxFpMessage> result = await receiveContext.Value.ReceiveMessageAsync(availableMessages[i]);
-							if (!result.WasSuccessful)
-							{
-								if (HandleTooManyRequestError(result.ResponseStatusCode!.Value))
-								{
-									receiveContext.Key.HasTooManyRequestsError = true;
-									return;
-								}
+            return receiveStatus;
+        }
 
-								messagesForRetry.Add(availableMessages[i]);
-								if (result.ApiException != null)
-								{
-									exceptions.Add(result.ApiException);
-								}
-							}
-							else
-							{
-								string fileName = fpFileRepo.StoreXmlFileTo(result.Message, receiveDirectoryPath);
+        private async Task<PolicyResult> ReceiveMessagesWithRetryAsync(
+            KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> receiveContext,
+            ReceiveStatus receiveStatus)
+        {
+            var availableMessages = receiveContext.Key.GetAvailableMessages();
+            var messageLimit = Math.Min(availableMessages.Length, receiveOptions.MessageLimitCount);
 
-								BusinessApiResponse<bool> ackResponse = await receiveContext.Value.AcknowledgeReceivedMessageAsync(result.Message);
-								if (!ackResponse.WasSuccessful)
-								{
-									fpFileRepo.DeleteFile(fileName);
+            return await Policy.Handle<Exception>()
+                .WaitAndRetryAsync(receiveOptions.Retry.Count, _ => TimeSpan.FromSeconds(10),
+                    (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
+                .ExecuteAndCaptureAsync(async () =>
+                {
+                    await ReceiveMessagesAsync(receiveContext, availableMessages, messageLimit, receiveStatus);
+                });
+        }
 
-									if (HandleTooManyRequestError(ackResponse.ResponseStatusCode!.Value))
-									{
-										receiveContext.Key.HasTooManyRequestsError = true;
-										return;
-									}
+        private async Task ReceiveMessagesAsync(
+            KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> receiveContext,
+            FpInboxMessage[] availableMessages,
+            int messageLimit,
+            ReceiveStatus receiveStatus)
+        {
+            var messagesForRetry = new List<FpInboxMessage>();
+            var exceptions = new List<Exception>();
 
-									messagesForRetry.Add(availableMessages[i]);
-									if (ackResponse.ApiException != null)
-									{
-										exceptions.Add(ackResponse.ApiException);
-									}
-									continue;
-								}
+            for (var i = 0; i < messageLimit; i++)
+            {
+                try
+                {
+                    await ProcessSingleMessageAsync(receiveContext, availableMessages[i], receiveStatus);
+                }
+                catch (Exception ex)
+                {
+                    receiveStatus.AddFailedReceivedMessage(availableMessages[i], ex);
+                    messagesForRetry.Add(availableMessages[i]);
+                    exceptions.Add(new RetryableException(
+                        $"Error while receiving message with identification {availableMessages[i].MessageId}.", ex));
+                }
+            }
 
-								receiveContext.Key.AddReceivedXmlMessage(result.Message);
-							}
-						}
-						catch (Exception ex)
-						{
-							messagesForRetry.Add(availableMessages[i]);
-							exceptions.Add(new RetryableException($"Error while receiving message with identification {availableMessages[i].MessageId}.", ex));
-						}
-					}
+            if (messagesForRetry.Count != 0)
+            {
+                throw new AggregateException(
+                    "At least one error occurred. Details can be found in the inner exceptions.", exceptions);
+            }
+        }
 
-					availableMessages = messagesForRetry.ToArray();
-					if (messagesForRetry.Count != 0)
-					{
-						if (exceptions.Count != 0)
-						{
-							throw new AggregateException("At least one error occured. Details can be found in the inner exceptions.", exceptions);
-						}
+        private async Task ProcessSingleMessageAsync(
+            KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> receiveContext, FpInboxMessage message,
+            ReceiveStatus receiveStatus)
+        {
+            var result = await receiveContext.Value.ReceiveMessageAsync(message);
 
-						throw new InvalidOperationException("Error while receiving AS4 messages.");
-					}
-				})
-				.WithCancellation(cancellationToken);
-		}
+            if (!result.WasSuccessful)
+            {
+                if (HandleTooManyRequestError(result.ResponseStatusCode!.Value))
+                {
+                    receiveContext.Key.HasTooManyRequestsError = true;
+                    return;
+                }
 
-		private bool HandleTooManyRequestError(HttpStatusCode httpStatusCode)
-		{
-			if (httpStatusCode != HttpStatusCode.TooManyRequests)
-			{
-				return false;
-			}
+                throw new InvalidOperationException("Error while receiving AS4 messages.");
+            }
 
-			logger.LogError(TooManyRequestsMessage);
-			return true;
-		}
-	}
+            var fileName = fpFileRepo.StoreXmlFileTo(result.Message, receiveOptions.Directory);
+
+            var ackResponse = await receiveContext.Value.AcknowledgeReceivedMessageAsync(result.Message);
+            if (!ackResponse.WasSuccessful)
+            {
+                fpFileRepo.DeleteFile(fileName);
+
+                if (HandleTooManyRequestError(ackResponse.ResponseStatusCode!.Value))
+                {
+                    receiveContext.Key.HasTooManyRequestsError = true;
+                    return;
+                }
+
+                throw new InvalidOperationException("Error while acknowledging AS4 messages.");
+            }
+
+            receiveStatus.AddSuccessfulReceivedMessage(message);
+        }
+
+        private void LogFinalStatus(ReceiveStatus receiveStatus,
+            Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients,
+            List<string> marketPartnersWithoutCertificate)
+        {
+            foreach (var as4BusinessApiClient in as4BusinessApiClients)
+            {
+                as4BusinessApiClient.Value.Dispose();
+            }
+
+            var totalNumberOfMessages = as4BusinessApiClients.Keys.Sum(x => x.GetAvailableMessages().Length);
+            var statusMessage = CreateSuccessStatusMessage(
+                receiveStatus.SuccessfulMessages,
+                totalNumberOfMessages,
+                receiveStatus.FailedMessages,
+                marketPartnersWithoutCertificate,
+                as4BusinessApiClients.Any(c => c.Key.HasTooManyRequestsError));
+
+            logger.LogInformation("Receiving available messages finished: {StatusMessage}", statusMessage);
+        }
+
+        private string CreateSuccessStatusMessage(
+            int successfulMessageCount,
+            int totalMessageCount,
+            int failedMessageCount,
+            IReadOnlyCollection<string> marketPartnersWithoutCertificate,
+            bool hasTooManyRequestsError)
+        {
+            var statusMessage = $"{successfulMessageCount}/{totalMessageCount} messages were received successfully.";
+            if (failedMessageCount > 0)
+            {
+                statusMessage += $" There were {failedMessageCount} messages with errors.";
+            }
+
+            if (marketPartnersWithoutCertificate.Count > 0)
+            {
+                var noCertificateMessage =
+                    $" The following market partners do not have a certificate: {string.Join(", ", marketPartnersWithoutCertificate.Distinct())}";
+                statusMessage += noCertificateMessage;
+            }
+
+            if (hasTooManyRequestsError)
+            {
+                statusMessage += TooManyRequestsMessage;
+            }
+
+            return statusMessage;
+        }
+
+        private bool HandleTooManyRequestError(HttpStatusCode httpStatusCode)
+        {
+            if (httpStatusCode != HttpStatusCode.TooManyRequests)
+            {
+                return false;
+            }
+
+            logger.LogError(TooManyRequestsMessage);
+            return true;
+        }
+    }
 }
