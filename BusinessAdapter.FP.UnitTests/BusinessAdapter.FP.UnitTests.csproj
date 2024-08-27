@@ -18,6 +18,9 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\BusinessAdapter.FP.Console\BusinessAdapter.FP.Console.csproj" />
 	  <ProjectReference Include="..\BusinessAdapter.FP\BusinessAdapter.FP.csproj" />
+	  <Content Include="Parsing\*.*">
+	  	<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="appsettings.unittests.json">
