@@ -64,6 +64,6 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
 
     private FpParty ToFpParty(EICMappingEntry entry, string mpId)
     {
-        return new FpParty(mpId, entry.MpType, entry.FpType, entry.Bilanzkreis);
+        return new FpParty(mpId, entry.MarktpartnerTyp, entry.FahrplanHaendlertyp, entry.Bilanzkreis);
     }
 }

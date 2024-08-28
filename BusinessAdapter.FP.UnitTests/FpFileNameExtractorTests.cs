@@ -55,8 +55,8 @@ public class FpFileNameExtractorTests
             {
                 Bilanzkreis = "FINGRID",
                 EIC = receiverEicCode,
-                FpType = "PPS",
-                MpType = "BDEW"
+                FahrplanHaendlertyp = "PPS",
+                MarktpartnerTyp = "BDEW"
             }
         };
         
@@ -73,7 +73,7 @@ public class FpFileNameExtractorTests
         Assert.That(result.Timestamp, Is.EqualTo(validityDate));
         Assert.That(result.Date, Is.EqualTo(creationDate));
         Assert.That(result.Version, Is.EqualTo("123"));
-        Assert.That(result.TypeHaendlerfahrplan, Is.EqualTo(mappedPartyMock.First().FpType));
+        Assert.That(result.TypeHaendlerfahrplan, Is.EqualTo(mappedPartyMock.First().FahrplanHaendlertyp));
     }
 
     [TestCase("A07", FpMessageType.Confirmation)]

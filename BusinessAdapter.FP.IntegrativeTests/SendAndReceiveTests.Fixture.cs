@@ -57,23 +57,23 @@ public partial class SendAndReceiveTests
 				        new EICMappingEntry
 				        {
 					        EIC = "5790000432752",
-					        MpType = "BDEW",
+					        MarktpartnerTyp = "BDEW",
 					        Bilanzkreis = "FINGRID",
-					        FpType = "PPS"
+					        FahrplanHaendlertyp = "PPS"
 				        },
 				        new EICMappingEntry
 				        {
 					        EIC = "5790000432766",
-					        MpType = "BDEW",
+					        MarktpartnerTyp = "BDEW",
 					        Bilanzkreis = "FINGRID",
-					        FpType = "TPS"
+					        FahrplanHaendlertyp = "TPS"
 				        },
 				        new EICMappingEntry
 				        {
 					        EIC = "10X000000000RTEM",
-					        MpType = "BDEW",
+					        MarktpartnerTyp = "BDEW",
 					        Bilanzkreis = "FINGRID",
-					        FpType = "PPS"
+					        FahrplanHaendlertyp = "PPS"
 				        }
 			        }
 		        }

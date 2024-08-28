@@ -22,7 +22,11 @@ public class FpFileNameExtractor : IFpFileNameExtractor
 		var parsedFile = fpFileParser.ParsePayload(fpMessage.Payload);
 
 		var mappedParty = eicMapping.Value.GetPartyOrDefault(parsedFile.Receiver);
-		// Error handling?
+		if (mappedParty == null)
+		{
+			throw new InvalidDataException(
+				$"Unable to find mapping for MP: {fpMessage.Receiver.Id}:{fpMessage.Receiver.Type}");
+		}
 		
 		return new FpFileName()
 		{

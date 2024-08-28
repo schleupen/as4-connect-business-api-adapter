@@ -62,8 +62,8 @@ public partial class EICMappingTest
 			{
 				Bilanzkreis = "Bilanzkreis",
 				EIC = "eic1",
-				FpType = "fpTyp",
-				MpType = "type"
+				FahrplanHaendlertyp = "fpTyp",
+				MarktpartnerTyp = "type"
 			}
 		};
 		
@@ -73,8 +73,8 @@ public partial class EICMappingTest
 			{
 				Bilanzkreis = "Bilanzkreis",
 				EIC = "eic2",
-				FpType = "fpTyp",
-				MpType = "type"
+				FahrplanHaendlertyp = "fpTyp",
+				MarktpartnerTyp = "type"
 			}
 		};
 	}
