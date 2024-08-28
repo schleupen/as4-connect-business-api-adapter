@@ -29,6 +29,7 @@ pipeline
         HTTPS_PROXY = "${SchleupenInternetProxyUrl}"
         HTTP_PROXY = "${SchleupenInternetProxyUrl}"
         NO_PROXY = "127.0.0.0/8,10.0.0.0/8,localhost,.schleupen-ag.de"
+        BRANCH_NAME = sh(returnStdout: true, script: "echo ${GIT_BRANCH} | (sed 's/[^a-zA-Z0-9]/-/g')").trim()
     }
 
     stages
@@ -38,9 +39,11 @@ pipeline
             steps
             {
                 script
-                {             
+                {
+                    VERSION_NUMBER = VersionNumber(versionNumberString: '0.0.${BUILDS_ALL_TIME}-${BRANCH_NAME}')
+                    currentBuild.displayName = "${VERSION_NUMBER}"
                     bat  'dotnet restore ./BusinessAdapter.sln'
-                    bat  'dotnet build -c Release ./BusinessAdapter.sln'
+                    bat  "dotnet build -c Release ./BusinessAdapter.sln -p:Version=${VERSION_NUMBER}"
                 }
             }
         }
