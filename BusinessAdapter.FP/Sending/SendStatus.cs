@@ -48,7 +48,7 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, DirectoryResul
 		this.abortedDueToTooManyConnections = true;
 	}
 
-	public int FailedMessageCount => this.failedSendMessages.Count + this.DirectoryResult.FailedFiles.Count;
+	public int FailedMessageCount => this.failedSendMessages.Count + this.DirectoryResult.FailedFiles.Count();
 
 	public int SuccessfulMessageCount => this.successfulSendMessages.Count;
 

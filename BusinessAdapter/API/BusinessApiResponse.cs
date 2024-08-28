@@ -3,7 +3,6 @@
 namespace Schleupen.AS4.BusinessAdapter.API
 {
 	using System;
-	using System.Net;
 
 	/// <summary>
 	/// Encapsulates the result of an API call and allows to see if the call was successful.

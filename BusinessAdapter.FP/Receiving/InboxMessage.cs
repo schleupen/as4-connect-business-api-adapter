@@ -37,7 +37,8 @@ public class InboxFpMessage(
 			}
 
 			// The hash has to be calculated on the zipped payload
-			byte[] ediHash = SHA256.HashData(Payload);
+			using var sha = SHA256.Create();
+			byte[] ediHash = sha.ComputeHash(Payload);
 			return Convert.ToBase64String(ediHash);
 		}
 	}

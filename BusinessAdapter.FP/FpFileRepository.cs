@@ -1,6 +1,5 @@
 namespace Schleupen.AS4.BusinessAdapter.FP;
 
-using System.Collections.Immutable;
 using System.IO.Compression;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -24,7 +23,7 @@ public class FpFileRepository(
 		var filesInDirectory = Directory.GetFiles(path);
 
 		List<FailedFile> failedFiles = new List<FailedFile>();
-		ImmutableList<FpFile?> fpFiles = filesInDirectory.Select(fp =>
+		IEnumerable<FpFile?> fpFiles = filesInDirectory.Select(fp =>
 		{
 			try
 			{
@@ -37,11 +36,11 @@ public class FpFileRepository(
 				failedFiles.Add(new FailedFile(path, e));
 				return null;
 			}
-		}).Where(x => x is not null).ToImmutableList();
+		}).Where(x => x is not null).ToList();
 
-		logger.LogInformation("found '{ValidFileCount}' valid and '{InvalidFileCount}' invalid files in '{Directory}'", fpFiles.Count, failedFiles.Count, path);
+		logger.LogInformation("found '{ValidFileCount}' valid and '{InvalidFileCount}' invalid files in '{Directory}'", fpFiles.Count(), failedFiles.Count, path);
 
-		return new DirectoryResult(path, fpFiles!, failedFiles.ToImmutableList());
+		return new DirectoryResult(path, fpFiles!, failedFiles.ToList());
 	}
 
 	public void DeleteFile(string filePath)
@@ -63,7 +62,7 @@ public class FpFileRepository(
 				zipStream.CopyTo(resultStream);
 				xmlStream.Write(Encoding.UTF8.GetString(resultStream.ToArray()));
 			}
-			
+
 		}
 
 		return messagePath;

@@ -1,7 +1,6 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Sending;
 
 using System.Collections.Immutable;
-using System.Net;
 using NUnit.Framework;
 using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.FP.Sending;

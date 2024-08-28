@@ -3,7 +3,6 @@
 namespace Schleupen.AS4.BusinessAdapter.Sending
 {
 	using System.Collections.ObjectModel;
-	using System.Net;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Moq;

@@ -2,7 +2,6 @@
 
 namespace Schleupen.AS4.BusinessAdapter.API
 {
-	using System.Net;
 	using NUnit.Framework;
 
 	[TestFixture]

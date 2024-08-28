@@ -8,10 +8,8 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	/// <summary>
 	/// A X509 certificate store.
 	/// </summary>
-	public sealed class ClientCertificateStore : IClientCertificateStore
+	public sealed class ClientCertificateStore(X509Store x509Store) : IClientCertificateStore
 	{
-		private readonly X509Store x509Store;
-
 		/// <summary>
 		/// Returns the available AS4 certificates in the certificate store.
 		/// </summary>
@@ -19,13 +17,9 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		{
 			get
 			{
-				return x509Store.Certificates.Where(IsDistinguishedNameAs4).Select(x => new ClientCertificate(x)).ToList();
+				return ((IEnumerable<X509Certificate2>)x509Store.Certificates).Where(IsDistinguishedNameAs4)
+					.Select(x => new ClientCertificate(x)).ToList();
 			}
-		}
-
-		public ClientCertificateStore(X509Store x509Store)
-		{
-			this.x509Store = x509Store;
 		}
 
 		/// <summary>

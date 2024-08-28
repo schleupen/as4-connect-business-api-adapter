@@ -68,13 +68,13 @@ public record FpFileName
 		{
 			version = parts[4];
 			timestamp = parts.Length > 6 ? parts[6] : null;
-			messageTypePart = parts[^2];
+			messageTypePart = parts[parts.Length - 2];
 		}
 		else
 		{
 			version = parts.Length > 5 ? parts[4] : null;
 			timestamp = parts.Length > 5 ? parts[5] : null;
-			messageTypePart = parts[^1];
+			messageTypePart = parts[parts.Length - 1];
 		}
 
 		messageType = messageTypePart switch

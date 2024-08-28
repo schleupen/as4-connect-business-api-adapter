@@ -71,8 +71,8 @@ public partial class SendStatusTest
 						FailedOutboundMessage.FileName,
 						FailedOutboundMessage.FilePath,
 						TestData.BDEWProperties)
-				}.ToImmutableList(),
-				ImmutableList<FailedFile>.Empty);
+				}.ToList(),
+				[]);
 		}
 
 		public FpOutboxMessage SuccessfulOutboundMessage { get; }

@@ -5,7 +5,6 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Net;
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;

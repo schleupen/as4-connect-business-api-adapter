@@ -19,6 +19,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
+	using HttpStatusCode = Schleupen.AS4.BusinessAdapter.HttpStatusCode;
 
 	public sealed class BusinessApiGateway : IBusinessApiGateway
 	{

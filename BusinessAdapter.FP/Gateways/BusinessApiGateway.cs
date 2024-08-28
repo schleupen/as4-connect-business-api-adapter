@@ -5,7 +5,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	using System.IO;
 	using System.Text;
 	using System.IO.Compression;
-	using System.Net;
+	using System.Net.Http;
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
 	using Schleupen.AS4.BusinessAdapter.API;
@@ -27,7 +27,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 		private static readonly Encoding DefaultEncoding = Encoding.GetEncoding("ISO-8859-1");
 
 		public async Task<BusinessApiResponse<FpOutboxMessage>> SendMessageAsync(
-			FpOutboxMessage message, 
+			FpOutboxMessage message,
 			CancellationToken cancellationToken)
 		{
 			logger.LogInformation("Sending {FileName} from {Sender} to {Receiver} [MessageId:'{}']",
@@ -75,7 +75,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			QueryInboxFPMessagesResponseDto clientResponse = await businessApiClient.V1FpMessagesInboxGetAsync(limit);
 
 			List<FpInboxMessage> messages = new List<FpInboxMessage>();
-			
+
 			foreach (InboundFPMessageDto? message in clientResponse.Messages)
 			{
 				try
@@ -93,7 +93,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 								message.PartyInfo.Sender.Id,
 								message.PartyInfo.Sender.Type.ToString()),
 							new ReceivingParty(
-								message.PartyInfo.Receiver.Id, 
+								message.PartyInfo.Receiver.Id,
 								message.PartyInfo.Receiver.Type.ToString())),
 						message.BdewDocumentNo!,
 						message.BdewFulfillmentDate!,
@@ -156,7 +156,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 					ex);
 			}
 		}
-		
+
 		public async Task<BusinessApiResponse<bool>> AcknowledgeReceivedMessageAsync(InboxFpMessage fpMessage)
 		{
 			string tokenString = jwtBuilder.CreateSignedToken(fpMessage);
@@ -177,7 +177,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 				return new BusinessApiResponse<bool>(false, false, (HttpStatusCode)ex.StatusCode, ex);
 			}
 		}
-		
+
 		public void Dispose()
 		{
 			httpClient.Dispose();

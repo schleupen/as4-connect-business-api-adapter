@@ -1,7 +1,6 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Sending;
 
 using System.Collections.Immutable;
-using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
