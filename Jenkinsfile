@@ -40,7 +40,7 @@ pipeline
             {
                 script
                 {
-                    VERSION_NUMBER = VersionNumber(versionNumberString: '0.0.${BUILDS_ALL_TIME}-${BRANCH_NAME}')
+                    VERSION_NUMBER = "0.0.${BUILDS_ALL_TIME}-${BRANCH_NAME}"
                     currentBuild.displayName = "${VERSION_NUMBER}"
                     bat  'dotnet restore ./BusinessAdapter.sln'
                     bat  "dotnet build -c Release ./BusinessAdapter.sln -p:Version=${VERSION_NUMBER}"
