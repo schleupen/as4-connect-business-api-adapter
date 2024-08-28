@@ -45,7 +45,7 @@ pipeline
                         VERSION_NUMBER = "0.0.${BUILD_NUMBER}-${GIT_BRANCH.split("/")[1]}"
                     }                    
                     currentBuild.displayName = "${VERSION_NUMBER}"
-                    bat  'dotnet restore ./BusinessAdapter.sln'
+                    
                     bat  "dotnet build -c Release ./BusinessAdapter.sln -p:Version=${VERSION_NUMBER}"
                 }
             }
@@ -103,12 +103,16 @@ pipeline
                     junit skipPublishingChecks: true, testResults: '*/*.junit.xml'
                 }
             }
-        }             
+        }
+   
     }
 
     post {
            success {
-               setBuildStatus("Build succeeded", "SUCCESS")
+               setBuildStatus("Build succeeded", "SUCCESS")      
+               withCredentials([string(credentialsId: '697d0028-bb04-467b-bb3f-83699e6f49c3', variable: 'NEXUS_TOKEN')]) {
+                    bat "dotnet nuget push .\BusinessAdapter.FP\bin\Release\Schleupen.AS4.BusinessAdapter.FP.${VERSION_NUMBER}.nupkg -s https://nexus.schleupen-ag.de/repository/nuget-v3/"
+               }         
                notifyBuildSuccessful()
            }
            unstable {
