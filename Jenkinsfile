@@ -21,7 +21,7 @@ pipeline
 
     agent
     {
-        label 'hv24-leer-windows'
+        label 'hv24-entflochten-windows-sqlserver'
     }
 
     environment
