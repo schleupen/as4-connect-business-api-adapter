@@ -52,33 +52,29 @@ pipeline
         }
 
         stage('IntegrativeTests') {
-            parallel {
-                stage('Installation') {
-                    stages {
-                        stage('FakeServer') {
-                            steps {
-                                timeout(time: 3, unit: 'HOURS') {
-                                    withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                                        powershellFile(filename: ".\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1")  
-                                    }                                 
-                                }
-                            }
+            stages {
+                stage('start FakeServer') {
+                    steps {
+                        timeout(time: 3, unit: 'HOURS') {
+                            withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                                powershellFile(filename: ".\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1")  
+                            }                                 
                         }
-                        stage('Tests') {
-                            steps {
-                                timeout(time: 3, unit: 'HOURS') {
-                                   script {                                                                          
-                                    bat  'dotnet restore ./BusinessAdapter.sln'
-                                    bat  'dotnet build -c Release ./BusinessAdapter.sln'
+                    }
+                }
+                stage('Tests') {
+                    steps {
+                        timeout(time: 3, unit: 'HOURS') {
+                           script {                                                                          
+                            bat  'dotnet restore ./BusinessAdapter.sln'
+                            bat  'dotnet build -c Release ./BusinessAdapter.sln'
 
-                                    bat "dotnet test -c Release BusinessAdapter.FP.IntegrativeTests/BusinessAdapter.FP.IntegrativeTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
-                                  }
-                                }                          
-                            }
-                        }
-                    }                               
-                }                
-            }
+                            bat "dotnet test -c Release BusinessAdapter.FP.IntegrativeTests/BusinessAdapter.FP.IntegrativeTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
+                          }
+                        }                          
+                    }
+                }
+            }                        
         }      
         stage('unittests')
         {
