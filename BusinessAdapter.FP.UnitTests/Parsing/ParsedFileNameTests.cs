@@ -15,7 +15,7 @@ public class FpFileNameTests
 		var parsed = FpFileName.Parse(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
-		Assert.That(parsed.TypeHaendlerfahrplan, Is.EqualTo("TPS"));
+		Assert.That(parsed.FahrplanHaendlertyp, Is.EqualTo("TPS"));
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("001"));
@@ -31,7 +31,7 @@ public class FpFileNameTests
 		var parsed = FpFileName.Parse(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
-		Assert.That(parsed.TypeHaendlerfahrplan, Is.EqualTo("TPS"));
+		Assert.That(parsed.FahrplanHaendlertyp, Is.EqualTo("TPS"));
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("001"));
@@ -47,7 +47,7 @@ public class FpFileNameTests
 		var parsed = FpFileName.Parse(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
-		Assert.That(parsed.TypeHaendlerfahrplan, Is.EqualTo("TPS"));
+		Assert.That(parsed.FahrplanHaendlertyp, Is.EqualTo("TPS"));
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("001"));
@@ -63,7 +63,7 @@ public class FpFileNameTests
 		var parsed = FpFileName.Parse(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
-		Assert.That(parsed.TypeHaendlerfahrplan, Is.EqualTo("TPS"));
+		Assert.That(parsed.FahrplanHaendlertyp, Is.EqualTo("TPS"));
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.Null);
@@ -79,7 +79,7 @@ public class FpFileNameTests
 		var parsed = FpFileName.Parse(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
-		Assert.That(parsed.TypeHaendlerfahrplan, Is.EqualTo("TPS"));
+		Assert.That(parsed.FahrplanHaendlertyp, Is.EqualTo("TPS"));
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("001"));

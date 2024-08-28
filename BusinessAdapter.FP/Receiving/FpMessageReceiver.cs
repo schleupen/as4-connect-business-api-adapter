@@ -248,10 +248,9 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
                 as4BusinessApiClient.Value.Dispose();
             }
 
-            var totalNumberOfMessages = as4BusinessApiClients.Keys.Sum(x => x.GetAvailableMessages().Length);
             var statusMessage = CreateSuccessStatusMessage(
                 receiveStatus.SuccessfulMessages,
-                totalNumberOfMessages,
+                receiveStatus.TotalNumberOfMessages,
                 receiveStatus.FailedMessages,
                 marketPartnersWithoutCertificate,
                 as4BusinessApiClients.Any(c => c.Key.HasTooManyRequestsError));

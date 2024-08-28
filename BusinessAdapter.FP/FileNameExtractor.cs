@@ -36,7 +36,7 @@ public class FpFileNameExtractor : IFpFileNameExtractor
 			Timestamp = parsedFile.ValidityDate,
 			Date = parsedFile.CreationDate,
 			Version = fpMessage.BDEWProperties.BDEWDocumentNo,
-			TypeHaendlerfahrplan = mappedParty.FpType
+			FahrplanHaendlertyp = mappedParty.FpType
 		};
 	}
 

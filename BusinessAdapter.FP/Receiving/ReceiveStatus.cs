@@ -3,28 +3,30 @@
 namespace Schleupen.AS4.BusinessAdapter.FP.Receiving;
 public class ReceiveStatus
 {
-    public int SuccessfulMessages => _successfulMessages.Count;
-    public int FailedMessages => _failedMessages.Count;
-    private readonly List<FpInboxMessage> _successfulMessages;
-    private readonly List<(FpInboxMessage Message, Exception Exception)> _failedMessages;
+    public int SuccessfulMessages => successfulMessages.Count;
+    public int FailedMessages => failedMessages.Count;
+    public int TotalNumberOfMessages => successfulMessages.Count + failedMessages.Count;
+    
+    private readonly List<FpInboxMessage> successfulMessages;
+    private readonly List<(FpInboxMessage Message, Exception Exception)> failedMessages;
 
     public ReceiveStatus()
     {
-        _successfulMessages = new List<FpInboxMessage>();
-        _failedMessages = new List<(FpInboxMessage, Exception)>();
+        successfulMessages = new List<FpInboxMessage>();
+        failedMessages = new List<(FpInboxMessage, Exception)>();
     }
 
     public void AddSuccessfulReceivedMessage(FpInboxMessage message)
     {
-        _successfulMessages.Add(message);
+        successfulMessages.Add(message);
     }
 
     public void AddFailedReceivedMessage(FpInboxMessage message, Exception exception)
     {
-        _failedMessages.Add((message, exception));
+        failedMessages.Add((message, exception));
     }
 
-    public IReadOnlyCollection<FpInboxMessage> GetSuccessfulMessages() => _successfulMessages.AsReadOnly();
+    public IReadOnlyCollection<FpInboxMessage> GetSuccessfulMessages() => successfulMessages.AsReadOnly();
 
-    public IReadOnlyCollection<(FpInboxMessage Message, Exception Exception)> GetFailedMessages() => _failedMessages.AsReadOnly();
+    public IReadOnlyCollection<(FpInboxMessage Message, Exception Exception)> GetFailedMessages() => failedMessages.AsReadOnly();
 }
