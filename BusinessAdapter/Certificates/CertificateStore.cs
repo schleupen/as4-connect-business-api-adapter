@@ -38,7 +38,6 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 
 		private bool IsDistinguishedNameAs4(X509Certificate2? certificate)
 		{
-			return true;
 			return certificate?.IsSubjectDistinguishedNameEqualToAs4() ?? false;
 		}
 	}

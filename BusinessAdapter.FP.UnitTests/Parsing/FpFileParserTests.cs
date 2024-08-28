@@ -51,6 +51,14 @@ internal sealed partial class FpFileParserTests
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
         Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("Schedule"));
     }
+    
+    [Test]
+    public void FpFileParser_ESS_ScheduleMessageGetsParsed_MissingId_ThrowsExceptin()
+    {
+        string pathOfFile = fixture.CreateWrongESSScheduleMessage();
+
+        Assert.Throws<ArgumentException>(() => sut.Parse(pathOfFile));
+    }
 
     [Test]
     public void FpFileParser_ESS_AnomalyReportGetsParsed_Correctly()

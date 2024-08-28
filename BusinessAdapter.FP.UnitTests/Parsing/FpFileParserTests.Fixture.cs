@@ -23,6 +23,12 @@ internal sealed partial class FpFileParserTests
             string dir = TestContext.CurrentContext.TestDirectory;
             return Path.Combine(dir, @"Parsing/20240125_PPS_0X1001A1001A264_FINGRID_002.xml");
         }
+
+        public string CreateWrongESSScheduleMessage()
+        {
+            string dir = TestContext.CurrentContext.TestDirectory;
+            return Path.Combine(dir, @"Parsing/20240125_PPS_0X1001A1001A264_FINGRID_003.xml");
+        }
         
         public string CreateExampleESSAnomalyReport()
         {

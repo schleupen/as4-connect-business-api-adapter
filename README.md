@@ -72,6 +72,22 @@ A simple example (only required values):
     "Marketpartners": [
       "9984617000002"
     ]
+  },
+    "EICMapping": {
+    "9984617000002": [
+      {
+        "EIC": "5790000432752",
+        "MarktpartnerTyp": "BDEW",
+        "Bilanzkreis": "FINGRID",
+        "FahrplanHaendlertyp": "PPS"
+      },
+      {
+        "EIC": "5790000432766",
+        "MarktpartnerTyp": "BDEW",
+        "Bilanzkreis": "FINGRID",
+        "FahrplanHaendlertyp": "TPS"
+      }
+    ]
   }
 }
 ```
@@ -105,6 +121,30 @@ A full example:
       },
       "SleepDuration" :  "00:01:00",
       "MessageLimitCount": 1000
+  },
+    "EICMapping": {
+    "9984617000002": [
+      {
+        "EIC": "5790000432752",
+        "MarktpartnerTyp": "BDEW",
+        "Bilanzkreis": "FINGRID",
+        "FahrplanHaendlertyp": "PPS"
+      },
+      {
+        "EIC": "5790000432766",
+        "MarktpartnerTyp": "BDEW",
+        "Bilanzkreis": "FINGRID",
+        "FahrplanHaendlertyp": "TPS"
+      }
+    ],
+    "9984616000003": [
+      {
+        "EIC": "10X000000000RTEM",
+        "MarktpartnerTyp": "BDEW",
+        "Bilanzkreis": "FINGRID",
+        "FahrplanHaendlertyp": "PPS"
+      }
+    ]
   }
 }
 ```
@@ -131,21 +171,35 @@ A full example:
 ### FP configuration
 
 The configuration of the FP Adapter required an additional `EICMapping`.
-This maps the EIC-Code (eg. "11XYYYYYY-V----V") to the AS4 specific Party-Id (eg. 1000000001) and Party-Type (BDEW, DVGW, GS1) and vice versa.
+This maps the AS4 specific Party-Id (eg. 1000000001) to X-amount of EIC-Codes (eg. "11XYYYYYY-V----V") and Party-Type (BDEW, DVGW, GS1),
+the FahrplanHaendlertyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice versa.
 
 ```
 {
   // Adapter,Send,Receive
-  
-  "EICMapping": {
-    "11XYYYYYY-V----V": {
-      "Id": "1000000001",
-      "Type": "BDEW"
-    },
-    "22X22222-V----V": {
-      "Id": "1000000002",
-      "Type": "BDEW"
-    }
+   "EICMapping": {
+    "9984617000002": [
+      {
+        "EIC": "5790000432752",
+        "MarktpartnerTyp": "BDEW",
+        "Bilanzkreis": "FINGRID",
+        "FahrplanHaendlertyp": "PPS"
+      },
+      {
+        "EIC": "5790000432766",
+        "MarktpartnerTyp": "BDEW",
+        "Bilanzkreis": "FINGRID",
+        "FahrplanHaendlertyp": "TPS"
+      }
+    ],
+    "9984616000003": [
+      {
+        "EIC": "10X000000000RTEM",
+        "MarktpartnerTyp": "BDEW",
+        "Bilanzkreis": "FINGRID",
+        "FahrplanHaendlertyp": "PPS"
+      }
+    ]
   }
 }
 ```
