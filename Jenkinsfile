@@ -1,15 +1,5 @@
 @Library('schleupen@master') _
 
-void setBuildStatus(String message, String state) {
-  step([
-      $class: "GitHubCommitStatusSetter",
-      reposSource: [$class: "ManuallyEnteredRepositorySource", url: "https://github.com/schleupen/as4-connect-business-api-adapter"],
-      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
-      errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
-      statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
-  ]);
-}
-
 pipeline
 {
     options 
@@ -105,9 +95,8 @@ pipeline
 
     post {
            success {
-               setBuildStatus("Build succeeded", "SUCCESS")      
                withCredentials([string(credentialsId: '697d0028-bb04-467b-bb3f-83699e6f49c3', variable: 'NEXUS_TOKEN')]) {
-                    bat "dotnet nuget push ./BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${VERSION_NUMBER}.nupkg -s https://nexus.schleupen-ag.de/repository/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
+                    bat "dotnet nuget push ./BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
                }         
                notifyBuildSuccessful()
            }
