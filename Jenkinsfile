@@ -11,7 +11,7 @@ pipeline
 
     agent
     {
-        label 'hv24-entflochten-windows-sqlserver'
+        label 'hv24-entflochten-windows-sqlserver || hv24-integriert-windows-sqlserver || fv24-entflochten-windows-sqlserver || sv24-integriert-windows-sqlserver'
     }
 
     environment
