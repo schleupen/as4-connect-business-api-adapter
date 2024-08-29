@@ -66,7 +66,7 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, DirectoryResul
 		}
 	}
 
-	public void LogTo(ILogger logger, SendOptions sendOptions)
+	public void LogTo(ILogger logger)
 	{
 		if (abortedDueToTooManyConnections)
 		{
@@ -83,18 +83,10 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, DirectoryResul
 			logger.LogWarning(failedParsedFile.Exception, "Failed to parse file '{FilePath}'", failedParsedFile.Path);
 		}
 
-		/*logger.LogInformation(
-			"Messages {SuccessfulMessagesCount}/{MessageInSendDirectoryCount} send successful. {{ Failed = {FailedMessagesCount} , MessageLimit = {MessageLimitCount} }}",
-			SuccessfulMessageCount,
-			TotalCountOfMessagesInSendDirectory,
-			MessageLimitCount,
-			FailedMessageCount);*/
-
 		logger.LogInformation(
-			"Messages {SuccessfulMessagesCount}/{MessageInSendDirectoryCount} send successful. {}",
+			"Messages {SuccessfulMessagesCount}/{MessageInSendDirectoryCount} send successful.",
 			SuccessfulMessageCount,
-			TotalCountOfMessagesInSendDirectory,
-			sendOptions);
+			TotalCountOfMessagesInSendDirectory);
 	}
 
 	public List<FpOutboxMessage> GetUnsentMessagesForRetry()

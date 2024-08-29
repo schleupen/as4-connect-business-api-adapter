@@ -53,7 +53,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 			}
 			finally
 			{
-				sendStatus.LogTo(logger, sendOptions);
+				sendStatus.LogTo(logger);
 			}
 
 			return sendStatus;
