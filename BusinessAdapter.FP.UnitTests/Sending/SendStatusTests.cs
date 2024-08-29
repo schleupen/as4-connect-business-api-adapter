@@ -17,6 +17,7 @@ public partial class SendStatusTest
 		Assert.That(status.FailedMessageCount, Is.EqualTo(0));
 		Assert.That(status.RetryIteration, Is.EqualTo(0));
 		Assert.DoesNotThrow(() => status.ThrowIfRetryIsNeeded());
+		Assert.That(status.AbortedDueToTooManyConnections, Is.False);
 	}
 
 	[Test]
@@ -76,6 +77,7 @@ public partial class SendStatusTest
 		status.AbortDueToTooManyConnections();
 
 		Assert.DoesNotThrow(() => status.ThrowIfRetryIsNeeded());
+		Assert.That(status.AbortedDueToTooManyConnections, Is.True);
 	}
 
 	[Test]

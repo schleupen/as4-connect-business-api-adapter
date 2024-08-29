@@ -2,14 +2,14 @@
 
 using Microsoft.Extensions.Logging;
 using Schleupen.AS4.BusinessAdapter.API;
-using Schleupen.AS4.BusinessAdapter.Configuration;
 
 public record SendStatus(int TotalCountOfMessagesInSendDirectory, DirectoryResult DirectoryResult)
 {
 	private readonly List<FpOutboxMessage> successfulSendMessages = new();
 	private readonly Dictionary<Guid, Tuple<FpOutboxMessage, Exception>> failedSendMessages = new();
-	private bool abortedDueToTooManyConnections;
 	private int retryIteration = 0;
+
+	public bool AbortedDueToTooManyConnections { get; private set; }
 
 	public void NewRetry()
 	{
@@ -45,7 +45,7 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, DirectoryResul
 
 	public void AbortDueToTooManyConnections()
 	{
-		this.abortedDueToTooManyConnections = true;
+		this.AbortedDueToTooManyConnections = true;
 	}
 
 	public int FailedMessageCount => this.failedSendMessages.Count + this.DirectoryResult.FailedFiles.Count();
@@ -54,7 +54,7 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, DirectoryResul
 
 	public void ThrowIfRetryIsNeeded()
 	{
-		if (this.abortedDueToTooManyConnections)
+		if (this.AbortedDueToTooManyConnections)
 		{
 			return; // send retry will not fix this problem, so throwing the Exception for Retry doesn't make sense
 		}
@@ -68,7 +68,7 @@ public record SendStatus(int TotalCountOfMessagesInSendDirectory, DirectoryResul
 
 	public void LogTo(ILogger logger)
 	{
-		if (abortedDueToTooManyConnections)
+		if (AbortedDueToTooManyConnections)
 		{
 			logger.LogWarning("A 429 TooManyRequests status code was encountered while sending the messages which caused the sending to end before all messages could be sent.");
 		}
