@@ -62,7 +62,7 @@ Import-PfxCertificate -FilePath "C:\dotnetdevcert.pfx" -CertStoreLocation "Cert:
 Write-Output "Berechtigung für CS_Applikation setzen an Private Key..."
 Set-CertificatePrivateKeyPermission -CertStorePath "Cert:\LocalMachine\My"
 
-Write-Output "Starte Fakeserver...
+Write-Output "Starte Fakeserver..."
 ls -fi *.dll -r | % { $_.versioninfo }
 Start-Process .\Schleupen.AS4.MSH.BusinessAPI.FakeServer.exe -WorkingDirectory "C:\GitHubDownload\FakeServer"
 
