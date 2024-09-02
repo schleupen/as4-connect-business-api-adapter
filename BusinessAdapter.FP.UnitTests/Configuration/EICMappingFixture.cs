@@ -2,7 +2,6 @@
 
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
-using Schleupen.AS4.BusinessAdapter.API;
 using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 public partial class EICMappingTest
@@ -66,7 +65,7 @@ public partial class EICMappingTest
 				MarktpartnerTyp = "type"
 			}
 		};
-		
+
 		public readonly List<EICMappingEntry> MappingParty2 = new List<EICMappingEntry>()
 		{
 			new EICMappingEntry()

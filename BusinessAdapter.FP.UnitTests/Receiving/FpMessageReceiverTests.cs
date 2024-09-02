@@ -91,8 +91,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
             // Act
             var test = await fpMessageReceiver.ReceiveAvailableMessagesAsync(CancellationToken.None);
             Assert.That(test, Is.Not.Null);
-            Assert.That(test.SuccessfulMessages, Is.EqualTo(1));
-            Assert.That(test.FailedMessages, Is.EqualTo(0));
+            Assert.That(test.SuccessfulMessageCount, Is.EqualTo(1));
+            Assert.That(test.FailedMessageCount, Is.EqualTo(0));
             Assert.That(test.TotalNumberOfMessages, Is.EqualTo(1));
         }
         

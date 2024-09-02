@@ -249,9 +249,9 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             }
 
             var statusMessage = CreateSuccessStatusMessage(
-                receiveStatus.SuccessfulMessages,
+                receiveStatus.SuccessfulMessageCount,
                 receiveStatus.TotalNumberOfMessages,
-                receiveStatus.FailedMessages,
+                receiveStatus.FailedMessageCount,
                 marketPartnersWithoutCertificate,
                 as4BusinessApiClients.Any(c => c.Key.HasTooManyRequestsError));
 

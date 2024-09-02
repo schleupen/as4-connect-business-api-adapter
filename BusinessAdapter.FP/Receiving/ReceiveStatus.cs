@@ -1,20 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace Schleupen.AS4.BusinessAdapter.FP.Receiving;
+﻿namespace Schleupen.AS4.BusinessAdapter.FP.Receiving;
 public class ReceiveStatus
 {
-    public int SuccessfulMessages => successfulMessages.Count;
-    public int FailedMessages => failedMessages.Count;
+    public int SuccessfulMessageCount => successfulMessages.Count;
+    public int FailedMessageCount => failedMessages.Count;
     public int TotalNumberOfMessages => successfulMessages.Count + failedMessages.Count;
-    
-    private readonly List<FpInboxMessage> successfulMessages;
-    private readonly List<(FpInboxMessage Message, Exception Exception)> failedMessages;
 
-    public ReceiveStatus()
-    {
-        successfulMessages = new List<FpInboxMessage>();
-        failedMessages = new List<(FpInboxMessage, Exception)>();
-    }
+    private readonly List<FpInboxMessage> successfulMessages = new();
+    private readonly List<(FpInboxMessage Message, Exception Exception)> failedMessages = new();
 
     public void AddSuccessfulReceivedMessage(FpInboxMessage message)
     {
