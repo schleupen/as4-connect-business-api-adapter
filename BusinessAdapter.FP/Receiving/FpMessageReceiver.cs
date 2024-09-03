@@ -22,7 +22,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
         private readonly EICMapping eicMapping;
 
         private const string TooManyRequestsMessage =
-            "A 429 TooManyRequests status code was encountered while receiving the EDIFACT messages which caused the receiving to end before all messages could be received.";
+            "A 429 TooManyRequests status code was encountered while receiving the XML messages which caused the receiving to end before all messages could be received.";
 
         public FpMessageReceiver(
             ILogger<FpMessageReceiver> logger,
@@ -53,6 +53,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 
             LogFinalStatus(receiveStatus, as4BusinessApiClients, marketPartnersWithoutCertificate);
 
+            receiveStatus.LogTo(logger);
+            
             return receiveStatus;
         }
 
@@ -214,6 +216,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
                 if (HandleTooManyRequestError(result.ResponseStatusCode!.Value))
                 {
                     receiveContext.Key.HasTooManyRequestsError = true;
+                    receiveStatus.AbortDueToTooManyConnections();
                     return;
                 }
 
