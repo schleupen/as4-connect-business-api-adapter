@@ -16,8 +16,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 		IOptions<SendOptions> sendOptions)
 		: BackgroundService
 	{
-		private readonly SendOptions sendOptions = sendOptions.Value;
-
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)
@@ -36,8 +34,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 					logger.LogError(ex, "Error while sending messages");
 				}
 
-				logger.LogInformation("Next sending iteration is scheduled in '{SleepDuration}' at '{ScheduleTime}'", sendOptions.SleepDuration, DateTime.Now + sendOptions.SleepDuration);
-				await Task.Delay(sendOptions.SleepDuration, stoppingToken);
+				logger.LogInformation("Next sending iteration is scheduled in '{SleepDuration}' at '{ScheduleTime}'", sendOptions.Value.SleepDuration, DateTime.Now + sendOptions.Value.SleepDuration);
+				await Task.Delay(sendOptions.Value.SleepDuration, stoppingToken);
 			}
 		}
 	}

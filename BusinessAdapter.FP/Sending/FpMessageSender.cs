@@ -19,15 +19,13 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 		ILogger<FpMessageSender> logger)
 		: IFpMessageSender
 	{
-		private readonly SendOptions sendOptions = sendOptions.Value;
-
 		public async Task<SendStatus> SendMessagesAsync(CancellationToken cancellationToken)
 		{
 			logger.LogDebug("Sending of available messages starting.");
 
-			var directoryResult = fileRepository.GetFilesFrom(sendOptions.Directory);
+			var directoryResult = fileRepository.GetFilesFrom(sendOptions.Value.Directory);
 			var validFpFiles = directoryResult.ValidFpFiles;
-			var selectedFilesToSend = validFpFiles.Take(sendOptions.MessageLimitCount);
+			var selectedFilesToSend = validFpFiles.Take(sendOptions.Value.MessageLimitCount);
 			var messagesToSend = outboxMessageAssembler.ToFpOutboxMessages(selectedFilesToSend);
 
 			var sendStatus = new SendStatus(directoryResult.TotalFileCount, directoryResult);
@@ -35,13 +33,13 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 			{
 				await Policy.Handle<Exception>()
 					.WaitAndRetryAsync(
-						sendOptions.Retry.Count,
-						x => sendOptions.Retry.SleepDuration,
+						sendOptions.Value.Retry.Count,
+						x => sendOptions.Value.Retry.SleepDuration,
 						(ex, ts, r, c) =>
 						{
 							sendStatus.NewRetry();
 							messagesToSend = sendStatus.GetUnsentMessagesForRetry(); // use only unsent/failed message for next iteration
-							logger.LogWarning("Error while sending messages - retry {CurrentRetry}/{MaxRetryCount} with '{MessagesToSendCount}' messages is scheduled in '{RetrySleepDuration}' at '{ScheduleTime}'", r, sendOptions.Retry.Count, messagesToSend.Count, ts, DateTime.Now + ts);
+							logger.LogWarning("Error while sending messages - retry {CurrentRetry}/{MaxRetryCount} with '{MessagesToSendCount}' messages is scheduled in '{RetrySleepDuration}' at '{ScheduleTime}'", r, sendOptions.Value.Retry.Count, messagesToSend.Count, ts, DateTime.Now + ts);
 						})
 					.ExecuteAndCaptureAsync(
 						async () =>
