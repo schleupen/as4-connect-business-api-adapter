@@ -28,7 +28,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 			fixture!.PrepareCreateAndOpen();
 			CertificateStoreFactory testObject = fixture!.CreateTestObject();
 
-			using (ICertificateStore result = testObject.CreateAndOpen())
+			using (IClientCertificateStore result = testObject.CreateAndOpen())
 			{
 				Assert.That(result, Is.Not.Null);
 			}

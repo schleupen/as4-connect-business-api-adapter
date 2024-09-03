@@ -3,6 +3,7 @@
 namespace Schleupen.AS4.BusinessAdapter.Certificates
 {
 	using System.Security.Cryptography.X509Certificates;
+	using Microsoft.Extensions.Options;
 	using Moq;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 
@@ -11,11 +12,11 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		private sealed class Fixture : IDisposable
 		{
 			private readonly MockRepository mockRepository = new(MockBehavior.Strict);
-			private readonly Mock<IConfigurationAccess> configurationAccessMock;
+			private readonly Mock<IOptions<AdapterOptions>> configurationAccessMock;
 
 			public Fixture()
 			{
-				configurationAccessMock = mockRepository.Create<IConfigurationAccess>();
+				configurationAccessMock = mockRepository.Create<IOptions<AdapterOptions>>();
 			}
 
 			public CertificateStoreFactory CreateTestObject()
@@ -31,12 +32,11 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 			public void PrepareCreateAndOpen()
 			{
 				configurationAccessMock
-					.Setup(x => x.GetCertificateStoreLocation())
-					.Returns(StoreLocation.CurrentUser);
-
-				configurationAccessMock
-					.Setup(x => x.GetCertificateStoreName())
-					.Returns(StoreName.My);
+					.Setup<AdapterOptions>(x => x.Value).Returns(new AdapterOptions()
+					{
+						CertificateStoreName = StoreName.My,
+						CertificateStoreLocation = StoreLocation.CurrentUser
+					});
 			}
 		}
 	}

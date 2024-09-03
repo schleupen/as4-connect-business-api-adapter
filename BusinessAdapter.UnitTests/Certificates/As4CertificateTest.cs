@@ -7,7 +7,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	using NUnit.Framework;
 
 	[TestFixture]
-	internal sealed partial class As4CertificateTest : IDisposable
+	internal sealed partial class ClientCertificateTest : IDisposable
 	{
 		private Fixture? fixture;
 
@@ -27,7 +27,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void IsCertificateFor_CertificateHasOtherIdentificationNumber_ShouldReturnFalse()
 		{
-			As4Certificate testObject = fixture!.CreateTestObject();
+			ClientCertificate testObject = fixture!.CreateTestObject();
 
 			bool result = testObject.IsCertificateFor("Test123");
 
@@ -37,7 +37,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void IsCertificateFor_CertificateHasMatchingIdentificationNumber_ShouldReturnTrue()
 		{
-			As4Certificate testObject = fixture!.CreateTestObject();
+			ClientCertificate testObject = fixture!.CreateTestObject();
 
 			bool result = testObject.IsCertificateFor("9912345000001");
 
@@ -47,7 +47,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void AsX509Certificate_ShouldReturnX509Certificate()
 		{
-			As4Certificate testObject = fixture!.CreateTestObject();
+			ClientCertificate testObject = fixture!.CreateTestObject();
 
 			X509Certificate result = testObject.AsX509Certificate();
 
@@ -58,7 +58,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void GetPrivateSecurityKey_ShouldReturnPrivateKey()
 		{
-			As4Certificate testObject = fixture!.CreateTestObject();
+			ClientCertificate testObject = fixture!.CreateTestObject();
 
 			SecurityKey result = testObject.GetPrivateSecurityKey();
 
@@ -68,7 +68,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void GetRawCertData_ShouldReturnRawCertificateData()
 		{
-			As4Certificate testObject = fixture!.CreateTestObject();
+			ClientCertificate testObject = fixture!.CreateTestObject();
 
 			byte[] result = testObject.GetRawCertData();
 

@@ -3,9 +3,10 @@
 namespace Schleupen.AS4.BusinessAdapter.API
 {
 	using NUnit.Framework;
+	using Schleupen.AS4.BusinessAdapter.MP.API;
 
 	[TestFixture]
-	internal sealed partial class As4BusinessApiClientFactoryTest : IDisposable
+	internal sealed partial class BusinessApiGatewayFactoryTest : IDisposable
 	{
 		private Fixture? fixture;
 
@@ -26,18 +27,18 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		public void CreateAs4BusinessApiClient_WithConfiguration_ShouldCreateClient()
 		{
 			fixture!.PrepareConfigurationSet();
-			As4BusinessApiClientFactory testObject = fixture!.CreateTestObject();
+			BusinessApiGatewayFactory testObject = fixture!.CreateTestObject();
 
-			IAs4BusinessApiClient client = testObject.CreateAs4BusinessApiClient("12345");
+			IBusinessApiGateway gateway = testObject.CreateAs4BusinessApiClient("12345");
 
-			Assert.That(client, Is.Not.Null);
+			Assert.That(gateway, Is.Not.Null);
 		}
 
 		[Test]
 		public void CreateAs4BusinessApiClient_WithoutConfiguration_ShouldThrowCatastrophicException()
 		{
 			fixture!.PrepareConfigurationNotSet();
-			As4BusinessApiClientFactory testObject = fixture!.CreateTestObject();
+			BusinessApiGatewayFactory testObject = fixture!.CreateTestObject();
 
 			CatastrophicException? exception = Assert.Throws<CatastrophicException>(() => testObject.CreateAs4BusinessApiClient("12345"));
 

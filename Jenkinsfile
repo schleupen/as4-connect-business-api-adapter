@@ -1,4 +1,5 @@
 @Library('schleupen@master') _
+
 pipeline
 {
     options 
@@ -10,13 +11,11 @@ pipeline
 
     agent
     {
-        label 'linux-docker'
+        label 'hv24-entflochten-windows-sqlserver || hv24-integriert-windows-sqlserver || fv24-entflochten-windows-sqlserver || sv24-integriert-windows-sqlserver'
     }
 
     environment
-    {
-        DOCKER_BUILDKIT = 1
-        
+    {        
         HTTPS_PROXY = "${SchleupenInternetProxyUrl}"
         HTTP_PROXY = "${SchleupenInternetProxyUrl}"
         NO_PROXY = "127.0.0.0/8,10.0.0.0/8,localhost,.schleupen-ag.de"
@@ -29,53 +28,84 @@ pipeline
             steps
             {
                 script
-                {             
-                    docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
-                    {
-                        sh 'dotnet --list-runtimes --list-sdks'
-                        sh 'dotnet restore ./BusinessAdapter.sln'
-                        sh 'dotnet build -c Release --no-restore ./BusinessAdapter.sln'
-                    }
+                {
+                    if (env.BRANCH_NAME == 'main') {
+                        VERSION_NUMBER = "1.0.${BUILD_NUMBER}"
+                    } else {
+                        VERSION_NUMBER = "0.0.${BUILD_NUMBER}-${GIT_BRANCH.split("/")[1]}"
+                    }                    
+                    currentBuild.displayName = "${VERSION_NUMBER}"
+                    
+                    bat  "dotnet build -c Release ./BusinessAdapter.sln -p:Version=${VERSION_NUMBER}"
                 }
             }
         }
 
+        stage('IntegrativeTests') {
+            stages {
+                stage('start FakeServer') {
+                    steps {
+                        timeout(time: 3, unit: 'HOURS') {
+                            withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                                powershellFile(filename: ".\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1")  
+                            }                                 
+                        }
+                    }
+                }
+                stage('Tests') {
+                    steps {
+                        timeout(time: 3, unit: 'HOURS') {
+                           script {                                                                          
+                            bat  'dotnet restore ./BusinessAdapter.sln'
+                            bat  'dotnet build -c Release ./BusinessAdapter.sln'
+
+                            bat "dotnet test -c Release BusinessAdapter.FP.IntegrativeTests/BusinessAdapter.FP.IntegrativeTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
+                          }
+                        }                          
+                    }
+                }
+            }                        
+        }      
         stage('unittests')
         {
             steps
             {
                 script
                 {
-                    sh 'mkdir -p ./Tests/unit/results'
-
-                    docker.image("mcr.microsoft.com/dotnet/sdk:8.0").inside("-u 0:0")
-                    {
-                        sh 'dotnet test ./BusinessAdapter.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.UnitTests.junit.xml\' -e HOME=/tmp'
-                        sh 'dotnet test ./BusinessAdapter.Console.UnitTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.Console.UnitTests.dll --results-directory ./Tests/unit/results --logger \'junit;LogFileName=BusinessAdapter.Console.UnitTests.junit.xml\' -e HOME=/tmp'
-                    }
-                    
+                        bat  'dotnet test -c Release BusinessAdapter.UnitTests/BusinessAdapter.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.UnitTests.junit.xml\" -e HOME=/tmp'
+                                                
+                        bat  'dotnet test -c Release BusinessAdapter.FP.UnitTests/BusinessAdapter.FP.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.UnitTests.junit.xml\" -e HOME=/tmp'
+                        bat  'dotnet test -c Release BusinessAdapter.FP.Console.UnitTests/BusinessAdapter.FP.Console.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.Console.UnitTests.junit.xml\" -e HOME=/tmp'
+                        
+                        bat  'dotnet test -c Release BusinessAdapter.MP.UnitTests/BusinessAdapter.MP.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.MP.UnitTests.junit.xml\" -e HOME=/tmp'
+                        bat  'dotnet test -c Release BusinessAdapter.MP.Console.UnitTests/BusinessAdapter.MP.Console.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.MP.Console.UnitTests.junit.xml\" -e HOME=/tmp'
                 }
             }
             post
             {
                 always
                 {
-                    archiveArtifacts allowEmptyArchive: false, artifacts: '*/unit/results/*.junit.xml'
-                    junit skipPublishingChecks: true, testResults: '*/unit/results/*.junit.xml'
+                    archiveArtifacts allowEmptyArchive: false, artifacts: '*/*.junit.xml'
+                    junit skipPublishingChecks: true, testResults: '*/*.junit.xml'
                 }
             }
         }
+   
     }
 
     post {
-        success {
-            notifyBuildSuccessful()
-        }
-        unstable {
-            notifyBuildUnstable()
-        }
-        failure {
-            notifyBuildFailed()
-        }
+           success {
+               withCredentials([string(credentialsId: '697d0028-bb04-467b-bb3f-83699e6f49c3', variable: 'NEXUS_TOKEN')]) {
+                    bat "dotnet nuget push ./BusinessAdapter/bin/Release/Schleupen.AS4.BusinessAdapter.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
+                    bat "dotnet nuget push ./BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
+               }         
+               notifyBuildSuccessful()
+           }
+           unstable {
+               notifyBuildUnstable()
+           }
+           failure {
+               notifyBuildFailed()
+           }
     }
 }

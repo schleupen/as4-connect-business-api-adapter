@@ -10,9 +10,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		[Test]
 		public void Ctor_ShouldSetIdentificationNumber()
 		{
-			SendingParty testObject = new SendingParty("Identifier");
+			SendingParty testObject = new SendingParty("Identifier", "type");
 
 			Assert.That(testObject.Id, Is.EqualTo("Identifier"));
+			Assert.That(testObject.Type, Is.EqualTo("type"));
 		}
 	}
 }
