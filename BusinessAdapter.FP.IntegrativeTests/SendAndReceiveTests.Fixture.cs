@@ -78,19 +78,19 @@ public partial class SendAndReceiveTests
 			        }
 		        }
 	        };
-	        
+
 	        string sendDirectory = Environment.CurrentDirectory + @"\Send";
 	        string receiveDirectory =  Environment.CurrentDirectory + @"\Receive";
 	        AppSettingsPath = Environment.CurrentDirectory + @"\appsettings.json";
-	    
+
 	        CreateAppSettingsJson(sendDirectory, receiveDirectory, marketpartners, eicMapping, AppSettingsPath);
         }
 
         public void CreateAppSettingsJson(
-	        string sendDirectory, 
+	        string sendDirectory,
 	        string receiveDirectory,
-	        List<string> marketpartners, 
-	        Dictionary<string, List<EICMappingEntry>> eicMapping, 
+	        List<string> marketpartners,
+	        Dictionary<string, List<EICMappingEntry>> eicMapping,
 	        string outputPath)
         {
 	        var appSettings = new
@@ -130,8 +130,8 @@ public partial class SendAndReceiveTests
 	        var json = JsonConvert.SerializeObject(appSettings, Formatting.Indented);
 	        File.WriteAllText(outputPath, json);
         }
-        
-        public async Task<ReceiveStatus> Receive(FileInfo configFile)
+
+        public async Task<IReceiveStatus> Receive(FileInfo configFile)
         {
 	        var serviceProvider = CreateServiceProvider(configFile);
 	        var sender = serviceProvider.GetRequiredService<IFpMessageReceiver>();
@@ -140,7 +140,7 @@ public partial class SendAndReceiveTests
         }
 
 
-		public async Task<SendStatus> Send(FileInfo configFile)
+		public async Task<ISendStatus> Send(FileInfo configFile)
         {
 	        var serviceProvider = CreateServiceProvider(configFile);
 
@@ -163,7 +163,7 @@ public partial class SendAndReceiveTests
 			return serviceCollection.BuildServiceProvider();
         }
 
-        
+
         public void Dispose()
         {
         }

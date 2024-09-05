@@ -75,7 +75,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
             var messages = new[] { CreateFpInboxMessage() };
             var receiveInfo = new MessageReceiveInfo(messages);
             var businessApiResponse = new BusinessApiResponse<InboxFpMessage>(true, CreateDummyFpMessage());
-            
+
             businessApiGatewayFactoryMock
                 .Setup(factory => factory.CreateGateway(It.IsAny<FpParty>()))
                 .Returns(gatewayMock.Object);
@@ -91,11 +91,11 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
             // Act
             var test = await fpMessageReceiver.ReceiveAvailableMessagesAsync(CancellationToken.None);
             Assert.That(test, Is.Not.Null);
-            Assert.That(test.SuccessfulMessageCount, Is.EqualTo(1));
-            Assert.That(test.FailedMessageCount, Is.EqualTo(0));
-            Assert.That(test.TotalNumberOfMessages, Is.EqualTo(1));
+            Assert.That(test.SuccessfulMessages.Count, Is.EqualTo(1));
+            Assert.That(test.FailedMessages.Count, Is.EqualTo(0));
+            Assert.That(test.TotalMessageCount, Is.EqualTo(1));
         }
-        
+
             [Test]
         public void ReceiveAvailableMessagesAsync_ReceiveStatusIsCorrect_ForFailedAcknowledge()
         {
@@ -117,7 +117,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
             var messages = new[] { CreateFpInboxMessage() };
             var receiveInfo = new MessageReceiveInfo(messages);
             var businessApiResponse = new BusinessApiResponse<InboxFpMessage>(true, CreateDummyFpMessage());
-            
+
             businessApiGatewayFactoryMock
                 .Setup(factory => factory.CreateGateway(It.IsAny<FpParty>()))
                 .Returns(gatewayMock.Object);
@@ -134,7 +134,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
             Assert.That(async () => await fpMessageReceiver.ReceiveAvailableMessagesAsync(CancellationToken.None),
             Throws.TypeOf<AggregateException>());
         }
-        
+
 		[Test]
 		public void ReceiveAvailableMessagesAsync_ThrowsCatastrophicException_WhenReceiveDirectoryIsNotConfigured()
 		{
@@ -212,13 +212,13 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
             Assert.That(innerException, Is.InstanceOf<Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException>());
             Assert.That(((Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException)innerException).MarketpartnerIdentificationNumber, Is.EqualTo("TestMarketPartner"));
         }
-        
+
         public FpInboxMessage CreateFpInboxMessage(
-            DateTimeOffset? createdAt = null, 
-            string messageId = "TestMessageId", 
-            PartyInfo? partyInfo = null, 
+            DateTimeOffset? createdAt = null,
+            string messageId = "TestMessageId",
+            PartyInfo? partyInfo = null,
             string bdewDocumentNo = "12345",
-            string bdewFulfillmentDate = "2024-08-12", 
+            string bdewFulfillmentDate = "2024-08-12",
             string bdewSubjectPartyId = "PartyId123",
             string bdewSubjectPartyRole = "Sender",
             string bdewDocumentType = "Type1")
@@ -233,7 +233,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
                 bdewSubjectPartyRole,
                 bdewDocumentType);
         }
-        
+
         public InboxFpMessage CreateDummyFpMessage()
         {
             return new InboxFpMessage(
@@ -243,7 +243,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
                 CreateDummyMessageContent().ToString(),
                 CreateDummyMessageContent().ToArray(),
                         new FpBDEWProperties(
-                            "docType", 
+                            "docType",
                             "docNo",
                             "docDate",
                             "docSubjectId",
@@ -258,7 +258,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 				receiver: new ReceivingParty("DefaultReceivingPartyId", "DefaultReceivingPartyRole")
 			);
 		}
-	
+
         private MemoryStream CreateDummyMessageContent()
         {
             string dirOfTestFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Parsing/20240125_PPS_0X1001A1001A264_FINGRID_002.xml");

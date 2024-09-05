@@ -6,7 +6,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Polly;
-	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 	using Schleupen.AS4.BusinessAdapter.FP.Gateways;
 	using Schleupen.AS4.BusinessAdapter.FP.Sending.Assemblers;
@@ -19,7 +18,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 		ILogger<FpMessageSender> logger)
 		: IFpMessageSender
 	{
-		public async Task<SendStatus> SendMessagesAsync(CancellationToken cancellationToken)
+		public async Task<ISendStatus> SendMessagesAsync(CancellationToken cancellationToken)
 		{
 			logger.LogDebug("Sending of available messages starting.");
 
@@ -28,7 +27,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 			var selectedFilesToSend = validFpFiles.Take(sendOptions.Value.MessageLimitCount);
 			var messagesToSend = outboxMessageAssembler.ToFpOutboxMessages(selectedFilesToSend);
 
-			var sendStatus = new SendStatus(directoryResult.TotalFileCount, directoryResult);
+			var sendStatus = new SendStatus(directoryResult);
 			try
 			{
 				await Policy.Handle<Exception>()
@@ -37,9 +36,11 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 						x => sendOptions.Value.Retry.SleepDuration,
 						(ex, ts, r, c) =>
 						{
-							sendStatus.NewRetry();
 							messagesToSend = sendStatus.GetUnsentMessagesForRetry(); // use only unsent/failed message for next iteration
-							logger.LogWarning("Error while sending messages - retry {CurrentRetry}/{MaxRetryCount} with '{MessagesToSendCount}' messages is scheduled in '{RetrySleepDuration}' at '{ScheduleTime}'", r, sendOptions.Value.Retry.Count, messagesToSend.Count, ts, DateTime.Now + ts);
+							sendStatus.NewRetry();
+							logger.LogWarning(
+								"Error while sending messages - retry {CurrentRetry}/{MaxRetryCount} with '{MessagesToSendCount}' messages is scheduled in '{RetrySleepDuration}' at '{ScheduleTime}'",
+								r, sendOptions.Value.Retry.Count, messagesToSend.Count, ts, DateTime.Now + ts);
 						})
 					.ExecuteAndCaptureAsync(
 						async () =>
@@ -98,7 +99,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 						}
 					}
 				}
-				catch (Exception ex) when (ex is NoUniqueCertificateException or MissingCertificateException)
+				catch (Exception ex) // TODO Test
 				{
 					foreach (var message in messagesFromSender)
 					{

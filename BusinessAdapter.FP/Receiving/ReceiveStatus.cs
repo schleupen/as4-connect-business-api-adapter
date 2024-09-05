@@ -1,13 +1,11 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
-public class ReceiveStatus
+public class ReceiveStatus : IReceiveStatus
 {
-    public int SuccessfulMessageCount => successfulMessages.Count;
-    public int FailedMessageCount => failedMessages.Count;
-    public int TotalNumberOfMessages => successfulMessages.Count + failedMessages.Count;
+	private readonly List<FpInboxMessage> successfulMessages = new();
+	private readonly List<FailedInboxMessage> failedMessages = new();
 
-    private readonly List<FpInboxMessage> successfulMessages = new();
-    private readonly List<(FpInboxMessage Message, Exception Exception)> failedMessages = new();
+    public int TotalMessageCount => successfulMessages.Count + failedMessages.Count;
 
     public void AddSuccessfulReceivedMessage(FpInboxMessage message)
     {
@@ -16,10 +14,10 @@ public class ReceiveStatus
 
     public void AddFailedReceivedMessage(FpInboxMessage message, Exception exception)
     {
-        failedMessages.Add((message, exception));
+        failedMessages.Add(new FailedInboxMessage(message, exception));
     }
 
-    public IReadOnlyCollection<FpInboxMessage> GetSuccessfulMessages() => successfulMessages.AsReadOnly();
+    public IReadOnlyCollection<FpInboxMessage> SuccessfulMessages => successfulMessages.AsReadOnly();
 
-    public IReadOnlyCollection<(FpInboxMessage Message, Exception Exception)> GetFailedMessages() => failedMessages.AsReadOnly();
+    public IReadOnlyCollection<FailedInboxMessage> FailedMessages => failedMessages.AsReadOnly();
 }

@@ -38,14 +38,23 @@ public class FpFileRepository(
 			}
 		}).Where(x => x is not null).ToList();
 
-		logger.LogInformation("found '{ValidFileCount}' valid and '{InvalidFileCount}' invalid files in '{Directory}'", fpFiles.Count(), failedFiles.Count, path);
+		logger.LogInformation("found '{ValidFileCount}' valid and '{InvalidFileCount}' invalid files in '{Directory}'", fpFiles.Count(),
+			failedFiles.Count, path);
 
 		return new DirectoryResult(path, fpFiles!, failedFiles.ToList());
 	}
 
 	public void DeleteFile(string filePath)
 	{
+		var exists = File.Exists(filePath);
+		if (!exists)
+		{
+			logger.LogWarning("file '{FilePath}' does not exists.", filePath);
+		}
+
 		File.Delete(filePath);
+		logger.LogInformation("file '{FilePath}' removed", filePath);
+
 	}
 
 	public string StoreXmlFileTo(InboxFpMessage fpMessage, string receiveDirectoryPath)
@@ -62,7 +71,6 @@ public class FpFileRepository(
 				zipStream.CopyTo(resultStream);
 				xmlStream.Write(Encoding.UTF8.GetString(resultStream.ToArray()));
 			}
-
 		}
 
 		return messagePath;

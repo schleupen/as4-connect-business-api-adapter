@@ -40,7 +40,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             this.eicMapping = eicMapping;
         }
 
-        public async Task<ReceiveStatus> ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
+        public async Task<IReceiveStatus> ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
         {
             ValidateConfiguration();
 
@@ -249,9 +249,9 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             }
 
             var statusMessage = CreateSuccessStatusMessage(
-                receiveStatus.SuccessfulMessageCount,
-                receiveStatus.TotalNumberOfMessages,
-                receiveStatus.FailedMessageCount,
+                receiveStatus.SuccessfulMessages.Count,
+                receiveStatus.TotalMessageCount,
+                receiveStatus.FailedMessages.Count,
                 marketPartnersWithoutCertificate,
                 as4BusinessApiClients.Any(c => c.Key.HasTooManyRequestsError));
 
