@@ -23,7 +23,7 @@ public partial class FpOutboxMessageAssemblerTest
 		Assert.That(outboxMessage.Sender, Is.EqualTo(TestData.Sender));
 		Assert.That(outboxMessage.Payload, Is.EqualTo(outboxMessage.Payload));
 		Assert.That(outboxMessage.FilePath, Is.EqualTo(outboxMessage.FilePath));
-		Assert.That(outboxMessage.FilePath, Is.EqualTo(outboxMessage.FileName));
+		Assert.That(outboxMessage.FileName, Is.EqualTo(outboxMessage.FileName));
 	}
 
 	[Test]

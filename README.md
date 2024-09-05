@@ -79,13 +79,13 @@ A simple example (only required values):
         "EIC": "5790000432752",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       },
       {
         "EIC": "5790000432766",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "TPS"
+        "FahrplanHaendlerTyp": "TPS"
       }
     ]
   }
@@ -128,13 +128,13 @@ A full example:
         "EIC": "5790000432752",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       },
       {
         "EIC": "5790000432766",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "TPS"
+        "FahrplanHaendlerTyp": "TPS"
       }
     ],
     "9984616000003": [
@@ -142,7 +142,7 @@ A full example:
         "EIC": "10X000000000RTEM",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       }
     ]
   }
@@ -183,13 +183,13 @@ the FahrplanHaendlertyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
         "EIC": "5790000432752",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       },
       {
         "EIC": "5790000432766",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "TPS"
+        "FahrplanHaendlerTyp": "TPS"
       }
     ],
     "9984616000003": [
@@ -197,7 +197,7 @@ the FahrplanHaendlertyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
         "EIC": "10X000000000RTEM",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       }
     ]
   }
