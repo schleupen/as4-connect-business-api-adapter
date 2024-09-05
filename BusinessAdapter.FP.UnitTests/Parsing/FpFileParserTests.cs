@@ -32,7 +32,7 @@ internal sealed partial class FpFileParserTests
         string senderId = "5790000432752";
 
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
-        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("Confirmation"));
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A08"));
         Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("zerotro"));
         Assert.That(outboundFpMessage.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2001-06-02T22:00Z/2001-06-03T22:00Z"));
         Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo(senderId));
@@ -49,7 +49,7 @@ internal sealed partial class FpFileParserTests
         var outboundFpMessage = sut.Parse(pathOfFile);
 
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
-        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("Schedule"));
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A01"));
     }
     
     [Test]
@@ -68,7 +68,7 @@ internal sealed partial class FpFileParserTests
 	    var outboundFpMessage = sut.Parse(pathOfFile);
 
 	    Assert.That(outboundFpMessage.Content, Is.Not.Empty);
-	    Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("Anomaly"));
+	    Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A16"));
     }
 
     [Test]
