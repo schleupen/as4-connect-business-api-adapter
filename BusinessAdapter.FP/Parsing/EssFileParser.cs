@@ -21,7 +21,7 @@ public class EssFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not document number from file {path}.");
 		}
 
-		var documentIdentification = document.Descendants(ns + "DocumentIdentification").First().Attribute("v").Value;
+		var documentType = document.Descendants(ns + "DocumentType").First().Attribute("v").Value;
 
 		var senderIdentification = document.Descendants(ns + "SenderIdentification").FirstOrDefault()?.Attribute("v")?.Value;
 		if (senderIdentification == null)
@@ -64,7 +64,7 @@ public class EssFileParser : IFpFileSpecificParser
 		}
 
 		FpBDEWProperties properties =
-			new FpBDEWProperties(fpFileName.MessageType.ToString(), documentNo, scheduleTimeInterval, senderIdentification, senderRole);
+			new FpBDEWProperties(documentType, documentNo, scheduleTimeInterval, senderIdentification, senderRole);
 
 		
 		return new FpFile(

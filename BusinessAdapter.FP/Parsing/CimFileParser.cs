@@ -21,7 +21,7 @@ public class CimFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not document number from file {path}.");
 		}
 
-		var documentIdentification = document.Descendants(ns + "mRID").First().Attribute("v").Value;
+		var documentType = document.Descendants(ns + "type").First().Attribute("v").Value;
 
 		var senderIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Attribute("v")?.Value;
 		if (senderIdentification == null)
@@ -69,7 +69,7 @@ public class CimFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
 		}
 		
-		FpBDEWProperties bdewProperties = new FpBDEWProperties(fpFileName.MessageType.ToString(), documentNo, scheduleTimeInterval, senderIdentification, senderRole);
+		FpBDEWProperties bdewProperties = new FpBDEWProperties(documentType, documentNo, scheduleTimeInterval, senderIdentification, senderRole);
 		return new FpFile(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
