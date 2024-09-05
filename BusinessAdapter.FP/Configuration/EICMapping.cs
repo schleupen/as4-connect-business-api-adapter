@@ -3,14 +3,14 @@
 public class EICMapping : Dictionary<string, List<EICMappingEntry>>
 {
     public const string SectionName = nameof(EICMapping);
-    
+
     public EIC? GetEICForEic(string eicCode)
     {
         var entry = this.SelectMany(kvp => kvp.Value)
             .FirstOrDefault(entry => entry.EIC == eicCode);
         return entry == null ? null : new EIC(entry.EIC);
     }
-    
+
     public EIC? GetEICForMpId(string mpId)
     {
         var entry = this.FirstOrDefault(x => x.Key == mpId).Value?.FirstOrDefault();
@@ -19,12 +19,12 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
 
     public FpParty? GetParty(string identifcationNumber)
     {
-        var kvp = this.SelectMany(kvp => kvp.Value, 
+        var kvp = this.SelectMany(kvp => kvp.Value,
                 (kvp, entry) => new { Key = kvp.Key, Entry = entry })
             .Where(kvp => kvp.Key == identifcationNumber)
             .Select(kvp => new KeyValuePair<string, EICMappingEntry>(kvp.Key, kvp.Entry))
-            .ToList(); 
-        
+            .ToList();
+
         var entry = kvp.FirstOrDefault();
         return entry.Key == null ? null : ToFpParty(entry.Value, entry.Key);
     }
@@ -64,6 +64,6 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
 
     private FpParty ToFpParty(EICMappingEntry entry, string mpId)
     {
-        return new FpParty(mpId, entry.MarktpartnerTyp, entry.FahrplanHaendlertyp, entry.Bilanzkreis);
+        return new FpParty(mpId, entry.MarktpartnerTyp, entry.FahrplanHaendlerTyp, entry.Bilanzkreis);
     }
 }
