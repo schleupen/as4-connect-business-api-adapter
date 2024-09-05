@@ -46,5 +46,5 @@ public class FpOutboxMessage(
     /// <summary>
     /// The file path of the XML file.
     /// </summary>
-    public string FilePath { get; } = filename;
+    public string FilePath { get; } = filePath;
 }
