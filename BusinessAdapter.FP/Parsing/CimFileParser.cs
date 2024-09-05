@@ -20,8 +20,22 @@ public class CimFileParser : IFpFileSpecificParser
 		{
 			throw new ArgumentException($"Could not document number from file {path}.");
 		}
-
-		var documentType = document.Descendants(ns + "type").First().Attribute("v").Value;
+		
+		var documentType = "";
+		if (fpFileName.MessageType == FpMessageType.Acknowledge)
+		{
+			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
+			documentType = "A17";
+		}
+		else if (fpFileName.MessageType == FpMessageType.Anomaly)
+		{
+			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
+			documentType = "A16";
+		}
+		else
+		{
+			documentType = document.Descendants(ns + "type").First().Attribute("v").Value;
+		}
 
 		var senderIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Attribute("v")?.Value;
 		if (senderIdentification == null)
