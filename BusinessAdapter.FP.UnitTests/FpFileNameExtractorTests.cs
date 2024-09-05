@@ -73,7 +73,7 @@ public class FpFileNameExtractorTests
         Assert.That(result.Timestamp, Is.EqualTo(validityDate));
         Assert.That(result.Date, Is.EqualTo(creationDate));
         Assert.That(result.Version, Is.EqualTo("123"));
-        Assert.That(result.FahrplanHaendlertyp, Is.EqualTo(mappedPartyMock.First().FahrplanHaendlerTyp));
+        Assert.That(result.FahrplanHaendlerTyp, Is.EqualTo(mappedPartyMock.First().FahrplanHaendlerTyp));
     }
 
     [TestCase("A07", FpMessageType.Confirmation)]

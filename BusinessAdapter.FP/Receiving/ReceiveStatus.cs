@@ -1,12 +1,14 @@
 namespace Schleupen.AS4.BusinessAdapter.FP.Receiving;
-public class ReceiveStatus
-{
-    public int SuccessfulMessageCount => successfulMessages.Count;
 
+using Microsoft.Extensions.Logging;
+
+public class ReceiveStatus : IReceiveStatus
+{
     public bool AbortedDueToTooManyConnections { get; private set; }
+    public int TotalMessageCount => successfulMessages.Count + failedMessages.Count;
 
     private readonly List<FpInboxMessage> successfulMessages = new();
-    private readonly List<(FpInboxMessage Message, Exception Exception)> failedMessages = new();
+    private readonly List<FailedInboxMessage> failedMessages = new();
 
     public void AddSuccessfulReceivedMessage(FpInboxMessage message)
     {
@@ -15,12 +17,8 @@ public class ReceiveStatus
 
     public void AddFailedReceivedMessage(FpInboxMessage message, Exception exception)
     {
-        failedMessages.Add((message, exception));
+	    failedMessages.Add(new FailedInboxMessage(message, exception));
     }
-
-    public IReadOnlyCollection<FpInboxMessage> GetSuccessfulMessages() => successfulMessages.AsReadOnly();
-
-    public IReadOnlyCollection<(FpInboxMessage Message, Exception Exception)> GetFailedMessages() => failedMessages.AsReadOnly();
 
     public void AbortDueToTooManyConnections()
     {
@@ -41,6 +39,10 @@ public class ReceiveStatus
 
         logger.LogInformation(
             "Messages {SuccessfulMessagesCount} received successful.",
-            SuccessfulMessageCount);
+            successfulMessages.Count);
     }
+
+    public IReadOnlyCollection<FpInboxMessage> SuccessfulMessages => successfulMessages.AsReadOnly();
+
+    public IReadOnlyCollection<FailedInboxMessage> FailedMessages => failedMessages.AsReadOnly();
 }

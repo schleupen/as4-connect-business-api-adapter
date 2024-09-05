@@ -5,4 +5,5 @@ public interface IReceiveStatus
 	IReadOnlyCollection<FpInboxMessage> SuccessfulMessages { get; }
 	IReadOnlyCollection<FailedInboxMessage> FailedMessages { get; }
 	int TotalMessageCount { get; }
+	bool AbortedDueToTooManyConnections { get; }
 }

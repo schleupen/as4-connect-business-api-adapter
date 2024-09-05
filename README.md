@@ -172,7 +172,7 @@ A full example:
 
 The configuration of the FP Adapter required an additional `EICMapping`.
 This maps the AS4 specific Party-Id (eg. 1000000001) to X-amount of EIC-Codes (eg. "11XYYYYYY-V----V") and Party-Type (BDEW, DVGW, GS1),
-the FahrplanHaendlertyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice versa.
+the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice versa.
 
 ```
 {
