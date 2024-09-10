@@ -23,20 +23,17 @@ pipeline
 
     stages
     {
-        stage('build')
+        stage('copy build artifacts')
         {
             steps
             {
                 script
                 {
-                    if (env.BRANCH_NAME == 'main') {
-                        VERSION_NUMBER = "1.0.${BUILD_NUMBER}"
-                    } else {
-                        VERSION_NUMBER = "0.0.${BUILD_NUMBER}-${GIT_BRANCH.split("/")[1]}"
-                    }                    
-                    currentBuild.displayName = "${VERSION_NUMBER}"
-                    
-                    bat  "dotnet build -c Release ./BusinessAdapter.sln -p:Version=${VERSION_NUMBER}"
+                    VERSION_NUMBER = "${Version}" // from jenkins build parameter
+                 
+                    currentBuild.displayName = "${Version}"
+                    //bat "rmdir build /S /Q"
+                    bat "xcopy /y /f /S /v \\\\schleupen-ag.de\\eww\\Build\\Pipeline\\Schleupen.AS4.BusinessAdapter\\${VERSION_NUMBER}\\ .\\build\\"
                 }
             }
         }
@@ -56,48 +53,28 @@ pipeline
                     steps {
                         timeout(time: 3, unit: 'HOURS') {
                            script {                                                                          
-                            bat  'dotnet restore ./BusinessAdapter.sln'
-                            bat  'dotnet build -c Release ./BusinessAdapter.sln'
-
-                            bat "dotnet test -c Release BusinessAdapter.FP.IntegrativeTests/BusinessAdapter.FP.IntegrativeTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
+                            bat "dotnet test -c Release build/BusinessAdapter.FP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.dll --logger:\"junit;LogFilePath=Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
                           }
                         }                          
                     }
+                    post
+                        {
+                            always
+                            {
+                                archiveArtifacts allowEmptyArchive: false, artifacts: '*.junit.xml'
+                                junit skipPublishingChecks: true, testResults: '*.junit.xml'
+                            }
+                        }
                 }
             }                        
-        }      
-        stage('unittests')
-        {
-            steps
-            {
-                script
-                {
-                        bat  'dotnet test -c Release BusinessAdapter.UnitTests/BusinessAdapter.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.UnitTests.junit.xml\" -e HOME=/tmp'
-                                                
-                        bat  'dotnet test -c Release BusinessAdapter.FP.UnitTests/BusinessAdapter.FP.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.UnitTests.junit.xml\" -e HOME=/tmp'
-                        bat  'dotnet test -c Release BusinessAdapter.FP.Console.UnitTests/BusinessAdapter.FP.Console.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.FP.Console.UnitTests.junit.xml\" -e HOME=/tmp'
-                        
-                        bat  'dotnet test -c Release BusinessAdapter.MP.UnitTests/BusinessAdapter.MP.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.MP.UnitTests.junit.xml\" -e HOME=/tmp'
-                        bat  'dotnet test -c Release BusinessAdapter.MP.Console.UnitTests/BusinessAdapter.MP.Console.UnitTests.csproj --logger:\"junit;LogFilePath=BusinessAdapter.MP.Console.UnitTests.junit.xml\" -e HOME=/tmp'
-                }
-            }
-            post
-            {
-                always
-                {
-                    archiveArtifacts allowEmptyArchive: false, artifacts: '*/*.junit.xml'
-                    junit skipPublishingChecks: true, testResults: '*/*.junit.xml'
-                }
-            }
-        }
-   
+        }    
     }
 
     post {
            success {
                withCredentials([string(credentialsId: '697d0028-bb04-467b-bb3f-83699e6f49c3', variable: 'NEXUS_TOKEN')]) {
-                    bat "dotnet nuget push ./BusinessAdapter/bin/Release/Schleupen.AS4.BusinessAdapter.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
-                    bat "dotnet nuget push ./BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
+                    bat "dotnet nuget push ./build/BusinessAdapter/bin/Release/Schleupen.AS4.BusinessAdapter.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
+                    bat "dotnet nuget push ./build/BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
                }         
                notifyBuildSuccessful()
            }
