@@ -12,8 +12,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 	public sealed class ReceiveMessageBackgroundService(ILogger<ReceiveMessageBackgroundService> logger, IFpMessageReceiver receiveController, IOptions<ReceiveOptions> receiveOptions)
 		: BackgroundService
 	{
-		private ReceiveOptions options = receiveOptions.Value;
-
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)
@@ -32,7 +30,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 					logger.LogError(ex, "Exception during receive");
 				}
 
-				await Task.Delay(options.SleepDuration, stoppingToken);
+				await Task.Delay(receiveOptions.Value.SleepDuration, stoppingToken);
 			}
 		}
 	}

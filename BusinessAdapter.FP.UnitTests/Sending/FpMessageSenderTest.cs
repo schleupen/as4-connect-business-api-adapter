@@ -18,9 +18,9 @@ public partial class FpMessageSenderTest
 		var sendStatus = await sender.SendMessagesAsync(CancellationToken.None);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(0));
-		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(0));
-		Assert.That(sendStatus.TotalCountOfMessagesInSendDirectory, Is.EqualTo(0));
-		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(0));
+		Assert.That(sendStatus.FailedMessages.Count, Is.EqualTo(0));
+		Assert.That(sendStatus.TotalMessageCount, Is.EqualTo(0));
+		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(0));
 
 		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom(TestData.SendDir), Times.Exactly(1));
 		fixture.Mocks.FpFileRepository.VerifyNoOtherCalls();
@@ -40,9 +40,9 @@ public partial class FpMessageSenderTest
 		var sendStatus = await sender.SendMessagesAsync(cancellationToken);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(retryCount));
-		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(1));
-		Assert.That(sendStatus.TotalCountOfMessagesInSendDirectory, Is.EqualTo(1));
-		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(0));
+		Assert.That(sendStatus.FailedMessages.Count, Is.EqualTo(1));
+		Assert.That(sendStatus.TotalMessageCount, Is.EqualTo(1));
+		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(0));
 
 		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom(TestData.SendDir), Times.Exactly(1));
 		fixture.Mocks.FpFileRepository.VerifyNoOtherCalls();
@@ -64,9 +64,9 @@ public partial class FpMessageSenderTest
 		var sendStatus = await sender.SendMessagesAsync(cancellationToken);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(0));
-		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(1));
-		Assert.That(sendStatus.TotalCountOfMessagesInSendDirectory, Is.EqualTo(1));
-		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(0));
+		Assert.That(sendStatus.FailedMessages.Count, Is.EqualTo(1));
+		Assert.That(sendStatus.TotalMessageCount, Is.EqualTo(1));
+		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(0));
 
 		fixture.Mocks.FpFileRepository.Verify(r => r.GetFilesFrom(TestData.SendDir), Times.Exactly(1));
 		fixture.Mocks.FpFileRepository.VerifyNoOtherCalls();
@@ -88,9 +88,9 @@ public partial class FpMessageSenderTest
 		var sendStatus = await sender.SendMessagesAsync(cancellationToken);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(0));
-		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(failedParsedFiles));
-		Assert.That(sendStatus.TotalCountOfMessagesInSendDirectory, Is.EqualTo(totalMessageCount));
-		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(successfulParsedFiles));
+		Assert.That(sendStatus.FailedMessages.Count, Is.EqualTo(failedParsedFiles));
+		Assert.That(sendStatus.TotalMessageCount, Is.EqualTo(totalMessageCount));
+		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(successfulParsedFiles));
 
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(successfulParsedFiles));
 	}
@@ -111,9 +111,9 @@ public partial class FpMessageSenderTest
 		var sendStatus = await sender.SendMessagesAsync(cancellationToken);
 
 		Assert.That(sendStatus.RetryIteration, Is.EqualTo(0));
-		Assert.That(sendStatus.FailedMessageCount, Is.EqualTo(failedParsedFiles));
-		Assert.That(sendStatus.TotalCountOfMessagesInSendDirectory, Is.EqualTo(totalMessageCount));
-		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(messageLimit));
+		Assert.That(sendStatus.FailedMessages.Count, Is.EqualTo(failedParsedFiles));
+		Assert.That(sendStatus.TotalMessageCount, Is.EqualTo(totalMessageCount));
+		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(messageLimit));
 
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(messageLimit));
 	}

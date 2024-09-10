@@ -79,13 +79,13 @@ A simple example (only required values):
         "EIC": "5790000432752",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       },
       {
         "EIC": "5790000432766",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "TPS"
+        "FahrplanHaendlerTyp": "TPS"
       }
     ]
   }
@@ -128,13 +128,13 @@ A full example:
         "EIC": "5790000432752",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       },
       {
         "EIC": "5790000432766",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "TPS"
+        "FahrplanHaendlerTyp": "TPS"
       }
     ],
     "9984616000003": [
@@ -142,7 +142,7 @@ A full example:
         "EIC": "10X000000000RTEM",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       }
     ]
   }
@@ -172,7 +172,7 @@ A full example:
 
 The configuration of the FP Adapter required an additional `EICMapping`.
 This maps the AS4 specific Party-Id (eg. 1000000001) to X-amount of EIC-Codes (eg. "11XYYYYYY-V----V") and Party-Type (BDEW, DVGW, GS1),
-the FahrplanHaendlertyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice versa.
+the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice versa.
 
 ```
 {
@@ -183,13 +183,13 @@ the FahrplanHaendlertyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
         "EIC": "5790000432752",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       },
       {
         "EIC": "5790000432766",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "TPS"
+        "FahrplanHaendlerTyp": "TPS"
       }
     ],
     "9984616000003": [
@@ -197,7 +197,7 @@ the FahrplanHaendlertyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
         "EIC": "10X000000000RTEM",
         "MarktpartnerTyp": "BDEW",
         "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlertyp": "PPS"
+        "FahrplanHaendlerTyp": "PPS"
       }
     ]
   }

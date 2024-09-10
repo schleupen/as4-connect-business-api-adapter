@@ -12,9 +12,9 @@ public partial class SendStatusTest
 	{
 		SendStatus status = fixture.CreateSendStatusObject();
 
-		Assert.That(status.TotalCountOfMessagesInSendDirectory, Is.EqualTo(100));
-		Assert.That(status.SuccessfulMessageCount, Is.EqualTo(0));
-		Assert.That(status.FailedMessageCount, Is.EqualTo(0));
+		Assert.That(status.TotalMessageCount, Is.EqualTo(0));
+		Assert.That(status.SuccessfulMessages.Count, Is.EqualTo(0));
+		Assert.That(status.FailedMessages.Count, Is.EqualTo(0));
 		Assert.That(status.RetryIteration, Is.EqualTo(0));
 		Assert.DoesNotThrow(() => status.ThrowIfRetryIsNeeded());
 		Assert.That(status.AbortedDueToTooManyConnections, Is.False);
@@ -29,7 +29,7 @@ public partial class SendStatusTest
 
 		status.AddFailure(fixture.Data.FailedOutboundMessage, exception, fixture.Mocks.LoggerMock.Object);
 
-		Assert.That(status.FailedMessageCount, Is.EqualTo(1));
+		Assert.That(status.FailedMessages.Count, Is.EqualTo(1));
 		Assert.That(status.GetUnsentMessagesForRetry()[0], Is.EqualTo(fixture.Data.FailedOutboundMessage));
 		Assert.Throws<AggregateException>(() => status.ThrowIfRetryIsNeeded());
 	}
@@ -47,8 +47,8 @@ public partial class SendStatusTest
 			fixture.Mocks.LoggerMock.Object);
 
 		Assert.That(status.RetryIteration, Is.EqualTo(1));
-		Assert.That(status.FailedMessageCount, Is.EqualTo(0));
-		Assert.That(status.SuccessfulMessageCount, Is.EqualTo(1));
+		Assert.That(status.FailedMessages.Count, Is.EqualTo(0));
+		Assert.That(status.SuccessfulMessages.Count, Is.EqualTo(1));
 		Assert.That(status.GetUnsentMessagesForRetry(), Is.Empty);
 		Assert.DoesNotThrow(() => status.ThrowIfRetryIsNeeded());
 	}
@@ -94,7 +94,7 @@ public partial class SendStatusTest
 
 		status.AddBusinessApiResponse(response, fixture.Mocks.LoggerMock.Object);
 
-		Assert.That(status.FailedMessageCount, Is.EqualTo(1));
+		Assert.That(status.FailedMessages.Count, Is.EqualTo(1));
 		Assert.Throws<AggregateException>(() => status.ThrowIfRetryIsNeeded());
 	}
 
@@ -107,9 +107,9 @@ public partial class SendStatusTest
 			ImmutableList<FpFile>.Empty,
 			new List<FailedFile>() { failedFileInDirectory }.ToImmutableList());
 
-		SendStatus status = new SendStatus(100, directoryResult);
+		SendStatus status = new SendStatus(directoryResult);
 
-		Assert.That(status.FailedMessageCount, Is.EqualTo(1));
+		Assert.That(status.FailedMessages.Count, Is.EqualTo(1));
 		Assert.That(status.GetUnsentMessagesForRetry(), Has.Count.EqualTo(0));
 		Assert.DoesNotThrow(() => status.ThrowIfRetryIsNeeded());
 	}

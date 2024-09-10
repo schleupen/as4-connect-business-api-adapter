@@ -36,9 +36,9 @@ public class EICMappingOptionsValidator : IValidateOptions<Configuration.EICMapp
 				{
 					return ValidateOptionsResult.Fail($"Empty EIC for {keyValuePair.Key}.");
 				}
-				if (mappingEntry.FahrplanHaendlertyp.IsNullOrEmpty())
+				if (mappingEntry.FahrplanHaendlerTyp.IsNullOrEmpty())
 				{
-					return ValidateOptionsResult.Fail($"Empty FahrplanHaendlertyp for {keyValuePair.Key}.");
+					return ValidateOptionsResult.Fail($"Empty FahrplanHaendlerTyp for {keyValuePair.Key}.");
 				}
 				if (mappingEntry.MarktpartnerTyp.IsNullOrEmpty())
 				{

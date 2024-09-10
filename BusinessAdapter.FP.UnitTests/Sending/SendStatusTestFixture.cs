@@ -32,7 +32,7 @@ public partial class SendStatusTest
 
 		public SendStatus CreateSendStatusObject()
 		{
-			return new SendStatus(100, DirectoryResult.Empty("idk"));
+			return new SendStatus(DirectoryResult.Empty("idk"));
 		}
 	}
 

@@ -2,5 +2,5 @@
 
 public interface IFpMessageSender
 {
-	Task<SendStatus> SendMessagesAsync(CancellationToken cancellationToken);
+	Task<ISendStatus> SendMessagesAsync(CancellationToken cancellationToken);
 }

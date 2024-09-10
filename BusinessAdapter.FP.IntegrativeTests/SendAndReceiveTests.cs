@@ -12,8 +12,10 @@ public partial class SendAndReceiveTests
 
 		var sendStatus = await this.fixture.Send(configFileOption);
 
-		Assert.That(sendStatus.FailedMessageCount, Is.Zero);
-		Assert.That(sendStatus.SuccessfulMessageCount, Is.EqualTo(1));
+		Assert.That(sendStatus.FailedMessages.Count, Is.Zero);
+		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(1));
+
+		// TODO : Add filesystem checks
     }
 
     [Test]
@@ -24,7 +26,9 @@ public partial class SendAndReceiveTests
 
 	    var receiveStatus = await this.fixture.Receive(configFileOption);
 
-	    Assert.That(receiveStatus.FailedMessageCount, Is.Zero);
-	    Assert.That(receiveStatus.SuccessfulMessageCount, Is.EqualTo(4));
+	    Assert.That(receiveStatus.FailedMessages.Count, Is.Zero);
+	    Assert.That(receiveStatus.SuccessfulMessages.Count, Is.EqualTo(4));
+
+	    // TODO : Add filesystem checks
 	}
 }

@@ -17,7 +17,9 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		{
 			get
 			{
-				return ((IEnumerable<X509Certificate2>)x509Store.Certificates).Where(IsDistinguishedNameAs4)
+				return x509Store.Certificates
+					.Cast<X509Certificate2>()
+					.Where(IsDistinguishedNameAs4)
 					.Select(x => new ClientCertificate(x)).ToList();
 			}
 		}

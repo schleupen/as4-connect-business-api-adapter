@@ -25,13 +25,11 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	{
 		private const string TooManyRequestsMessage = "A 429 TooManyRequests status code was encountered while receiving the EDIFACT messages which caused the receiving to end before all messages could be received.";
 
-		private readonly ReceiveOptions receiveOptions = receiveOptions.Value;
-
 		public async Task ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
 		{
 			logger.LogDebug("Receiving of available messages starting.");
 
-			string receiveDirectoryPath = receiveOptions.Directory;
+			string receiveDirectoryPath = receiveOptions.Value.Directory;
 			if (string.IsNullOrEmpty(receiveDirectoryPath))
 			{
 				throw new CatastrophicException("The receive directory is not configured.");
@@ -56,7 +54,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 					try
 					{
 						IBusinessApiGateway gateway = businessApiGatewayFactory.CreateAs4BusinessApiClient(receiverIdentificationNumber);
-						int messageLimit = receiveOptions.MessageLimitCount;
+						int messageLimit = receiveOptions.Value.MessageLimitCount;
 						MessageReceiveInfo receiveInfo = await gateway.QueryAvailableMessagesAsync(messageLimit);
 						as4BusinessApiClients.Add(receiveInfo, gateway);
 					}
@@ -143,12 +141,12 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 			int failedMessageCountBase,
 			CancellationToken cancellationToken)
 		{
-			int configuredLimit = this.receiveOptions.MessageLimitCount;
+			int configuredLimit = receiveOptions.Value.MessageLimitCount;
 			int messageLimit = Math.Min(receiveContext.Key.GetAvailableMessages().Length, configuredLimit);
 			MpMessage[] availableMessages = receiveContext.Key.GetAvailableMessages();
 
 			return await Policy.Handle<Exception>()
-				.WaitAndRetryAsync(receiveOptions.Retry.Count, _ => receiveOptions.Retry.SleepDuration, (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
+				.WaitAndRetryAsync(receiveOptions.Value.Retry.Count, _ => receiveOptions.Value.Retry.SleepDuration, (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
 				.ExecuteAndCaptureAsync(async () =>
 				{
 					List<MpMessage> messagesForRetry = new List<MpMessage>();

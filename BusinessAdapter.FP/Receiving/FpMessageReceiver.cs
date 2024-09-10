@@ -1,6 +1,5 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-using System.Net;
 using Polly;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,11 +14,12 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
     public sealed class FpMessageReceiver : IFpMessageReceiver
     {
         private readonly ILogger<FpMessageReceiver> logger;
-        private readonly ReceiveOptions receiveOptions;
-        private readonly AdapterOptions adapterOptions;
+        private readonly IOptions<ReceiveOptions> receiveOptions;
+        private readonly IOptions<AdapterOptions> adapterOptions;
+        private readonly IOptions<EICMapping> eicMapping;
         private readonly IBusinessApiGatewayFactory businessApiGatewayFactory;
         private readonly IFpFileRepository fpFileRepo;
-        private readonly EICMapping eicMapping;
+
 
         private const string TooManyRequestsMessage =
             "A 429 TooManyRequests status code was encountered while receiving the XML messages which caused the receiving to end before all messages could be received.";
@@ -33,14 +33,14 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             IOptions<EICMapping> eicMapping)
         {
             this.logger = logger;
-            this.receiveOptions = receiveOptions.Value;
-            this.adapterOptions = adapterOptions.Value;
+            this.receiveOptions = receiveOptions;
+            this.adapterOptions = adapterOptions;
             this.businessApiGatewayFactory = businessApiGatewayFactory;
             this.fpFileRepo = fpFileRepo;
-            this.eicMapping = eicMapping.Value;
+            this.eicMapping = eicMapping;
         }
 
-        public async Task<ReceiveStatus> ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
+        public async Task<IReceiveStatus> ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
         {
             ValidateConfiguration();
 
@@ -62,12 +62,12 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
         {
             logger.LogDebug("Receiving of available messages starting.");
 
-            if (string.IsNullOrEmpty(receiveOptions.Directory))
+            if (string.IsNullOrEmpty(receiveOptions.Value.Directory))
             {
                 throw new CatastrophicException("The receive directory is not configured.");
             }
 
-            if (adapterOptions.Marketpartners!.Length == 0)
+            if (adapterOptions.Value.Marketpartners!.Length == 0)
             {
                 throw new CatastrophicException("No valid own market partners were found.");
             }
@@ -79,7 +79,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
         {
             var as4BusinessApiClients = new Dictionary<MessageReceiveInfo, IBusinessApiGateway>();
 
-            foreach (var receiverIdentificationNumber in adapterOptions.Marketpartners)
+            foreach (var receiverIdentificationNumber in adapterOptions.Value.Marketpartners)
             {
                 var queryExceptions = await QueryMessagesAsync(receiverIdentificationNumber, as4BusinessApiClients,
                     marketPartnersWithoutCertificate);
@@ -97,7 +97,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             var exceptions = new List<Exception>();
             try
             {
-                var partyReceiver = eicMapping.GetParty(receiverIdentificationNumber);
+                var partyReceiver = eicMapping.Value.GetParty(receiverIdentificationNumber);
                 if (partyReceiver == null)
                 {
                     var errorMessage = $"Receiving party {receiverIdentificationNumber} mapping not configured";
@@ -106,7 +106,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
                 }
 
                 var gateway = businessApiGatewayFactory.CreateGateway(partyReceiver);
-                var messageLimit = receiveOptions.MessageLimitCount;
+                var messageLimit = receiveOptions.Value.MessageLimitCount;
                 var receiveInfo = await gateway.QueryAvailableMessagesAsync(messageLimit);
                 as4BusinessApiClients.Add(receiveInfo, gateway);
             }
@@ -163,10 +163,10 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             ReceiveStatus receiveStatus)
         {
             var availableMessages = receiveContext.Key.GetAvailableMessages();
-            var messageLimit = Math.Min(availableMessages.Length, receiveOptions.MessageLimitCount);
+            var messageLimit = Math.Min(availableMessages.Length, receiveOptions.Value.MessageLimitCount);
 
             return await Policy.Handle<Exception>()
-                .WaitAndRetryAsync(receiveOptions.Retry.Count, _ => TimeSpan.FromSeconds(10),
+                .WaitAndRetryAsync(receiveOptions.Value.Retry.Count, _ => TimeSpan.FromSeconds(10),
                     (ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
                 .ExecuteAndCaptureAsync(async () =>
                 {
@@ -223,7 +223,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
                 throw new InvalidOperationException("Error while receiving AS4 messages.");
             }
 
-            var fileName = fpFileRepo.StoreXmlFileTo(result.Message, receiveOptions.Directory);
+            var fileName = fpFileRepo.StoreXmlFileTo(result.Message, receiveOptions.Value.Directory);
 
             var ackResponse = await receiveContext.Value.AcknowledgeReceivedMessageAsync(result.Message);
             if (!ackResponse.WasSuccessful)
@@ -252,9 +252,9 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             }
 
             var statusMessage = CreateSuccessStatusMessage(
-                receiveStatus.SuccessfulMessageCount,
-                receiveStatus.TotalNumberOfMessages,
-                receiveStatus.FailedMessageCount,
+                receiveStatus.SuccessfulMessages.Count,
+                receiveStatus.TotalMessageCount,
+                receiveStatus.FailedMessages.Count,
                 marketPartnersWithoutCertificate,
                 as4BusinessApiClients.Any(c => c.Key.HasTooManyRequestsError));
 

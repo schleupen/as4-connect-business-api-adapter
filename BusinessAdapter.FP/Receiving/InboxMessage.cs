@@ -1,7 +1,6 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 using System.Security.Cryptography;
-using Schleupen.AS4.BusinessAdapter.API;
 
 public class InboxFpMessage(
 	string messageId,

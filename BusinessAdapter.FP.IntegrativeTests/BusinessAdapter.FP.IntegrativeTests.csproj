@@ -5,7 +5,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>BusinessAdapter.FP.IntegrativeTests</AssemblyName>
+        <AssemblyName>Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests</AssemblyName>
     </PropertyGroup>
     <ItemGroup>
     <PackageReference Include="JunitXml.TestLogger" Version="3.1.12" />
