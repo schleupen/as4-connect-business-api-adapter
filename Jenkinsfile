@@ -30,6 +30,11 @@ pipeline
             {
                 script
                 {
+                   withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                       powershellFile(filename: ".\\SetCommitStatus.ps1", argumentList: "-sha ${SHA}")
+                   }       
+                               
+                               
                     VERSION_NUMBER = "${Version}" // from jenkins build parameter
                  
                     currentBuild.displayName = "${Version}"
@@ -76,11 +81,7 @@ pipeline
                withCredentials([string(credentialsId: '697d0028-bb04-467b-bb3f-83699e6f49c3', variable: 'NEXUS_TOKEN')]) {
                     bat "dotnet nuget push ./build/BusinessAdapter/bin/Release/Schleupen.AS4.BusinessAdapter.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
                     bat "dotnet nuget push ./build/BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
-               }
-
-               withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                   powershellFile(filename: ".\\SetCommitStatus.ps1", argumentList: "-sha ${SHA}")
-               }                                 
+               }                          
 
                notifyBuildSuccessful()
            }
