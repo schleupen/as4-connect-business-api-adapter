@@ -11,4 +11,4 @@ $json = '{ "state": "pending", "target_url": "https://jenkins", "description": "
 
 Write-Host $url
 Write-Host $json
-curl.exe -XPOST -H "Authorization: token $password" $url -d '{"state":"success","target_url":"https://example.com/build/status","description":"The build succeeded!","context":"continuous-integration/jenkins"}'
+curl.exe -L -X POST -H "Authorization: token $password" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $url -d '{"state":"success","target_url":"https://example.com/build/status","description":"The build succeeded!","context":"continuous-integration/jenkins"}'
