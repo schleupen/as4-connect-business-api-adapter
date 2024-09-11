@@ -11,4 +11,4 @@ $json = '{ "state": "pending", "target_url": "https://jenkins", "description": "
 
 Write-Host $url
 Write-Host $json
-curl.exe -XPOST -H "Authorization: token $password" $url -d $json
+curl.exe -XPOST -H "Authorization: token $password" $url -d '{"state":"success","target_url":"https://example.com/build/status","description":"The build succeeded!","context":"continuous-integration/jenkins"}'
