@@ -1,4 +1,4 @@
-﻿param ($sha)
+﻿param ($sha, $status)
 $user = $env:usr
 $password = $env:pwd
 $repo = "as4-connect-business-api-adapter"
@@ -14,4 +14,4 @@ Write-Host $json
 
 ls env:
 
-curl.exe -L -X POST -H "Authorization: token $password" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $url -d "{""""state"""":""""success"""",""""target_url"""":""""$env:BUILD_URL"""",""""description"""":""""The build succeeded!"""",""""context"""":""""continuous-integration/jenkins""""}"
+curl.exe -L -X POST -H "Authorization: token $password" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $url -d "{""""state"""":""""$status"""",""""target_url"""":""""$env:BUILD_URL"""",""""description"""":""""The build succeeded!"""",""""context"""":""""continuous-integration/jenkins""""}"

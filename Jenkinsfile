@@ -31,7 +31,7 @@ pipeline
                 script
                 {
                    withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                       powershellFile(filename: ".\\SetCommitStatus.ps1", argumentList: "-sha ${SHA}")
+                       powershellFile(filename: ".\\SetCommitStatus.ps1", argumentList: "-sha ${SHA} -status pending")
                    }       
                                
                                
