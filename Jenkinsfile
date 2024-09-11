@@ -24,21 +24,27 @@ pipeline
 
     stages
     {
+        stage('preparation')
+        {
+            steps
+            {
+                script
+                {
+                    VERSION_NUMBER = "${Version}" // from jenkins build parameter
+                    currentBuild.displayName = "${Version}"
+                    
+                    withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                        powershellFile(filename: ".\\SetCommitStatus.ps1", argumentList: "-sha ${SHA} -status pending")
+                    }
+                }
+            }
+        }
         stage('copy build artifacts')
         {
             steps
             {
                 script
                 {
-                   withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                       powershellFile(filename: ".\\SetCommitStatus.ps1", argumentList: "-sha ${SHA} -status pending")
-                   }       
-                               
-                               
-                    VERSION_NUMBER = "${Version}" // from jenkins build parameter
-                 
-                    currentBuild.displayName = "${Version}"
-                    //bat "rmdir build /S /Q"
                     bat "xcopy /y /f /S /v \\\\schleupen-ag.de\\eww\\Build\\Pipeline\\Schleupen.AS4.BusinessAdapter\\${VERSION_NUMBER}\\ .\\build\\"
                 }
             }
@@ -83,12 +89,21 @@ pipeline
                     bat "dotnet nuget push ./build/BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${VERSION_NUMBER}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
                }                          
 
+               withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                   powershellFile(filename: ".\\SetCommitStatus.ps1", argumentList: "-sha ${SHA} -status success")
+               }
                notifyBuildSuccessful()
            }
            unstable {
+               withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                   powershellFile(filename: ".\\SetCommitStatus.ps1", argumentList: "-sha ${SHA} -status error -description unstable")
+               }
                notifyBuildUnstable()
            }
            failure {
+               withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                   powershellFile(filename: ".\\SetCommitStatus.ps1", argumentList: "-sha ${SHA} -status failure -description failure")
+               }
                notifyBuildFailed()
            }
     }
