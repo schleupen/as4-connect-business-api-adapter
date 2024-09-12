@@ -34,9 +34,10 @@ pipeline
                     currentBuild.displayName = "${Version}"
                     
                     withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                        powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status pending")
+                        powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status pending")            
                     }
-                }
+                    
+                  }
             }
         }
         stage('copy build artifacts')
@@ -91,7 +92,12 @@ pipeline
 
                withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
                    powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status success")
+               
+                   bat("git tag -a $Version ${SHA} -m ${Version}")
+                   bat("git push https://${usr}:${pwd}@github.com/schleupen/as4-connect-business-api-adapter $Version")
                }
+               
+               
                notifyBuildSuccessful()
            }
            unstable {
@@ -102,7 +108,7 @@ pipeline
            }
            failure {
                withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                   powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status failure -description failure")
+                   powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status failure -description failure") 
                }
                notifyBuildFailed()
            }
