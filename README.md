@@ -213,7 +213,14 @@ the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
   }
 }
 ```
-
 Currently tested platforms:
-
 * Windows (requires .NET 8 Runtime)
+
+## Changelog
+### 3.0
+* Support MP and FP Service in separate executables (Schleupen.AS4.BusinessAdapter.MP.Console.exe, Schleupen.AS4.BusinessAdapter.FP.Console.exe)
+* Support **.net framework** runtime in core assemblies targeting .netstandard
+* The format of the config files has been revised in an incompatible manner (corresponding 1.0)
+
+### 1.0
+* Supports MP Service in a single executable ( Schleupen.AS4.BusinessAdapter.Console.exe ) 
