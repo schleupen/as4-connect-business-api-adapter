@@ -11,7 +11,7 @@ public class ReceiveCommand : Command
 	private readonly ConfigurationFromFileProvider configurationFromFileProvider = new();
 	private readonly ServiceConfigurator configurator = new();
 
-	public ReceiveCommand() : base("receive", "receives fp messages from as4 connect")
+	public ReceiveCommand() : base("receive", "receives mp messages from as4 connect")
 	{
 		var configFileOption = new ConfigFileOption();
 		this.AddOption(configFileOption);

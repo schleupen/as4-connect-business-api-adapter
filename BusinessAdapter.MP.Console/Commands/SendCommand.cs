@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 public class SendCommand : Command
 {
-	public SendCommand() : base("send", "sends fp messages to as4 connect")
+	public SendCommand() : base("send", "sends mp messages to as4 connect")
 	{
 		var configFileOption = new ConfigFileOption();
 		this.AddOption(configFileOption);
