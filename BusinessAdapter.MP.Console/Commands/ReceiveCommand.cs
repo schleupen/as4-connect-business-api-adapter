@@ -1,10 +1,10 @@
-﻿namespace Schleupen.AS4.BusinessAdapter.FP.Commands;
+﻿namespace Schleupen.AS4.BusinessAdapter.MP.Commands;
 
 using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Schleupen.AS4.BusinessAdapter.FP.Configuration;
+using Schleupen.AS4.BusinessAdapter.MP.Configuration;
 
 public class ReceiveCommand : Command
 {

@@ -1,6 +1,6 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.FP
+namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 {
 	using System;
 	using System.Threading.Tasks;
@@ -8,21 +8,22 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 	using Microsoft.Extensions.Logging;
 	using Microsoft.Extensions.Options;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
-	using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 	public sealed class SendMessageBackgroundService(
 		ILogger<SendMessageBackgroundService> logger,
-		IFpMessageSender sender,
-		IOptions<SendOptions> sendOptions)
+		ISendMessageAdapterController sendController,
+		IOptions<SendOptions> options)
 		: BackgroundService
 	{
+		private readonly SendOptions sendOptions = options.Value;
+
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)
 			{
 				try
 				{
-					await sender.SendMessagesAsync(stoppingToken);
+					await sendController.SendAvailableMessagesAsync(stoppingToken);
 				}
 				catch (CatastrophicException ex)
 				{
@@ -34,8 +35,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 					logger.LogError(ex, "Error while sending messages");
 				}
 
-				logger.LogInformation("Next sending iteration is scheduled in '{SleepDuration}' at '{ScheduleTime}'", sendOptions.Value.SleepDuration, DateTime.Now + sendOptions.Value.SleepDuration);
-				await Task.Delay(sendOptions.Value.SleepDuration, stoppingToken);
+				await Task.Delay(sendOptions.SleepDuration, stoppingToken);
 			}
 		}
 	}

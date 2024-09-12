@@ -1,20 +1,19 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter;
+namespace Schleupen.AS4.BusinessAdapter.MP;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using Schleupen.AS4.BusinessAdapter.FP;
-using Schleupen.AS4.BusinessAdapter.FP.Receiving;
-using Schleupen.AS4.BusinessAdapter.FP.Sending;
+using Schleupen.AS4.BusinessAdapter.MP.Receiving;
+using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 [TestFixture]
 internal sealed partial class ServiceConfiguratorTest
 {
-	private readonly Fixture fixture = new();
+	private readonly ServiceConfiguratorTest.Fixture fixture = new();
 	private IConfiguration config = new ConfigurationBuilder().Build();
 	private ServiceCollection serviceCollection = new();
 
@@ -33,7 +32,7 @@ internal sealed partial class ServiceConfiguratorTest
 		configurator.ConfigureSending(serviceCollection, config);
 		serviceCollection.AddLogging((b) => b.AddConsole());
 
-		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<IFpMessageSender>();
+		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<ISendMessageAdapterController>();
 		Assert.That(sender, Is.Not.Null);
 	}
 
@@ -45,7 +44,7 @@ internal sealed partial class ServiceConfiguratorTest
 		configurator.ConfigureReceiving(serviceCollection, config);
 		serviceCollection.AddLogging((b) => b.AddConsole());
 
-		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<Schleupen.AS4.BusinessAdapter.FP.Receiving.IFpMessageReceiver>();
+		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<IReceiveMessageAdapterController>();
 		Assert.That(sender, Is.Not.Null);
 	}
 

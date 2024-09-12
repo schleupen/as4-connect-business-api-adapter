@@ -1,33 +1,32 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter;
+namespace Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Schleupen.AS4.BusinessAdapter.Configuration;
-using Schleupen.AS4.BusinessAdapter.MP;
 
-internal sealed partial class SendMessageWorkerTest
+internal sealed partial class SendMessageBackgroundServiceTest
 {
 	private sealed class Fixture : IDisposable
 	{
 		private readonly MockRepository mockRepository = new(MockBehavior.Strict);
-		private readonly Mock<ILogger<SendMessageWorker>> loggerMock;
+		private readonly Mock<ILogger<SendMessageBackgroundService>> loggerMock;
 		private readonly Mock<ISendMessageAdapterController> sendMessageAdapterControllerMock;
 		private readonly Mock<IOptions<SendOptions>> sendOptionsMock;
 
 		public Fixture()
 		{
-			loggerMock = mockRepository.Create<ILogger<SendMessageWorker>>();
+			loggerMock = mockRepository.Create<ILogger<SendMessageBackgroundService>>();
 			sendMessageAdapterControllerMock = mockRepository.Create<ISendMessageAdapterController>();
 			sendOptionsMock = mockRepository.Create<IOptions<SendOptions>>();
 			sendOptionsMock.SetupGet(o => o.Value).Returns(new SendOptions());
 		}
 
-		public SendMessageWorker CreateTestObject()
+		public SendMessageBackgroundService CreateTestObject()
 		{
-			return new SendMessageWorker(loggerMock.Object, sendMessageAdapterControllerMock.Object, sendOptionsMock.Object);
+			return new SendMessageBackgroundService(loggerMock.Object, sendMessageAdapterControllerMock.Object, sendOptionsMock.Object);
 		}
 
 		public void Dispose()
