@@ -39,11 +39,21 @@ If you would like to prepare the solution to publish it, you can use the followi
 This will produce for each Service (MP, FP) a single, self-contained executable that can be run.
 
 ## Run
+This repository contains the following executables, corresponding to the AS4 Service.
+* **Marktprozesse (MP)**: Schleupen.AS4.BusinessAdapter.MP.Console.exe
+* **Fahrplanmanagement (FP)**: Schleupen.AS4.BusinessAdapter.FP.Console.exe
+
+Each executable supports the following commands:
+* **send**: Send available messages in the Send.Directory to as4 connect. Will terminate after one iteration. 
+* **receive**: receives messages from as4 connect and saves them in Receive.Directory. Will terminate after one iteration.
+* **service**: send and receives messages continuously.
+
+The options are also documented in the executable itself. For more information execute with `-?`
+
+`Schleupen.AS4.BusinessAdapter.MP.Console.exe -?`
+`Schleupen.AS4.BusinessAdapter.FP.Console.exe send -?`
 
 To run the adapter you will need the [client certificates](#certificates) and a [configuration](#configuration) file for the specific service.
-
-* **MP** (Marktprozesse): Schleupen.AS4.BusinessAdapter.MP.Console.exe
-* **FP** (Fahrplanmanagement): Schleupen.AS4.BusinessAdapter.FP.Console.exe
 
 ### Certificates
 
