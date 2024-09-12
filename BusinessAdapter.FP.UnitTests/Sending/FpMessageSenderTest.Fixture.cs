@@ -140,8 +140,6 @@ public partial class FpMessageSenderTest
 			return gatewayMock;
 		}
 
-
-
 		public Mock<IBusinessApiGateway> SetupTooManyConnection(CancellationToken cancellationToken)
 		{
 			Mocks.SendOptions
@@ -202,6 +200,21 @@ public partial class FpMessageSenderTest
 			Mocks.FpOutboxMessageAssembler
 				.Setup(r => r.ToFpOutboxMessages(It.IsAny<IEnumerable<FpFile>>()))
 				.Returns(new List<FpOutboxMessage>());
+		}
+
+		public void SetupSenderGatewayCreationFails(Exception exception)
+		{
+			Mocks.SendOptions
+				.Setup(x => x.Value)
+				.Returns(CreateSendOptions(5));
+
+			Mocks.FpFileRepository
+				.Setup(r => r.GetFilesFrom(TestData.SendDir))
+				.Returns(Data.CreateDirectoryResult(1, 0));
+
+			Mocks.BusinessApiGatewayFactory
+				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
+				.Throws(() => exception);
 		}
 	}
 

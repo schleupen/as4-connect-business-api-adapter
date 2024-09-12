@@ -99,7 +99,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 						}
 					}
 				}
-				catch (Exception ex) // TODO Test
+				catch (Exception ex)
 				{
 					foreach (var message in messagesFromSender)
 					{
