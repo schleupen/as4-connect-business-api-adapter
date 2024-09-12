@@ -93,6 +93,11 @@ public partial class FpMessageSenderTest
 		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(successfulParsedFiles));
 
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(successfulParsedFiles));
+		fixture.Mocks.FpFileRepository.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Exactly(successfulParsedFiles));
+		foreach (var successFilePath in sendStatus.SuccessfulMessages.Select(x => x.FilePath))
+		{
+			fixture.Mocks.FpFileRepository.Verify(x => x.DeleteFile(successFilePath), Times.Exactly(1));
+		}
 	}
 
 	[Test]
