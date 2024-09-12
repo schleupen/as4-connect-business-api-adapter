@@ -34,14 +34,14 @@ public class ServiceConfigurator
 	{
 		ConfigureDefaults(collection, configuration);
 		collection.AddSendConfiguration(configuration);
-		collection.AddTransient<ISendMessageAdapterController, SendMessageAdapterController>();
+		collection.AddTransient<IMpMessageSender, MpMessageSender>();
 	}
 
 	public void ConfigureReceiving(IServiceCollection collection, IConfiguration configuration)
 	{
 		ConfigureDefaults(collection, configuration);
 		collection.AddReceiveConfiguration(configuration);
-		collection.AddTransient<IReceiveMessageAdapterController, ReceiveMessageAdapterController>();
+		collection.AddTransient<IMpMessageReceiver, MpMessageReceiver>();
 	}
 
 	public void ConfigureService(IServiceCollection collection, IConfiguration configuration)

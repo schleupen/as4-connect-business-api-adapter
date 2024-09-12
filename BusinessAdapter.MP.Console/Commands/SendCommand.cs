@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 public class SendCommand : Command
 {
@@ -23,8 +24,8 @@ public class SendCommand : Command
 		var startUpValidator = serviceProvider.GetRequiredService<IStartupValidator>();
 		startUpValidator.Validate();
 
-		var sender = serviceProvider.GetRequiredService<ISendMessageAdapterController>();
-		await sender.SendAvailableMessagesAsync(CancellationToken.None);
+		var sender = serviceProvider.GetRequiredService<IMpMessageSender>();
+		await sender.SendMessagesAsync(CancellationToken.None);
 	}
 
 	private ServiceProvider CreateServiceProvider(FileInfo fileInfo)

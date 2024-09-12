@@ -14,16 +14,16 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 	using Schleupen.AS4.BusinessAdapter.MP.API;
 
-	public sealed class SendMessageAdapterController(
+	public sealed class MpMessageSender(
 		IBusinessApiGatewayFactory businessApiGatewayFactory,
 		IEdifactDirectoryResolver edifactDirectoryResolver,
 		IOptions<SendOptions> sendOptions,
-		ILogger<SendMessageAdapterController> logger)
-		: ISendMessageAdapterController
+		ILogger<MpMessageSender> logger)
+		: IMpMessageSender
 	{
 		private readonly SendOptions sendOptions = sendOptions.Value;
 
-		public async Task SendAvailableMessagesAsync(CancellationToken cancellationToken)
+		public async Task SendMessagesAsync(CancellationToken cancellationToken)
 		{
 			string sendDirectoryPath = sendOptions.Directory;
 			if (string.IsNullOrEmpty(sendDirectoryPath))

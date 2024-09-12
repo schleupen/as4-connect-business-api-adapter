@@ -6,7 +6,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 	[TestFixture]
-	internal sealed partial class ReceiveMessageAdapterControllerTest : IDisposable
+	internal sealed partial class MpMessageReceiverTest : IDisposable
 	{
 		private Fixture? fixture;
 
@@ -27,9 +27,9 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 		public async Task ReceiveAvailableMessagesAsync_ShouldReceiveAllFiles()
 		{
 			fixture!.PrepareReceiveAvailableMessagesAsync();
-			ReceiveMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageReceiver testObject = fixture!.CreateTestObject();
 
-			await testObject.ReceiveAvailableMessagesAsync(CancellationToken.None);
+			await testObject.ReceiveMessagesAsync(CancellationToken.None);
 
 			// Verify is performed during dispose
 		}

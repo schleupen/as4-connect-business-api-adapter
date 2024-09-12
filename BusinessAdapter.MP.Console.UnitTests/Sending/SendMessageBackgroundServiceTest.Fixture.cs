@@ -13,13 +13,13 @@ internal sealed partial class SendMessageBackgroundServiceTest
 	{
 		private readonly MockRepository mockRepository = new(MockBehavior.Strict);
 		private readonly Mock<ILogger<SendMessageBackgroundService>> loggerMock;
-		private readonly Mock<ISendMessageAdapterController> sendMessageAdapterControllerMock;
+		private readonly Mock<IMpMessageSender> sendMessageAdapterControllerMock;
 		private readonly Mock<IOptions<SendOptions>> sendOptionsMock;
 
 		public Fixture()
 		{
 			loggerMock = mockRepository.Create<ILogger<SendMessageBackgroundService>>();
-			sendMessageAdapterControllerMock = mockRepository.Create<ISendMessageAdapterController>();
+			sendMessageAdapterControllerMock = mockRepository.Create<IMpMessageSender>();
 			sendOptionsMock = mockRepository.Create<IOptions<SendOptions>>();
 			sendOptionsMock.SetupGet(o => o.Value).Returns(new SendOptions());
 		}
@@ -37,14 +37,14 @@ internal sealed partial class SendMessageBackgroundServiceTest
 		public void PrepareStart()
 		{
 			sendMessageAdapterControllerMock
-				.Setup(x => x.SendAvailableMessagesAsync(It.IsAny<CancellationToken>()))
+				.Setup(x => x.SendMessagesAsync(It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult(0));
 		}
 
 		public void PrepareStartWithError()
 		{
 			sendMessageAdapterControllerMock
-				.Setup(x => x.SendAvailableMessagesAsync(It.IsAny<CancellationToken>()))
+				.Setup(x => x.SendMessagesAsync(It.IsAny<CancellationToken>()))
 				.Throws(() => new InvalidOperationException("Expected Exception during test."));
 
 			SetupLogger(LogLevel.Error, "Error while sending messages", e => e.Message == "Expected Exception during test.");
@@ -53,7 +53,7 @@ internal sealed partial class SendMessageBackgroundServiceTest
 		public void PrepareStartWithCatastrophicError()
 		{
 			sendMessageAdapterControllerMock
-				.Setup(x => x.SendAvailableMessagesAsync(It.IsAny<CancellationToken>()))
+				.Setup(x => x.SendMessagesAsync(It.IsAny<CancellationToken>()))
 				.Throws(() => new CatastrophicException("Expected Catastrophic Exception during test."));
 
 			SetupLogger(LogLevel.Error, "Catastrophic exception while sending", e => e.Message == "Expected Catastrophic Exception during test.");
@@ -74,7 +74,7 @@ internal sealed partial class SendMessageBackgroundServiceTest
 
 		public void VerifyControllerWasCalled()
 		{
-			sendMessageAdapterControllerMock.Verify(x => x.SendAvailableMessagesAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce());
+			sendMessageAdapterControllerMock.Verify(x => x.SendMessagesAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce());
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
-	internal sealed partial class ReceiveMessageAdapterControllerTest
+	internal sealed partial class MpMessageReceiverTest
 	{
 		private sealed class Fixture : IDisposable
 		{
@@ -19,7 +19,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 			private readonly Mock<IBusinessApiGatewayFactory> businessApiClientFactoryMock;
 			private readonly Mock<IOptions<AdapterOptions>> adapterOptions;
 			private readonly Mock<IEdifactDirectoryResolver> edifactDirectoryResolverMock;
-			private readonly Mock<ILogger<ReceiveMessageAdapterController>> loggerMock;
+			private readonly Mock<ILogger<MpMessageReceiver>> loggerMock;
 			private readonly Mock<IOptions<ReceiveOptions>> receiveOptionsMock;
 			private readonly Mock<IBusinessApiGateway> businessApiClientMock;
 
@@ -29,7 +29,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 				businessApiClientFactoryMock = mockRepository.Create<IBusinessApiGatewayFactory>();
 				adapterOptions = mockRepository.Create<IOptions<AdapterOptions>>();
 				edifactDirectoryResolverMock = mockRepository.Create<IEdifactDirectoryResolver>();
-				loggerMock = mockRepository.Create<ILogger<ReceiveMessageAdapterController>>(MockBehavior.Loose);
+				loggerMock = mockRepository.Create<ILogger<MpMessageReceiver>>(MockBehavior.Loose);
 				receiveOptionsMock = mockRepository.Create<IOptions<ReceiveOptions>>(MockBehavior.Loose);
 			}
 
@@ -38,9 +38,9 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 				mockRepository.VerifyAll();
 			}
 
-			public ReceiveMessageAdapterController CreateTestObject()
+			public MpMessageReceiver CreateTestObject()
 			{
-				return new ReceiveMessageAdapterController(
+				return new MpMessageReceiver(
 					businessApiClientFactoryMock.Object,
 					edifactDirectoryResolverMock.Object,
 					receiveOptionsMock.Object,

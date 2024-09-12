@@ -7,7 +7,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 	[TestFixture]
-	internal sealed partial class SendMessageAdapterControllerTest : IDisposable
+	internal sealed partial class MpMessageSenderTest : IDisposable
 	{
 		private Fixture? fixture;
 
@@ -28,11 +28,11 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 		public async Task SendAvailableMessagesAsync_WithoutSendDirectory_ShouldThrowCatastrophicException()
 		{
 			fixture!.SendAvailableMessagesAsyncWithoutSendDirectory();
-			SendMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageSender testObject = fixture!.CreateTestObject();
 
 			try
 			{
-				await testObject.SendAvailableMessagesAsync(CancellationToken.None);
+				await testObject.SendMessagesAsync(CancellationToken.None);
 			}
 			catch (CatastrophicException exception)
 			{
@@ -48,9 +48,9 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 		public async Task SendAvailableMessagesAsync_WithoutEdifactFiles_ShouldNeverCallApi()
 		{
 			fixture!.SendAvailableMessagesAsyncWithoutEdifactFiles();
-			SendMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageSender testObject = fixture!.CreateTestObject();
 
-			await testObject.SendAvailableMessagesAsync(CancellationToken.None);
+			await testObject.SendMessagesAsync(CancellationToken.None);
 
 			fixture.VerifyApiWasNotCalled();
 		}
@@ -59,9 +59,9 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 		public async Task SendAvailableMessagesAsync_ShouldCallApiWithOutboxMessageAndRemoveFileAfterwards()
 		{
 			fixture!.SendAvailableMessagesAsync();
-			SendMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageSender testObject = fixture!.CreateTestObject();
 
-			await testObject.SendAvailableMessagesAsync(CancellationToken.None);
+			await testObject.SendMessagesAsync(CancellationToken.None);
 
 			// Verify is performed during dispose
 		}
@@ -70,10 +70,10 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 		public async Task SendAvailableMessagesAsync_WithErrorDuringSend_ShouldThrowExpectedException()
 		{
 			fixture!.SendAvailableMessagesAsyncWithErrorDuringSend();
-			SendMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageSender testObject = fixture!.CreateTestObject();
 			try
 			{
-				await testObject.SendAvailableMessagesAsync(CancellationToken.None);
+				await testObject.SendMessagesAsync(CancellationToken.None);
 			}
 			catch (AggregateException e) when (e.InnerExceptions[0].Message == "Expected")
 			{
@@ -88,9 +88,9 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 		public async Task SendAvailableMessagesAsync_WithSenderIdentificationNumberNotResolvable_ShouldNotCallApi()
 		{
 			fixture!.SendAvailableMessagesAsyncWithSenderIdentificationNumberNotResolvable();
-			SendMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageSender testObject = fixture!.CreateTestObject();
 
-			await testObject.SendAvailableMessagesAsync(CancellationToken.None);
+			await testObject.SendMessagesAsync(CancellationToken.None);
 
 			fixture.VerifyApiWasNotCalled();
 		}
@@ -99,11 +99,11 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 		public async Task SendAvailableMessagesAsync_WithExceptionDuringApiCreation_ShouldProcessOtherMessages()
 		{
 			fixture!.SendAvailableMessagesAsyncWithExceptionDuringApiCreation();
-			SendMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageSender testObject = fixture!.CreateTestObject();
 
 			try
 			{
-				await testObject.SendAvailableMessagesAsync(CancellationToken.None);
+				await testObject.SendMessagesAsync(CancellationToken.None);
 			}
 			catch (AggregateException e) when (e.InnerExceptions[0].Message == "Expected during API creation")
 			{
@@ -118,9 +118,9 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 		public async Task SendAvailableMessagesAsync_WithApiExceptionForTooManyMessages_ShouldLogTooManyMessagesError()
 		{
 			fixture!.SendAvailableMessagesAsyncWithApiExceptionForTooManyMessages();
-			SendMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageSender testObject = fixture!.CreateTestObject();
 
-			await testObject.SendAvailableMessagesAsync(CancellationToken.None);
+			await testObject.SendMessagesAsync(CancellationToken.None);
 
 			fixture.VerifyTooManyMessagesErrorWasLogged();
 		}
@@ -129,11 +129,11 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 		public async Task SendAvailableMessagesAsync_WithApiExceptionForTooManyMessages_ShouldThrowAggregateException()
 		{
 			fixture!.SendAvailableMessagesAsyncWithApiException();
-			SendMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageSender testObject = fixture!.CreateTestObject();
 
 			try
 			{
-				await testObject.SendAvailableMessagesAsync(CancellationToken.None);
+				await testObject.SendMessagesAsync(CancellationToken.None);
 			}
 			catch (AggregateException e)
 			{
@@ -150,9 +150,9 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 		public async Task SendAvailableMessagesAsync_WithMoreMessagesThanConfiguredLimit_ShouldOnlySendMessagesUpToLimit()
 		{
 			fixture!.SendAvailableMessagesAsyncWithMoreMessagesThanLimit();
-			SendMessageAdapterController testObject = fixture!.CreateTestObject();
+			MpMessageSender testObject = fixture!.CreateTestObject();
 
-			await testObject.SendAvailableMessagesAsync(CancellationToken.None);
+			await testObject.SendMessagesAsync(CancellationToken.None);
 
 			fixture.VerifySecondMessageWasNotSend();
 		}

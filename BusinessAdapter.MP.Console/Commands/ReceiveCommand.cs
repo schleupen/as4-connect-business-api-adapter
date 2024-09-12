@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.MP.Configuration;
+using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 public class ReceiveCommand : Command
 {
@@ -24,9 +25,9 @@ public class ReceiveCommand : Command
 		var serviceProvider = CreateServiceProvider(configFile);
 		var startUpValidator = serviceProvider.GetRequiredService<IStartupValidator>();
 		startUpValidator.Validate();
-		var sender = serviceProvider.GetRequiredService<IReceiveMessageAdapterController>();
+		var sender = serviceProvider.GetRequiredService<IMpMessageReceiver>();
 
-		await sender.ReceiveAvailableMessagesAsync(CancellationToken.None);
+		await sender.ReceiveMessagesAsync(CancellationToken.None);
 	}
 
 	private ServiceProvider CreateServiceProvider(FileInfo configFile)

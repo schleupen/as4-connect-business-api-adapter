@@ -17,7 +17,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 			{
 				try
 				{
-					await receiveController.ReceiveAvailableMessagesAsync(stoppingToken);
+					await receiveController.ReceiveMessagesAsync(stoppingToken);
 				}
 				catch (CatastrophicException ex)
 				{

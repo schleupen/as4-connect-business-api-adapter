@@ -32,7 +32,7 @@ internal sealed partial class ServiceConfiguratorTest
 		configurator.ConfigureSending(serviceCollection, config);
 		serviceCollection.AddLogging((b) => b.AddConsole());
 
-		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<ISendMessageAdapterController>();
+		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<IMpMessageSender>();
 		Assert.That(sender, Is.Not.Null);
 	}
 
@@ -44,7 +44,7 @@ internal sealed partial class ServiceConfiguratorTest
 		configurator.ConfigureReceiving(serviceCollection, config);
 		serviceCollection.AddLogging((b) => b.AddConsole());
 
-		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<IReceiveMessageAdapterController>();
+		var sender = serviceCollection.BuildServiceProvider().GetRequiredService<IMpMessageReceiver>();
 		Assert.That(sender, Is.Not.Null);
 	}
 

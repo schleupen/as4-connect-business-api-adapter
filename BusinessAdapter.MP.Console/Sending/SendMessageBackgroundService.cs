@@ -11,7 +11,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 
 	public sealed class SendMessageBackgroundService(
 		ILogger<SendMessageBackgroundService> logger,
-		ISendMessageAdapterController sendController,
+		IMpMessageSender mpController,
 		IOptions<SendOptions> options)
 		: BackgroundService
 	{
@@ -23,7 +23,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 			{
 				try
 				{
-					await sendController.SendAvailableMessagesAsync(stoppingToken);
+					await mpController.SendMessagesAsync(stoppingToken);
 				}
 				catch (CatastrophicException ex)
 				{

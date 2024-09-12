@@ -15,17 +15,17 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Parsing;
 
-	public sealed class ReceiveMessageAdapterController(
+	public sealed class MpMessageReceiver(
 		IBusinessApiGatewayFactory businessApiGatewayFactory,
 		IEdifactDirectoryResolver edifactDirectoryResolver,
 		IOptions<ReceiveOptions> receiveOptions,
 		IOptions<AdapterOptions> adapterOptions,
-		ILogger<ReceiveMessageAdapterController> logger)
-		: IReceiveMessageAdapterController
+		ILogger<MpMessageReceiver> logger)
+		: IMpMessageReceiver
 	{
 		private const string TooManyRequestsMessage = "A 429 TooManyRequests status code was encountered while receiving the EDIFACT messages which caused the receiving to end before all messages could be received.";
 
-		public async Task ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
+		public async Task ReceiveMessagesAsync(CancellationToken cancellationToken)
 		{
 			logger.LogDebug("Receiving of available messages starting.");
 

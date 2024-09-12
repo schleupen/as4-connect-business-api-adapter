@@ -12,7 +12,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
-	internal sealed partial class SendMessageAdapterControllerTest
+	internal sealed partial class MpMessageSenderTest
 	{
 		private sealed class Fixture : IDisposable
 		{
@@ -21,7 +21,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 			private readonly MockRepository mockRepository = new(MockBehavior.Strict);
 			private readonly Mock<IBusinessApiGatewayFactory> businessApiClientFactory;
 			private readonly Mock<IEdifactDirectoryResolver> edifactDirectoryResolverMock;
-			private readonly Mock<ILogger<SendMessageAdapterController>> loggerMock;
+			private readonly Mock<ILogger<MpMessageSender>> loggerMock;
 			private readonly Mock<IEdifactFile> edifactFile1Mock;
 			private readonly Mock<IEdifactFile> edifactFile2Mock;
 			private readonly Mock<IBusinessApiGateway> as4BusinessApiClientMock;
@@ -34,13 +34,13 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 				edifactFile1Mock = mockRepository.Create<IEdifactFile>();
 				edifactFile2Mock = mockRepository.Create<IEdifactFile>();
 				as4BusinessApiClientMock = mockRepository.Create<IBusinessApiGateway>();
-				loggerMock = mockRepository.Create<ILogger<SendMessageAdapterController>>(MockBehavior.Loose);
+				loggerMock = mockRepository.Create<ILogger<MpMessageSender>>(MockBehavior.Loose);
 				sendOptionsMock = mockRepository.Create<IOptions<SendOptions>>(MockBehavior.Loose);
 			}
 
-			public SendMessageAdapterController CreateTestObject()
+			public MpMessageSender CreateTestObject()
 			{
-				return new SendMessageAdapterController(
+				return new MpMessageSender(
 					businessApiClientFactory.Object,
 					edifactDirectoryResolverMock.Object,
 					sendOptionsMock.Object,

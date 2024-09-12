@@ -8,7 +8,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	using Microsoft.Extensions.Options;
 	using Schleupen.AS4.BusinessAdapter.Configuration;
 
-	public sealed class ReceiveMessageBackgroundService(ILogger<ReceiveMessageBackgroundService> logger, IReceiveMessageAdapterController receiveController, IOptions<ReceiveOptions> receiveOptions)
+	public sealed class ReceiveMessageBackgroundService(ILogger<ReceiveMessageBackgroundService> logger, IMpMessageReceiver mpController, IOptions<ReceiveOptions> receiveOptions)
 		: BackgroundService
 	{
 		private readonly ReceiveOptions receiveOptions = receiveOptions.Value;
@@ -19,7 +19,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 			{
 				try
 				{
-					await receiveController.ReceiveAvailableMessagesAsync(stoppingToken);
+					await mpController.ReceiveMessagesAsync(stoppingToken);
 				}
 				catch (CatastrophicException ex)
 				{
