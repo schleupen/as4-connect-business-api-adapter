@@ -46,7 +46,7 @@ pipeline
             {
                 script
                 {
-                    bat "xcopy /y /f /S /v \\\\schleupen-ag.de\\eww\\Build\\Pipeline\\Schleupen.AS4.BusinessAdapter\\${VERSION_NUMBER}\\ .\\build\\"
+                    bat "xcopy /y /f /S /v ${BuildPipelineLocation}\\Schleupen.AS4.BusinessAdapter\\${VERSION_NUMBER}\\ .\\build\\"
                 }
             }
         }
@@ -93,10 +93,11 @@ pipeline
                withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
                    powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status success")
                
-                   bat("git tag -a $Version ${SHA} -m ${Version}")
-                   bat("git push https://${usr}:${pwd}@github.com/schleupen/as4-connect-business-api-adapter $Version")
+                   if (env.BRANCH_NAME == 'main') {
+                        bat("git tag -a $Version ${SHA} -m ${Version}")
+                        bat("git push https://${usr}:${pwd}@github.com/schleupen/as4-connect-business-api-adapter $Version")
+                   }
                }
-               
                
                notifyBuildSuccessful()
            }
