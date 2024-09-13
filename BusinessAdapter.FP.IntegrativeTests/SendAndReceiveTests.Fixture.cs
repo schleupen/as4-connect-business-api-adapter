@@ -45,9 +45,9 @@ public partial class SendAndReceiveTests
 
 		}
 
-        public void CreateDefaultAppSettings()
+        public void CreateDefaultAppSettings(string marketPartner = "9912345000002")
         {
-	        var marketpartners = new List<string> { "9912345000002" };
+	        var marketpartners = new List<string> {  marketPartner };
 
 	        var eicMapping = new Dictionary<string, List<EICMappingEntry>>
 	        {
@@ -76,6 +76,18 @@ public partial class SendAndReceiveTests
 					        FahrplanHaendlerTyp = "PPS"
 				        }
 			        }
+		        }, 
+		        {
+		       		"9912345000003", new List<EICMappingEntry>
+		       		{
+			   		    new EICMappingEntry
+			   		    {
+					        EIC = "5790000432755",
+					        MarktpartnerTyp = "BDEW",
+					        Bilanzkreis = "FINGRID",
+					        FahrplanHaendlerTyp = "PPS"
+			   		    }
+		       		}
 		        }
 	        };
 
@@ -84,6 +96,19 @@ public partial class SendAndReceiveTests
 	        AppSettingsPath = Environment.CurrentDirectory + @"\appsettings.json";
 
 	        CreateAppSettingsJson(sendDirectory, receiveDirectory, marketpartners, eicMapping, AppSettingsPath);
+        }
+
+        public bool CheckSendFile()
+        {
+	        var fileName = "20010602_PPS_FINGRID_10X000000000RTEM_1234_ACK_.xml";
+	        var directory = Environment.CurrentDirectory + @"\Send";
+	        return File.Exists(Path.Combine(directory, fileName));
+        }
+
+        public bool CheckReceiveFileDirIsNotEmpty()
+        {
+	        var directory = Environment.CurrentDirectory + @"\Send";
+	        return !Directory.EnumerateFileSystemEntries(directory).Any();
         }
 
         public void CreateAppSettingsJson(
