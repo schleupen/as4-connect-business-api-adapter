@@ -3,8 +3,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 using System.IO.Compression;
 using System.Text;
 using System.Xml.Linq;
-using Microsoft.Extensions.Options;
-using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
 {
@@ -32,7 +30,7 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
 
 	    }
 		string responseText = System.Text.Encoding.ASCII.GetString(payload);
-		XDocument doc = XDocument.Parse(xml); 
+		XDocument doc = XDocument.Parse(xml);
 	    var parser = this.CreateParserFor(doc);
 	    return parser.ParsePayload(doc);
     }

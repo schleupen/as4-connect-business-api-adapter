@@ -3,8 +3,6 @@
 using System.Text;
 using System.Xml.Linq;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
-using Microsoft.Extensions.Options;
-using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 public class EssFileParser : IFpFileSpecificParser
 {
@@ -36,7 +34,7 @@ public class EssFileParser : IFpFileSpecificParser
 		{
 			documentType = document.Descendants(ns + "DocumentType").First().Attribute("v").Value;
 		}
-		
+
 
 		var senderIdentification = document.Descendants(ns + "SenderIdentification").FirstOrDefault()?.Attribute("v")?.Value;
 		if (senderIdentification == null)
@@ -81,7 +79,7 @@ public class EssFileParser : IFpFileSpecificParser
 		FpBDEWProperties properties =
 			new FpBDEWProperties(documentType, documentNo, scheduleTimeInterval, senderIdentification, senderRole);
 
-		
+
 		return new FpFile(
 			new EIC(senderIdentification),
 			 new EIC(receiverIdentification),
@@ -95,7 +93,7 @@ public class EssFileParser : IFpFileSpecificParser
 	public FpParsedPayload ParsePayload(XDocument document)
 	{
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
-		
+
 		var senderIdentification = document.Descendants(ns + "SenderIdentification").FirstOrDefault()?.Attribute("v")?.Value;
 		if (senderIdentification == null)
 		{
@@ -119,12 +117,12 @@ public class EssFileParser : IFpFileSpecificParser
 		{
 			throw new ArgumentException($"Could not retrieve receiver role from payload.");
 		}
-		
+
 		var messageDateTime = document.Descendants(ns + "CreationDateTime").FirstOrDefault()?.Attribute("v")?.Value;
 
 		// TODO how do we get the scheduletimeinterval for acks and status messages?
 		string? scheduleTimeInterval  = document.Descendants(ns + "ScheduleTimeInterval").FirstOrDefault()?.Attribute("v")?.Value;
-		
+
 		return new FpParsedPayload(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
