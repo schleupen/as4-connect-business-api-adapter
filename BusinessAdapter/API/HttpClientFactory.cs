@@ -13,7 +13,7 @@ public class HttpClientFactory(IOptions<AdapterOptions> options, IClientCertific
 	public HttpClient CreateFor(Party party)
 	{
 		var certificate = clientCertificateProvider.GetCertificate(party.Id);
-		
+
 #pragma warning disable CA5386 // Hartcodierung des SecurityProtocolType-Werts vermeiden
 		ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 #pragma warning restore CA5386 // Hartcodierung des SecurityProtocolType-Werts vermeiden
@@ -41,20 +41,12 @@ public class HttpClientFactory(IOptions<AdapterOptions> options, IClientCertific
 			Credentials = null,
 			AllowAutoRedirect = false,
 			SslProtocols = SslProtocols.Tls12,
-			//ClientCertificates = { clientMarketpartner.Certificate.AsX509Certificate() },
 			CheckCertificateRevocationList = false
 		};
 #pragma warning restore CA5398 // Avoid hardcoding SslProtocols values
 
 		httpClientHandler.ClientCertificates.Add(clientCertificate.AsX509Certificate());
-		httpClientHandler.ServerCertificateCustomValidationCallback = Test;
 
 		return httpClientHandler;
-	}
-
-	private static bool Test(HttpRequestMessage arg1, X509Certificate2? arg2, X509Chain? arg3, SslPolicyErrors arg4)
-	{
-		// TODO ServerCertificateCustomValidationCallback returns always true?
-		return true;
 	}
 }

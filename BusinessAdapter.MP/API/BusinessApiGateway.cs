@@ -8,9 +8,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	using System.IO.Compression;
 	using System.Net;
 	using System.Net.Http;
-	using System.Net.Security;
 	using System.Security.Authentication;
-	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
@@ -218,22 +216,13 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 													Credentials = null,
 													AllowAutoRedirect = false,
 													SslProtocols = SslProtocols.Tls12,
-													//ClientCertificates = { clientMarketpartner.Certificate.AsX509Certificate() },
 													CheckCertificateRevocationList = false
 												};
 #pragma warning restore CA5398 // Avoid hardcoding SslProtocols values
 
 			httpClientHandler.ClientCertificates.Add(clientCertificate.AsX509Certificate());
 
-			httpClientHandler.ServerCertificateCustomValidationCallback = Test;
-
 			return httpClientHandler;
-		}
-
-		private static bool Test(HttpRequestMessage arg1, X509Certificate2? arg2, X509Chain? arg3, SslPolicyErrors arg4)
-		{
-			// TODO ServerCertificateCustomValidationCallback returns always true?
-			return true;
 		}
 	}
 }
