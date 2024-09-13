@@ -5,6 +5,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using Schleupen.AS4.BusinessAdapter.MP.Parsing;
 using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 public sealed class EdifactDirectoryResolver(IEdifactFileNameExtractor fileNameExtractor, IEdifactFileParser edifactFileParser)

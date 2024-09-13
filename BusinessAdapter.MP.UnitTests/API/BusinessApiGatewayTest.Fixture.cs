@@ -1,44 +1,61 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.API
+namespace Schleupen.AS4.BusinessAdapter.MP.API
 {
-	using System.Globalization;
 	using System.Net;
 	using System.Security.Cryptography.X509Certificates;
 	using Microsoft.Extensions.Logging;
 	using Moq;
-	using NUnit.Framework;
+	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.API.Assemblers;
-	using Schleupen.AS4.BusinessAdapter.Certificates;
-	using Schleupen.AS4.BusinessAdapter.MP.API;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 
 	internal sealed partial class BusinessApiGatewayTest
 	{
+		internal class TestData
+		{
+			public readonly InboxMpMessage InboxMpMessage;
+
+			public TestData()
+			{
+				this.InboxMpMessage = CreateInboxMessage();
+			}
+
+			private InboxMpMessage CreateInboxMessage()
+			{
+				return new InboxMpMessage(
+					Guid.NewGuid().ToString(),
+					new DateTimeOffset(new DateTime(2024, 01, 18, 09, 28, 00), TimeSpan.FromHours(1)),
+					"DocumentDate",
+					new SendingParty("SendingParty", "BDEW"),
+					new ReceivingParty("ReceivingParty", "BDEW"),
+					string.Empty,
+					null);
+			}
+		}
+
 		private sealed class Fixture : IDisposable
 		{
-			private const string MessageId = "EC953F86-038F-49E4-A7D9-3C417922EDB1";
-
+			public TestData Data { get; } = new();
 			private readonly MockRepository mockRepository = new (MockBehavior.Strict);
 			private readonly Mock<IJwtBuilder> jwtHelperMock;
-			private readonly Mock<IClientCertificateProvider> marketpartnerCertificateProviderMock;
 			private readonly Mock<ILogger<BusinessApiGateway>> loggerMock;
-			private readonly Mock<IBusinessApiClientFactory> clientWrapperFactoryMock;
-			private readonly Mock<IBusinessApiClient> clientWrapperMock;
-			private readonly Mock<IClientCertificate> certificateMock;
+			private readonly Mock<IBusinessApiClientFactory> businessApiClientFactoryMock;
+			private readonly Mock<IBusinessApiClient> businessApiClientMock;
 			private readonly Mock<IPartyIdTypeAssembler> partyIdTypeAssembler;
 			private readonly X509Certificate2 certificate;
+			private readonly Mock<IHttpClientFactory> httpClientFactoryMock;
+
 
 			public Fixture()
 			{
 				jwtHelperMock = mockRepository.Create<IJwtBuilder>();
-				marketpartnerCertificateProviderMock = mockRepository.Create<IClientCertificateProvider>();
 				loggerMock = mockRepository.Create<ILogger<BusinessApiGateway>>();
-				clientWrapperFactoryMock = mockRepository.Create<IBusinessApiClientFactory>();
-				clientWrapperMock = mockRepository.Create<IBusinessApiClient>();
-				certificateMock = mockRepository.Create<IClientCertificate>();
+				businessApiClientFactoryMock = mockRepository.Create<IBusinessApiClientFactory>();
+				businessApiClientMock = mockRepository.Create<IBusinessApiClient>();
 				certificate = new X509Certificate2(Array.Empty<byte>());
 				partyIdTypeAssembler = mockRepository.Create<IPartyIdTypeAssembler>(MockBehavior.Loose);
+				httpClientFactoryMock = mockRepository.Create<IHttpClientFactory>(MockBehavior.Loose);
 			}
 
 			public void Dispose()
@@ -51,37 +68,20 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			{
 				return new BusinessApiGateway(
 					jwtHelperMock.Object,
-					marketpartnerCertificateProviderMock.Object,
 					"https://Dummy",
 					"12345",
-					clientWrapperFactoryMock.Object,
+					businessApiClientFactoryMock.Object,
 					partyIdTypeAssembler.Object,
+					httpClientFactoryMock.Object,
 					loggerMock.Object);
-			}
-
-			public void ValidateReceiveInfo(MessageReceiveInfo receiveInfo)
-			{
-				Assert.That(receiveInfo.GetAvailableMessages().Length, Is.EqualTo(1));
-
-				MpMessage message = receiveInfo.GetAvailableMessages()[0];
-				Assert.That(message.BdewDocumentDate, Is.EqualTo("2024-01-15 15:55:42 +01:00"));
-				Assert.That(message.CreatedAt, Is.EqualTo(new DateTimeOffset(new DateTime(2024, 01, 17, 16, 00, 00), TimeSpan.FromHours(1))));
-				Assert.That(message.MessageId.ToUpper(CultureInfo.InvariantCulture), Is.EqualTo(MessageId.ToUpper(CultureInfo.InvariantCulture)));
-				Assert.That(message.PartyInfo.Receiver?.Id, Is.EqualTo("ReceiverId"));
-				Assert.That(message.PartyInfo.Receiver?.Type, Is.EqualTo("BDEW"));
-				Assert.That(message.PartyInfo.Sender?.Id, Is.EqualTo("SenderId"));
-
-				Assert.That(receiveInfo.ConfirmableMessages.Count,Is.EqualTo(0));
-				Assert.That(receiveInfo.HasTooManyRequestsError, Is.False);
 			}
 
 			public void PrepareQueryAvailableMessages()
 			{
-				SetupMarketpartnerCertificateProvider();
-				SetupClientWrapperFactory();
-				SetupCertificate();
+				SetupBusinessApiClientFactoryMock();
+				SetupHttpClientFactoryMock();
 
-				clientWrapperMock
+				businessApiClientMock
 					.Setup(x => x.V1MpMessagesInboxGetAsync(It.Is<int>(limit => limit == 51), It.IsAny<CancellationToken>()))
 					.Returns(Task.FromResult(new QueryInboxMessagesResponseDto
 					{
@@ -101,7 +101,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 									Timestamp = new DateTimeOffset(new DateTime(2024, 01, 16, 00, 00, 00), TimeSpan.FromHours(1)),
 									Title = "ErrorTitle"
 								},
-								MessageId = Guid.Parse(MessageId),
+								MessageId = Guid.Parse(Data.InboxMpMessage.MessageId),
 								State = InboundMessageStateDto.PROVIDED,
 								PartyInfo = new PartyInfoDto
 								{
@@ -127,77 +127,59 @@ namespace Schleupen.AS4.BusinessAdapter.API
 					}));
 			}
 
-			private void SetupClientWrapperFactory()
+			private void SetupHttpClientFactoryMock()
 			{
-				clientWrapperFactoryMock
-					.Setup(x => x.Create(It.Is<Uri>(endpoint => endpoint.AbsoluteUri == "https://dummy/"), It.IsAny<HttpClient>()))
-					.Returns(clientWrapperMock.Object);
+				this.httpClientFactoryMock.Setup(x => x.CreateFor(It.Is<Party>(x => x.Id == "12345"))).Returns(
+#pragma warning disable CA2000
+					new HttpClient());
+#pragma warning restore CA2000
 			}
 
-			private void SetupMarketpartnerCertificateProvider()
+			private void SetupBusinessApiClientFactoryMock()
 			{
-				marketpartnerCertificateProviderMock
-					.Setup(x => x.GetCertificate(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
-					.Returns(certificateMock.Object);
+				businessApiClientFactoryMock
+					.Setup(x => x.Create(It.Is<Uri>(endpoint => endpoint.AbsoluteUri == "https://dummy/"), It.IsAny<HttpClient>()))
+					.Returns(businessApiClientMock.Object);
 			}
 
 			public InboxMpMessage PrepareAcknowledgeReceivedMessage()
 			{
-				SetupMarketpartnerCertificateProvider();
-				SetupClientWrapperFactory();
-				SetupCertificate();
+				SetupBusinessApiClientFactoryMock();
+				SetupHttpClientFactoryMock();
 
 				jwtHelperMock
-					.Setup(x => x.CreateSignedToken(It.Is<InboxMpMessage>(message => message.MessageId == MessageId)))
+					.Setup(x => x.CreateSignedToken(It.Is<InboxMpMessage>(message => message.MessageId == Data.InboxMpMessage.MessageId)))
 					.Returns("SignedToken");
 
-				clientWrapperMock
+				businessApiClientMock
 					.Setup(x => x.V1MpMessagesInboxAcknowledgementAsync(
-							It.Is<Guid>(messageId => messageId == Guid.Parse(MessageId)),
+							It.Is<Guid>(messageId => messageId == Guid.Parse(Data.InboxMpMessage.MessageId)),
 							It.Is<MessageAcknowledgedRequestDto>(request => request.Jwt == "SignedToken"),
 							It.IsAny<CancellationToken>()))
 					.Returns(Task.CompletedTask);
 
-				return CreateInboxMessage();
+				return Data.InboxMpMessage;
 			}
 
-			private InboxMpMessage CreateInboxMessage()
-			{
-				return new InboxMpMessage(
-					MessageId,
-					new DateTimeOffset(new DateTime(2024, 01, 18, 09, 28, 00), TimeSpan.FromHours(1)),
-					"DocumentDate",
-					new SendingParty("SendingParty", "BDEW"),
-					new ReceivingParty("ReceivingParty", "BDEW"),
-					string.Empty,
-					null);
-			}
+
 
 			public InboxMpMessage PrepareAcknowledgeReceivedMessageFailed()
 			{
-				SetupMarketpartnerCertificateProvider();
-				SetupCertificate();
-				SetupClientWrapperFactory();
+				SetupBusinessApiClientFactoryMock();
+				SetupHttpClientFactoryMock();
 
 				jwtHelperMock
-					.Setup(x => x.CreateSignedToken(It.Is<InboxMpMessage>(message => message.MessageId == MessageId)))
+					.Setup(x => x.CreateSignedToken(It.Is<InboxMpMessage>(message => message.MessageId == Data.InboxMpMessage.MessageId)))
 					.Returns("SignedToken");
 
-				clientWrapperMock
+				businessApiClientMock
 					.Setup(x => x.V1MpMessagesInboxAcknowledgementAsync(
-						It.Is<Guid>(messageId => messageId == Guid.Parse(MessageId)),
+						It.Is<Guid>(messageId => messageId == Guid.Parse(Data.InboxMpMessage.MessageId)),
 						It.Is<MessageAcknowledgedRequestDto>(request => request.Jwt == "SignedToken"),
 						It.IsAny<CancellationToken>()))
 					.Throws(new ApiException("something failed", (int)HttpStatusCode.Conflict, "The response", new Dictionary<string, IEnumerable<string>>(), new InvalidOperationException("The inner exception")));
 
-				return CreateInboxMessage();
-			}
-
-			private void SetupCertificate()
-			{
-				certificateMock
-					.Setup(x => x.AsX509Certificate())
-					.Returns(certificate);
+				return Data.InboxMpMessage;
 			}
 		}
 	}

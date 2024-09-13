@@ -1,7 +1,6 @@
-﻿namespace Schleupen.AS4.BusinessAdapter.API;
+﻿namespace Schleupen.AS4.BusinessAdapter.API.Assemblers;
 
 using NUnit.Framework;
-using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 
 public class PartyIdTypeAssemblerTest
 {

@@ -67,7 +67,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Sending
 									{
 										try
 										{
-											client = businessApiGatewayFactory.CreateAs4BusinessApiClient(edifactFile.SenderIdentificationNumber);
+											client = businessApiGatewayFactory.CreateGateway(edifactFile.SenderIdentificationNumber);
 											gatewaysBySenderId.Add(edifactFile.SenderIdentificationNumber, client);
 										}
 										catch (Exception e)

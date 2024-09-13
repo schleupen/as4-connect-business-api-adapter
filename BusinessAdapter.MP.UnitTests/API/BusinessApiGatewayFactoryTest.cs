@@ -1,19 +1,18 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.API
+namespace Schleupen.AS4.BusinessAdapter.MP.API
 {
 	using NUnit.Framework;
-	using Schleupen.AS4.BusinessAdapter.MP.API;
 
 	[TestFixture]
 	internal sealed partial class BusinessApiGatewayFactoryTest : IDisposable
 	{
-		private Fixture? fixture;
+		private BusinessApiGatewayFactoryTest.Fixture? fixture;
 
 		[SetUp]
 		public void Setup()
 		{
-			fixture = new Fixture();
+			fixture = new BusinessApiGatewayFactoryTest.Fixture();
 		}
 
 		[TearDown]
@@ -24,12 +23,12 @@ namespace Schleupen.AS4.BusinessAdapter.API
 		}
 
 		[Test]
-		public void CreateAs4BusinessApiClient_WithConfiguration_ShouldCreateClient()
+		public void CreateGateway_WithConfiguration_ShouldCreateClient()
 		{
 			fixture!.PrepareConfigurationSet();
 			BusinessApiGatewayFactory testObject = fixture!.CreateTestObject();
 
-			IBusinessApiGateway gateway = testObject.CreateAs4BusinessApiClient("12345");
+			IBusinessApiGateway gateway = testObject.CreateGateway("12345");
 
 			Assert.That(gateway, Is.Not.Null);
 		}
@@ -40,7 +39,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
 			fixture!.PrepareConfigurationNotSet();
 			BusinessApiGatewayFactory testObject = fixture!.CreateTestObject();
 
-			CatastrophicException? exception = Assert.Throws<CatastrophicException>(() => testObject.CreateAs4BusinessApiClient("12345"));
+			CatastrophicException? exception = Assert.Throws<CatastrophicException>(() => testObject.CreateGateway("12345"));
 
 			Assert.That(exception!.Message, Contains.Substring("The endpoint for AS4 connect is not configured."));
 		}

@@ -1,23 +1,16 @@
 ﻿// Copyright...:  (c)  Schleupen SE
 
-namespace Schleupen.AS4.BusinessAdapter.MP;
+namespace Schleupen.AS4.BusinessAdapter.MP.Parsing;
 
 using System;
 using System.IO;
 using System.Text;
-using Schleupen.AS4.BusinessAdapter.MP.Parsing;
 
-public class EdifactFileParser : IEdifactFileParser
+public class EdifactFileParser(IFileSystemWrapper fileSystemWrapper) : IEdifactFileParser
 {
 	public static readonly Encoding DefaultEncoding = EdifactEncoding.GetEncoding();
 
-	private readonly IFileSystemWrapper fileSystemWrapper;
 	private IEdifactHeaderinformationParser? metadataParser;
-
-	public EdifactFileParser(IFileSystemWrapper fileSystemWrapper)
-	{
-		this.fileSystemWrapper = fileSystemWrapper;
-	}
 
 	public IEdifactFile Parse(string path)
 	{
@@ -53,7 +46,7 @@ public class EdifactFileParser : IEdifactFileParser
 			{
 				throw new ArgumentException($"Could not retrieve receiver code number type from file {path}.");
 			}
-			
+
 			string? documentNumber = metadataParser.GetDocumentnumber();
 			if (documentNumber == null)
 			{
@@ -75,6 +68,6 @@ public class EdifactFileParser : IEdifactFileParser
 			}
 
 			return new EdifactFile(path, filename, receiverIdentificationNumber, senderIdentificationNumber, receiverIdentificationNumberType, dataformatname, documentNumber, documentDate, payload);
-		} 
+		}
 	}
 }

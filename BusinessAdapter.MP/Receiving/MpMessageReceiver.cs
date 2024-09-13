@@ -53,7 +53,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 				{
 					try
 					{
-						IBusinessApiGateway gateway = businessApiGatewayFactory.CreateAs4BusinessApiClient(receiverIdentificationNumber);
+						IBusinessApiGateway gateway = businessApiGatewayFactory.CreateGateway(receiverIdentificationNumber);
 						int messageLimit = receiveOptions.Value.MessageLimitCount;
 						MessageReceiveInfo receiveInfo = await gateway.QueryAvailableMessagesAsync(messageLimit);
 						as4BusinessApiClients.Add(receiveInfo, gateway);

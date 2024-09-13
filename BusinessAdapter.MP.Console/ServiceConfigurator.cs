@@ -9,6 +9,7 @@ using Schleupen.AS4.BusinessAdapter.API.Assemblers;
 using Schleupen.AS4.BusinessAdapter.Certificates;
 using Schleupen.AS4.BusinessAdapter.Configuration;
 using Schleupen.AS4.BusinessAdapter.MP.API;
+using Schleupen.AS4.BusinessAdapter.MP.Parsing;
 using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 using Schleupen.AS4.BusinessAdapter.MP.Sending;
 

@@ -116,7 +116,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 			private void SetupBusinessApiClientFactory(string expectedMarketpartnerId)
 			{
 				businessApiClientFactoryMock
-					.Setup(x => x.CreateAs4BusinessApiClient(It.Is<string>(marketpartnerId => marketpartnerId == expectedMarketpartnerId)))
+					.Setup(x => x.CreateGateway(It.Is<string>(marketpartnerId => marketpartnerId == expectedMarketpartnerId)))
 					.Returns(businessApiClientMock.Object);
 			}
 

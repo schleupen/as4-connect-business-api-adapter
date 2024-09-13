@@ -81,7 +81,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 			public void VerifyApiWasNotCalled()
 			{
 				businessApiClientFactory
-					.Verify(x => x.CreateAs4BusinessApiClient(It.IsAny<string>()), Times.Never);
+					.Verify(x => x.CreateGateway(It.IsAny<string>()), Times.Never);
 			}
 
 			public void SendAvailableMessagesAsync()
@@ -111,7 +111,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Returns(@"C:\Temp\test.edi");
 
 				businessApiClientFactory
-					.Setup(x => x.CreateAs4BusinessApiClient(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
+					.Setup(x => x.CreateGateway(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
 					.Returns(as4BusinessApiClientMock.Object);
 
 				as4BusinessApiClientMock
@@ -148,7 +148,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Returns(CreateOutboxMessage);
 
 				businessApiClientFactory
-					.Setup(x => x.CreateAs4BusinessApiClient(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
+					.Setup(x => x.CreateGateway(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
 					.Returns(as4BusinessApiClientMock.Object);
 
 				as4BusinessApiClientMock
@@ -210,11 +210,11 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Returns(@"C:\Temp\test2.edi");
 
 				businessApiClientFactory
-					.Setup(x => x.CreateAs4BusinessApiClient(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
+					.Setup(x => x.CreateGateway(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
 					.Throws(() => new InvalidOperationException("Expected during API creation"));
 
 				businessApiClientFactory
-					.Setup(x => x.CreateAs4BusinessApiClient(It.Is<string>(marketpartnerId => marketpartnerId == "54321")))
+					.Setup(x => x.CreateGateway(It.Is<string>(marketpartnerId => marketpartnerId == "54321")))
 					.Returns(as4BusinessApiClientMock.Object);
 
 				as4BusinessApiClientMock
@@ -250,7 +250,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Returns(CreateOutboxMessage);
 
 				businessApiClientFactory
-					.Setup(x => x.CreateAs4BusinessApiClient(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
+					.Setup(x => x.CreateGateway(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
 					.Returns(as4BusinessApiClientMock.Object);
 
 				as4BusinessApiClientMock
@@ -307,7 +307,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Returns(CreateOutboxMessage);
 
 				businessApiClientFactory
-					.Setup(x => x.CreateAs4BusinessApiClient(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
+					.Setup(x => x.CreateGateway(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
 					.Returns(as4BusinessApiClientMock.Object);
 
 				as4BusinessApiClientMock
@@ -347,7 +347,7 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 					.Returns(@"C:\Temp\test.edi");
 
 				businessApiClientFactory
-					.Setup(x => x.CreateAs4BusinessApiClient(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
+					.Setup(x => x.CreateGateway(It.Is<string>(marketpartnerId => marketpartnerId == "12345")))
 					.Returns(as4BusinessApiClientMock.Object);
 
 				as4BusinessApiClientMock
