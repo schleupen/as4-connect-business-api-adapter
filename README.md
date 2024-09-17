@@ -215,12 +215,19 @@ the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
 ```
 Currently tested platforms:
 * Windows (requires .NET 8 Runtime)
+## Migration
+### 1.0 to 3.0
+* use 'Schleupen.AS4.BusinessAdapter.MP.Console.exe' instead of 'Schleupen.AS4.BusinessAdapter.Console.exe'
+  * you will get the behaviour of 'Schleupen.AS4.BusinessAdapter.Console.exe' by using the command **service**
+* migrate the config file to new format (see [Configuration](#Configuration))
+  * configure the send behavior in the section **Send** (concerns the legacy values: SendDirectory, DeliveryRetryCount, DeliveryMessageLimitCount)
+  * configure the receiving behavior in the section **Receive** (concerns the legacy values: ReceiveDirectory, ReceivingRetryCount, ReceivingMessageLimitCount)
 
 ## Changelog
 ### 3.0
 * Support MP and FP Service in separate executables (Schleupen.AS4.BusinessAdapter.MP.Console.exe, Schleupen.AS4.BusinessAdapter.FP.Console.exe)
 * Support **.net framework** runtime in core assemblies targeting .netstandard
-* The format of the config files has been revised in an incompatible manner (corresponding 1.0)
+* The format of the config files has been revised in an incompatible manner (corresponding 1.0). See also section [Migration](#Migration)
 
 ### 1.0
 * Supports MP Service in a single executable ( Schleupen.AS4.BusinessAdapter.Console.exe ) 
