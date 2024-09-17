@@ -1,5 +1,6 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Sending;
 
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -48,7 +49,8 @@ public partial class FpMessageSenderTest
 		fixture.Mocks.FpFileRepository.VerifyNoOtherCalls();
 		for (int i = 1; i <= retryCount; i++)
 		{
-			fixture.VerifyLoggerContainsMessages(LogLevel.Warning, $"Error while sending messages - retry {i}/{retryCount} with '1' messages", Times.Exactly(1));
+			fixture.VerifyLoggerContainsMessages(LogLevel.Warning, $"Error while sending messages - retry {i}/{retryCount} with '1' messages",
+				Times.Exactly(1));
 		}
 
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(retryCount + 1));
@@ -93,6 +95,11 @@ public partial class FpMessageSenderTest
 		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(successfulParsedFiles));
 
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(successfulParsedFiles));
+		fixture.Mocks.FpFileRepository.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Exactly(successfulParsedFiles));
+		foreach (var successFilePath in sendStatus.SuccessfulMessages.Select(x => x.FilePath))
+		{
+			fixture.Mocks.FpFileRepository.Verify(x => x.DeleteFile(successFilePath), Times.Exactly(1));
+		}
 	}
 
 	[Test]
@@ -129,5 +136,18 @@ public partial class FpMessageSenderTest
 
 		gatewayMock.Verify(x => x.SendMessageAsync(It.IsAny<FpOutboxMessage>(), cancellationToken), Times.Exactly(23));
 		fixture.Mocks.BusinessApiGatewayFactory.Verify(f => f.CreateGateway(It.IsAny<FpParty>()), Times.Exactly(1));
+	}
+
+	[Test]
+	public async Task SendAvailableMessagesAsync_SenderGatewayCreationFails_AllMessagesFromSenderShouldBeFailedWithException()
+	{
+		var exception = new InvalidOperationException("missing certs");
+		fixture.SetupSenderGatewayCreationFails(exception);
+
+		FpMessageSender sender = fixture.CreateFpMessageSender();
+
+		var result = await sender.SendMessagesAsync(CancellationToken.None);
+
+		Assert.That(result.FailedMessages.Select(x => x.Exception), Is.All.EqualTo(exception));
 	}
 }

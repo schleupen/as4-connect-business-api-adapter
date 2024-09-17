@@ -96,7 +96,6 @@ public class SendStatus(DirectoryResult directoryResult) : ISendStatus
 
 	public IReadOnlyCollection<FailedFpOutboxMessage> FailedMessages => BuildAllFailedFpMessages();
 
-	// TODO Test
 	private IReadOnlyCollection<FailedFpOutboxMessage> BuildAllFailedFpMessages()
 	{
 		return this.failedSendMessages.Values

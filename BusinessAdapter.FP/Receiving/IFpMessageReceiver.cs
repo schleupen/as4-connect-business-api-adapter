@@ -10,6 +10,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 		/// </summary>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns></returns>
-		Task<IReceiveStatus> ReceiveAvailableMessagesAsync(CancellationToken cancellationToken);
+		Task<IReceiveStatus> ReceiveMessagesAsync(CancellationToken cancellationToken);
 	}
 }

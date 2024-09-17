@@ -3,8 +3,6 @@
 using System.Text;
 using System.Xml.Linq;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
-using Microsoft.Extensions.Options;
-using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 public class CimFileParser : IFpFileSpecificParser
 {
@@ -20,7 +18,7 @@ public class CimFileParser : IFpFileSpecificParser
 		{
 			throw new ArgumentException($"Could not document number from file {path}.");
 		}
-		
+
 		var documentType = "";
 		if (fpFileName.MessageType == FpMessageType.Acknowledge)
 		{
@@ -82,7 +80,7 @@ public class CimFileParser : IFpFileSpecificParser
 		{
 			throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
 		}
-		
+
 		FpBDEWProperties bdewProperties = new FpBDEWProperties(documentType, documentNo, scheduleTimeInterval, senderIdentification, senderRole);
 		return new FpFile(
 			new EIC(senderIdentification),
@@ -96,7 +94,7 @@ public class CimFileParser : IFpFileSpecificParser
 	public FpParsedPayload ParsePayload(XDocument document)
 	{
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
-		
+
 		var senderIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Attribute("v")?.Value;
 		if (senderIdentification == null)
 		{
@@ -122,7 +120,7 @@ public class CimFileParser : IFpFileSpecificParser
 		}
 
 		string? scheduleTimeInterval = "";
-		
+
 		// For acknowledge und status messages we take the date from the filename
 		var startTimeInterval = document.Descendants(ns + "sender_MarketParticipant.start").FirstOrDefault()?.Attribute("v")?.Value;
 		var endTimeInterval = document.Descendants(ns + "sender_MarketParticipant.end").FirstOrDefault()?.Attribute("v")?.Value;
@@ -131,13 +129,13 @@ public class CimFileParser : IFpFileSpecificParser
 		{
 			scheduleTimeInterval = startTimeInterval + "/" + endTimeInterval;
 		}
-		
+
 
 		if (scheduleTimeInterval == null)
 		{
 			throw new ArgumentException($"Could not retrieve fulfillment date from Payload.");
 		}
-		
+
 		return new FpParsedPayload(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),

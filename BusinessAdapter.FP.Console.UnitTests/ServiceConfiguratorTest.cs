@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Schleupen.AS4.BusinessAdapter.FP;
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 [TestFixture]

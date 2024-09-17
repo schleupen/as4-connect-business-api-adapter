@@ -90,7 +90,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 							sendStatus.AddBusinessApiResponse(response, logger);
 							if (response.WasSuccessful)
 							{
-								// TODO Assert Deletion in Test
 								fileRepository.DeleteFile(message.FilePath);
 							}
 						}
@@ -100,7 +99,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 						}
 					}
 				}
-				catch (Exception ex) // TODO Test
+				catch (Exception ex)
 				{
 					foreach (var message in messagesFromSender)
 					{

@@ -54,7 +54,7 @@ public partial class SendStatusTest
 	}
 
 	[Test]
-	public void GetUnsentMessages_ShouldReturnFailedMessage()
+	public void GetUnsentMessagesForRetry_ShouldReturnFailedMessage()
 	{
 		SendStatus status = fixture.CreateSendStatusObject();
 
@@ -81,7 +81,7 @@ public partial class SendStatusTest
 	}
 
 	[Test]
-	public void AddBusinessApiResponse_Failed_RetryIsNeeded()
+	public void AddBusinessApiResponse_FailedResponse_RetryIsNeeded()
 	{
 		SendStatus status = fixture.CreateSendStatusObject();
 
@@ -112,5 +112,33 @@ public partial class SendStatusTest
 		Assert.That(status.FailedMessages.Count, Is.EqualTo(1));
 		Assert.That(status.GetUnsentMessagesForRetry(), Has.Count.EqualTo(0));
 		Assert.DoesNotThrow(() => status.ThrowIfRetryIsNeeded());
+	}
+
+	[Test]
+	public void FailedMessages_FailedResponse_FailedMessagesInDirectory_FailedMessagesContainsBothFailures()
+	{
+		var failedParseException = new InvalidOperationException("parsing failed");
+		var failedFileInDirectory = new FailedFile("idk/failedFile.xml", failedParseException);
+
+		DirectoryResult directoryResult = new DirectoryResult("idk",
+			ImmutableList<FpFile>.Empty,
+			new List<FailedFile>() { failedFileInDirectory }.ToImmutableList());
+
+		SendStatus status = new SendStatus(directoryResult);
+
+		var outboundMessage = fixture.Data.FailedOutboundMessage;
+
+		var sendFailedException = new InvalidOperationException("send failed");
+		var response = new BusinessApiResponse<FpOutboxMessage>(false,
+			outboundMessage,
+			HttpStatusCode.Forbidden,
+			sendFailedException);
+
+		status.AddBusinessApiResponse(response, fixture.Mocks.LoggerMock.Object);
+
+		Assert.That(status.FailedMessages.Count, Is.EqualTo(2));
+		Assert.That(status.FailedMessages.Select(x => x.Exception).ToList(), Does.Contain(failedParseException));
+		Assert.That(status.FailedMessages.Select(x => x.Exception).ToList(), Does.Contain(sendFailedException));
+		Assert.Throws<AggregateException>(() => status.ThrowIfRetryIsNeeded());
 	}
 }

@@ -11,36 +11,19 @@ using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 {
-    public sealed class FpMessageReceiver : IFpMessageReceiver
+    public sealed class FpMessageReceiver(
+	    ILogger<FpMessageReceiver> logger,
+	    IOptions<ReceiveOptions> receiveOptions,
+	    IOptions<AdapterOptions> adapterOptions,
+	    IBusinessApiGatewayFactory businessApiGatewayFactory,
+	    IFpFileRepository fpFileRepo,
+	    IOptions<EICMapping> eicMapping)
+	    : IFpMessageReceiver
     {
-        private readonly ILogger<FpMessageReceiver> logger;
-        private readonly IOptions<ReceiveOptions> receiveOptions;
-        private readonly IOptions<AdapterOptions> adapterOptions;
-        private readonly IOptions<EICMapping> eicMapping;
-        private readonly IBusinessApiGatewayFactory businessApiGatewayFactory;
-        private readonly IFpFileRepository fpFileRepo;
-
-
-        private const string TooManyRequestsMessage =
+	    private const string TooManyRequestsMessage =
             "A 429 TooManyRequests status code was encountered while receiving the XML messages which caused the receiving to end before all messages could be received.";
 
-        public FpMessageReceiver(
-            ILogger<FpMessageReceiver> logger,
-            IOptions<ReceiveOptions> receiveOptions,
-            IOptions<AdapterOptions> adapterOptions,
-            IBusinessApiGatewayFactory businessApiGatewayFactory,
-            IFpFileRepository fpFileRepo,
-            IOptions<EICMapping> eicMapping)
-        {
-            this.logger = logger;
-            this.receiveOptions = receiveOptions;
-            this.adapterOptions = adapterOptions;
-            this.businessApiGatewayFactory = businessApiGatewayFactory;
-            this.fpFileRepo = fpFileRepo;
-            this.eicMapping = eicMapping;
-        }
-
-        public async Task<IReceiveStatus> ReceiveAvailableMessagesAsync(CancellationToken cancellationToken)
+        public async Task<IReceiveStatus> ReceiveMessagesAsync(CancellationToken cancellationToken)
         {
             ValidateConfiguration();
 
@@ -54,7 +37,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             LogFinalStatus(receiveStatus, as4BusinessApiClients, marketPartnersWithoutCertificate);
 
             receiveStatus.LogTo(logger);
-            
+
             return receiveStatus;
         }
 

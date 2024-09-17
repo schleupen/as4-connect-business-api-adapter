@@ -161,7 +161,7 @@ public partial class SendAndReceiveTests
 	        var serviceProvider = CreateServiceProvider(configFile);
 	        var sender = serviceProvider.GetRequiredService<IFpMessageReceiver>();
 
-	        return await sender.ReceiveAvailableMessagesAsync(CancellationToken.None);
+	        return await sender.ReceiveMessagesAsync(CancellationToken.None);
         }
 
 

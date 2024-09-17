@@ -37,13 +37,4 @@ public static class ServiceCollectionExtensions
 		services.AddOptionsWithValidateOnStart<Configuration.ReceiveOptions>();
 		return services;
 	}
-
-	public static IServiceCollection AddSendAndReceiveConfiguration(this IServiceCollection services, Microsoft.Extensions.Configuration.IConfiguration configuration)
-	{
-		services.AddAdapterConfiguration(configuration);
-		services.AddSendConfiguration(configuration);
-		services.AddReceiveConfiguration(configuration);
-
-		return services;
-	}
 }
