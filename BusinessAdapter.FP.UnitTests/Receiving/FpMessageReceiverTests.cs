@@ -89,7 +89,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
                 .Setup(x => x.AcknowledgeReceivedMessageAsync(It.IsAny<InboxFpMessage>()))
                 .ReturnsAsync(new BusinessApiResponse<bool>(true, true));
             // Act
-            var test = await fpMessageReceiver.ReceiveAvailableMessagesAsync(CancellationToken.None);
+            var test = await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None);
             Assert.That(test, Is.Not.Null);
             Assert.That(test.SuccessfulMessages.Count, Is.EqualTo(1));
             Assert.That(test.FailedMessages.Count, Is.EqualTo(0));
@@ -131,7 +131,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
                 .Setup(x => x.AcknowledgeReceivedMessageAsync(It.IsAny<InboxFpMessage>()))
                 .ReturnsAsync(new BusinessApiResponse<bool>(false, false));
             // Act
-            Assert.That(async () => await fpMessageReceiver.ReceiveAvailableMessagesAsync(CancellationToken.None),
+            Assert.That(async () => await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None),
             Throws.TypeOf<AggregateException>());
         }
 
@@ -145,7 +145,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 				Retry = new Schleupen.AS4.BusinessAdapter.Configuration.RetryOption { Count = 3 }
 			});
 			// Act & Assert
-			Assert.That(async () => await fpMessageReceiver.ReceiveAvailableMessagesAsync(CancellationToken.None),
+			Assert.That(async () => await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None),
 				Throws.TypeOf<CatastrophicException>()
 					.With.Message.EqualTo("The receive directory is not configured."));
 		}
@@ -169,7 +169,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 				eicMappingMock);
 
 			// Act & Assert
-			Assert.That(async () => await fpMessageReceiver.ReceiveAvailableMessagesAsync(CancellationToken.None),
+			Assert.That(async () => await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None),
 				Throws.TypeOf<CatastrophicException>()
 					.With.Message.EqualTo("No valid own market partners were found."));
 		}
@@ -205,7 +205,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 
 			// Act
 			var ex = Assert.ThrowsAsync<AggregateException>(async () =>
-				await fpMessageReceiver.ReceiveAvailableMessagesAsync(CancellationToken.None));
+				await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None));
 
             // Assert
             var innerException = ex.InnerExceptions[0];

@@ -14,7 +14,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 	public sealed class BusinessApiGateway(
-		FpParty client,
+		FpParty party,
 		IHttpClientFactory httpClientFactory,
 		IBusinessApiClientFactory businessApiClientFactory,
 		IPartyIdTypeAssembler partyIdTypeAssembler,
@@ -23,7 +23,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 		IJwtBuilder jwtBuilder)
 		: IBusinessApiGateway
 	{
-		private readonly HttpClient httpClient = httpClientFactory.CreateFor(client);
+		private readonly HttpClient httpClient = httpClientFactory.CreateFor(party);
 		private static readonly Encoding DefaultEncoding = Encoding.GetEncoding("ISO-8859-1");
 
 		public async Task<BusinessApiResponse<FpOutboxMessage>> SendMessageAsync(

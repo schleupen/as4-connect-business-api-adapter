@@ -6,51 +6,29 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 	using System.Collections.Generic;
 	using System.IO;
 	using System.IO.Compression;
-	using System.Net;
 	using System.Net.Http;
-	using System.Net.Security;
-	using System.Security.Authentication;
-	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Threading.Tasks;
 	using Microsoft.Extensions.Logging;
 	using Schleupen.AS4.BusinessAdapter.API;
 	using Schleupen.AS4.BusinessAdapter.API.Assemblers;
-	using Schleupen.AS4.BusinessAdapter.Certificates;
 	using Schleupen.AS4.BusinessAdapter.MP.Receiving;
 	using Schleupen.AS4.BusinessAdapter.MP.Sending;
 	using HttpStatusCode = Schleupen.AS4.BusinessAdapter.HttpStatusCode;
 
-	public sealed class BusinessApiGateway : IBusinessApiGateway
+	public sealed class BusinessApiGateway(
+		IJwtBuilder jwtBuilder,
+		string as4BusinessApiEndpoint,
+		string marketpartnerIdentification,
+		IBusinessApiClientFactory businessApiClientFactory,
+		IPartyIdTypeAssembler partyIdTypeAssembler,
+		IHttpClientFactory httpClientFactory,
+		ILogger<BusinessApiGateway> logger)
+		: IBusinessApiGateway
 	{
 		private static readonly Encoding DefaultEncoding = Encoding.GetEncoding("ISO-8859-1");
 
-		private readonly IJwtBuilder jwtBuilder;
-		private readonly string as4BusinessApiEndpoint;
-		private readonly ILogger<BusinessApiGateway> logger;
-		private readonly IBusinessApiClientFactory businessApiClientFactory;
-		private readonly HttpClient httpClient;
-		private readonly HttpClientHandler httpClientHandler;
-		private readonly IPartyIdTypeAssembler partyIdTypeAssembler;
-
-		public BusinessApiGateway(IJwtBuilder jwtBuilder,
-			IClientCertificateProvider clientCertificateProvider,
-			string as4BusinessApiEndpoint,
-			string marketpartnerIdentification,
-			IBusinessApiClientFactory businessApiClientFactory,
-			IPartyIdTypeAssembler partyIdTypeAssembler,
-			ILogger<BusinessApiGateway> logger)
-		{
-			this.jwtBuilder = jwtBuilder;
-			this.as4BusinessApiEndpoint = as4BusinessApiEndpoint;
-			this.logger = logger;
-			this.partyIdTypeAssembler = partyIdTypeAssembler;
-			this.businessApiClientFactory = businessApiClientFactory;
-
-			IClientCertificate resolvedMarketpartnerCertificate = clientCertificateProvider.GetCertificate(marketpartnerIdentification);
-			httpClientHandler = InitializeHttpClientHandler(resolvedMarketpartnerCertificate);
-			httpClient = InitializeHttpClient();
-		}
+		private readonly HttpClient httpClient = httpClientFactory.CreateFor(new Party(marketpartnerIdentification, "UNKNOWN"));
 
 		public async Task<BusinessApiResponse<MpOutboxMessage>> SendMessageAsync(MpOutboxMessage message)
 		{
@@ -104,7 +82,8 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 						message.Created_at,
 						message.BdewDocumentDate,
 						message.MessageId.ToString(),
-						new PartyInfo(new SendingParty(message.PartyInfo.Sender.Id, message.PartyInfo.Sender.Type.ToString()), new ReceivingParty(message.PartyInfo.Receiver.Id, message.PartyInfo.Receiver.Type.ToString()))));
+						new PartyInfo(new SendingParty(message.PartyInfo.Sender.Id, message.PartyInfo.Sender.Type.ToString()),
+							new ReceivingParty(message.PartyInfo.Receiver.Id, message.PartyInfo.Receiver.Type.ToString()))));
 				}
 				catch (Exception e)
 				{
@@ -175,7 +154,8 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 					throw new InvalidOperationException("The message does not have a MessageId.");
 				}
 
-				await businessApiClient.V1MpMessagesInboxAcknowledgementAsync(Guid.Parse(mpMessage.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
+				await businessApiClient.V1MpMessagesInboxAcknowledgementAsync(Guid.Parse(mpMessage.MessageId),
+					new MessageAcknowledgedRequestDto { Jwt = tokenString });
 
 				return new BusinessApiResponse<bool>(true, true);
 			}
@@ -188,52 +168,6 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		public void Dispose()
 		{
 			httpClient.Dispose();
-			httpClientHandler.Dispose();
-		}
-
-		private HttpClient InitializeHttpClient()
-		{
-#pragma warning disable CA5386 // Hartcodierung des SecurityProtocolType-Werts vermeiden
-			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-#pragma warning restore CA5386 // Hartcodierung des SecurityProtocolType-Werts vermeiden
-			return new HttpClient(httpClientHandler)
-			{
-				BaseAddress = new Uri(as4BusinessApiEndpoint)
-			};
-		}
-
-		private static HttpClientHandler InitializeHttpClientHandler(IClientCertificate clientCertificate)
-		{
-#pragma warning disable CA5398 // Avoid hardcoding SslProtocols values
-			HttpClientHandler httpClientHandler = new HttpClientHandler
-												{
-													DefaultProxyCredentials = null,
-													UseCookies = false,
-													ClientCertificateOptions = ClientCertificateOption.Manual,
-													AutomaticDecompression = DecompressionMethods.None,
-													UseProxy = false,
-													Proxy = null,
-													PreAuthenticate = false,
-													UseDefaultCredentials = false,
-													Credentials = null,
-													AllowAutoRedirect = false,
-													SslProtocols = SslProtocols.Tls12,
-													//ClientCertificates = { clientMarketpartner.Certificate.AsX509Certificate() },
-													CheckCertificateRevocationList = false
-												};
-#pragma warning restore CA5398 // Avoid hardcoding SslProtocols values
-
-			httpClientHandler.ClientCertificates.Add(clientCertificate.AsX509Certificate());
-
-			httpClientHandler.ServerCertificateCustomValidationCallback = Test;
-
-			return httpClientHandler;
-		}
-
-		private static bool Test(HttpRequestMessage arg1, X509Certificate2? arg2, X509Chain? arg3, SslPolicyErrors arg4)
-		{
-			// TODO ServerCertificateCustomValidationCallback returns always true?
-			return true;
 		}
 	}
 }

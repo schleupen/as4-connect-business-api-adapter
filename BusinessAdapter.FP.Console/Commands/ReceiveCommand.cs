@@ -6,12 +6,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
-using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 public class ReceiveCommand : Command
 {
-	private readonly ConfigurationFromFileProvider configurationFromFileProvider = new ConfigurationFromFileProvider();
-	private readonly ServiceConfigurator configurator = new ServiceConfigurator();
+	private readonly ConfigurationFromFileProvider configurationFromFileProvider = new();
+	private readonly ServiceConfigurator configurator = new();
 
 	public ReceiveCommand() : base("receive", "receives fp messages from as4 connect")
 	{
@@ -26,9 +25,9 @@ public class ReceiveCommand : Command
 		var serviceProvider = CreateServiceProvider(configFile);
 		var startUpValidator = serviceProvider.GetRequiredService<IStartupValidator>();
 		startUpValidator.Validate();
-		var sender = serviceProvider.GetRequiredService<IReceiveMessageAdapterController>();
+		var sender = serviceProvider.GetRequiredService<IFpMessageReceiver>();
 
-		await sender.ReceiveAvailableMessagesAsync(CancellationToken.None);
+		await sender.ReceiveMessagesAsync(CancellationToken.None);
 	}
 
 	private ServiceProvider CreateServiceProvider(FileInfo configFile)

@@ -1,11 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Parsing;
+﻿namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Parsing;
 
 using NUnit.Framework;
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
-using Schleupen.AS4.BusinessAdapter.FP.Configuration;
-using Microsoft.Extensions.Options;
 
 [TestFixture]
 internal sealed partial class FpFileParserTests
@@ -18,7 +14,7 @@ internal sealed partial class FpFileParserTests
     public void Setup()
     {
         fileSystemWrapperMock = new FileSystemWrapper();
-        
+
         sut = new FpFileParser(fileSystemWrapperMock);
     }
 
@@ -51,7 +47,7 @@ internal sealed partial class FpFileParserTests
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
         Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A01"));
     }
-    
+
     [Test]
     public void FpFileParser_ESS_ScheduleMessageGetsParsed_MissingId_ThrowsExceptin()
     {
@@ -148,7 +144,7 @@ internal sealed partial class FpFileParserTests
 
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
     }
-    
-    
+
+
     // TODO Unhappy paths are untested (missing values)...
 }

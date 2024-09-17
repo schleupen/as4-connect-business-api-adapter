@@ -20,9 +20,6 @@
         "DOTNET_ENVIRONMENT": "Development"
       },
       "commandLineArgs": "send -c appsettings.Development.json"
-    },
-    "Container (Dockerfile)": {
-      "commandName": "Docker"
     }
   }
 }

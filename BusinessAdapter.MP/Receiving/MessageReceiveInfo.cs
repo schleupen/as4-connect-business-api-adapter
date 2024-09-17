@@ -7,15 +7,9 @@ namespace Schleupen.AS4.BusinessAdapter.MP.Receiving
 	/// <summary>
 	/// Contains the result of a message query.
 	/// </summary>
-	public sealed class MessageReceiveInfo
+	public sealed class MessageReceiveInfo(MpMessage[] availableMessages)
 	{
-		private readonly MpMessage[] availableMessages;
 		private readonly HashSet<InboxMpMessage> confirmableMessages = [];
-
-		public MessageReceiveInfo(MpMessage[] availableMessages)
-		{
-			this.availableMessages = availableMessages;
-		}
 
 		/// <summary>
 		/// Contains the successfully processed messages.

@@ -4,6 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<AssemblyName>Schleupen.AS4.BusinessAdapter.MP.Console.UnitTests</AssemblyName>
 		<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+		<RootNamespace>Schleupen.AS4.BusinessAdapter.MP</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
@@ -15,5 +16,10 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\BusinessAdapter.MP.Console\BusinessAdapter.MP.Console.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="appsettings.unittests.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>

@@ -1,13 +1,25 @@
 {
   "profiles": {
-    "BusinessAdapter.Console": {
+    "console - service": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
-      }
+      },
+      "commandLineArgs": "service -c appsettings.Development.json"
     },
-    "Container (Dockerfile)": {
-      "commandName": "Docker"
+    "console - receive": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "commandLineArgs": "receive -c appsettings.Development.json"
+    },
+    "console - send": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "commandLineArgs": "send -c appsettings.Development.json"
     }
   }
 }
