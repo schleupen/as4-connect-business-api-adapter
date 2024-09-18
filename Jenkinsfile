@@ -66,6 +66,7 @@ pipeline
                         timeout(time: 3, unit: 'HOURS') {
                            script {                                                                          
                             bat "dotnet test -c Release build/BusinessAdapter.FP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.dll --logger:\"junit;LogFilePath=Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
+                            bat "dotnet test -c Release build/BusinessAdapter.MP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.IntegrativeTests.dll --logger:\"junit;LogFilePath=Schleupen.AS4.BusinessAdapter.MP.IntegrativeTests.junit.xml\" --no-build"
                           }
                         }                          
                     }
