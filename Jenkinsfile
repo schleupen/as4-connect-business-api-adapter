@@ -85,7 +85,7 @@ pipeline
                         }
                     }
                 }
-                stage('push packages') 
+                /*stage('push packages') 
                 {
                     steps 
                     {
@@ -95,7 +95,7 @@ pipeline
                             bat "dotnet nuget push ./build/BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${Version}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
                         }          
                     }
-                }
+                }*/
             }
             post
             {
