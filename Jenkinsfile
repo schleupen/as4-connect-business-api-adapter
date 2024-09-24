@@ -56,7 +56,7 @@ pipeline
                     steps {
                         timeout(time: 3, unit: 'HOURS') {
                             withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                                powershellFile(filename: ".\\BusinessAdapter.FP.IntegrativeTests\\Start-As4ConnectFakeServer.ps1")  
+                                powershellFile(filename: ".\\Start-As4ConnectFakeServer.ps1")  
                             }                                 
                         }
                     }
@@ -66,6 +66,7 @@ pipeline
                         timeout(time: 3, unit: 'HOURS') {
                            script {                                                                          
                             bat "dotnet test -c Release build/BusinessAdapter.FP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.dll --logger:\"junit;LogFilePath=Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
+                            bat "dotnet test -c Release build/BusinessAdapter.MP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.IntegrativeTests.dll --logger:\"junit;LogFilePath=Schleupen.AS4.BusinessAdapter.MP.IntegrativeTests.junit.xml\" --no-build"
                           }
                         }                          
                     }

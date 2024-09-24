@@ -63,6 +63,18 @@ The certificate containing the keys to access your market partner data on our cl
 
 More information can be found under [AS4 Connect - API](https://developer-campus.de/tracks/integration/as4-connect-api/) (requires free registration).
 
+### Filename convention
+
+The the FP adapter expects the files that should be send, to follow a specific convention:
+
+* **Acknowledge message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
+* **Anomaly report**: <JJJJMMTT>_<TYP>_<EIC-NAME- BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
+* **Confirmation message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
+* **Status request**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_CRQ.XML
+* **Schedule message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
+
+The FP adapter will also save the received files in the same convention.
+
 ### Configuration
 
 The basic configuration of the Adapter is handled through the use of an `appsettings.json` files.

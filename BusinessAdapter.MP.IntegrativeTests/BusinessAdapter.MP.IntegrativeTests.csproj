@@ -5,8 +5,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests</AssemblyName>
-        <RootNamespace>Schleupen.AS4.BusinessAdapter.FP</RootNamespace>
+        <AssemblyName>Schleupen.AS4.BusinessAdapter.MP.IntegrativeTests</AssemblyName>
+        <RootNamespace>Schleupen.AS4.BusinessAdapter.MP</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
     <PackageReference Include="JunitXml.TestLogger" Version="3.1.12" />
@@ -15,15 +15,15 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\BusinessAdapter.FP\BusinessAdapter.FP.csproj" />
-        <ProjectReference Include="..\BusinessAdapter.FP.Console\BusinessAdapter.FP.Console.csproj" />
-        <ProjectReference Include="..\BusinessAdapter\BusinessAdapter.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <Content Update="xunit.runner.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
+</ItemGroup>
+<ItemGroup>
+    <ProjectReference Include="..\BusinessAdapter.MP.Console\BusinessAdapter.MP.Console.csproj" />
+    <ProjectReference Include="..\BusinessAdapter.MP\BusinessAdapter.MP.csproj" />
+    <ProjectReference Include="..\BusinessAdapter\BusinessAdapter.csproj" />
+</ItemGroup>
+<ItemGroup>
+<Content Update="xunit.runner.json">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+</Content>
+</ItemGroup>
 </Project>
