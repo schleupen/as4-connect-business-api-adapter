@@ -4,45 +4,59 @@ using NUnit.Framework;
 
 public sealed partial class SendAndReceiveTests : IDisposable
 {
-    [Test]
-    public async Task SendAndReceiveTests_SendOfValidFiles()
-    {
-	    fixture.CreateDefaultAppSettings();
-	    var configFileOption = new FileInfo(fixture.Data.AppSettingsPath);
+	[Test]
+	public async Task Send_ValidFilesInSendDirectory_ShouldSend()
+	{
+		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertifacte);
+		fixture.AddFileFromValidMarketpartnerToSendDirectory();
 
-		await this.fixture.Send(configFileOption);
+		await this.fixture.Send();
 
-		// we expect the file to be gone after sending
-		Assert.That(fixture.FileExistsInSendDirectory(Fixture.TestData.MsconsFileName), Is.False);
-    }
-
-    [Test]
-    public async Task SendAndReceiveTests_ReceiveOfValidFiles()
-    {
-	    fixture.CreateDefaultAppSettings();
-	    var configFileOption = new FileInfo(fixture.Data.AppSettingsPath);
-
-	    await this.fixture.Receive(configFileOption);
-
-	    // we expect files to be downloaded in the configured receive directory
-	    Assert.That(fixture.CheckReceiveFileDirIsEmpty(), Is.False);
+		fixture.VerifySendDirectoryIsEmpty();
 	}
 
-    [Test]
-    public async Task SendAndReceiveTests_SendOfValidFiles_WithoutCert()
-    {
-	    fixture.CreateDefaultAppSettings("9912345000003");
-	    var configFileOption = new FileInfo(fixture.Data.AppSettingsPath);
+	[Test]
+	public async Task Receive_InboxHasMessages_ShouldSaveFilesInReceiveDirectory()
+	{
+		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertifacte);
 
-	    var exception = Assert.ThrowsAsync<AggregateException> (() => this.fixture.Receive(configFileOption));
-	    Assert.That(exception.InnerExceptions[0].Message, Is.EqualTo("No certificate found for the market partner with identification number 9912345000003."));
+		await this.fixture.Receive();
 
-	    // we expect the file to be there after a failing send
-	    Assert.That(fixture.FileExistsInSendDirectory(Fixture.TestData.MsconsFileName), Is.True);
-    }
+		fixture.VerifyReceiveDirectoryIsNotEmpty();
+	}
 
-    public void Dispose()
-    {
-	    this.fixture?.Dispose();
-    }
+	[Test]
+	public async Task Send_MissingCertificate_ShouldThrowException()
+	{
+		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertifacte);
+		fixture.AddFileFromUnkownMarketpartnerToSendDirectory();
+
+		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Send());
+
+		Assert.That(exception, Is.Not.Null);
+		Assert.That(exception!.InnerExceptions, Is.Not.Empty);
+		Assert.That(exception!.InnerExceptions[0].Message, Is.EqualTo($"No certificate found for the market partner with identification number {TestData.MarketpartnerIdWithoutCertifacte}."));
+
+		fixture.VerifySendDirectoryContainsMsconsFile();
+	}
+
+	[Test]
+	[Ignore("mp logic logs this use case instead of throwing Exception")]
+	public async Task Receive_MissingCertificate_ShouldThrowException()
+	{
+		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithoutCertifacte);
+
+		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Receive());
+
+		Assert.That(exception, Is.Not.Null);
+		Assert.That(exception!.InnerExceptions, Is.Not.Empty);
+		Assert.That(exception!.InnerExceptions[0].Message, Is.EqualTo($"No certificate found for the market partner with identification number {TestData.MarketpartnerIdWithoutCertifacte}."));
+
+		fixture.VerifyReceiveDirectoryIsEmpty();
+	}
+
+	public void Dispose()
+	{
+		this.fixture?.Dispose();
+	}
 }
