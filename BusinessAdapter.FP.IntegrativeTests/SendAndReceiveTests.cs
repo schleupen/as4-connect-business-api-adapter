@@ -4,64 +4,58 @@ using NUnit.Framework;
 
 public sealed partial class SendAndReceiveTests : IDisposable
 {
-    [Test]
-    public async Task SendAndReceiveTests_SendOfValidFiles()
-    {
-	    fixture.CreateDefaultAppSettings();
-	    var configFileOption = new FileInfo(fixture.AppSettingsPath);
+	[Test]
+	public async Task Send_ValidFilesInSendDirectory_ShouldSend()
+	{
+		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
+		fixture.AddFileToSendDirectory();
 
-		var sendStatus = await this.fixture.Send(configFileOption);
+		var sendStatus = await this.fixture.Send();
 
 		Assert.That(sendStatus.FailedMessages.Count, Is.Zero);
 		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(1));
 
-		// we expect the file to be gone after sending
-		Assert.That(fixture.CheckSendFile(), Is.False);
-    }
-
-    [Test]
-    public async Task SendAndReceiveTests_ReceiveOfValidFiles()
-    {
-	    fixture.CreateDefaultAppSettings();
-	    var configFileOption = new FileInfo(fixture.AppSettingsPath);
-
-	    var receiveStatus = await this.fixture.Receive(configFileOption);
-
-	    Assert.That(receiveStatus.FailedMessages.Count, Is.Zero);
-	    Assert.That(receiveStatus.SuccessfulMessages.Count, Is.EqualTo(4));
-
-	    // we expect files to be downloaded in the configured receive directory
-	    Assert.That(fixture.CheckReceiveFileDirIsEmpty(), Is.False);
+		fixture.VerifySendDirectoryIsEmpty();
 	}
 
-    [Test]
-    public async Task SendAndReceiveTests_ReceiveOfValidFiles_WithoutCert()
-    {
-	    fixture.CreateDefaultAppSettings("9912345000003");
-	    var configFileOption = new FileInfo(fixture.AppSettingsPath);
-
-	    var exception = Assert.ThrowsAsync<AggregateException> (() => this.fixture.Receive(configFileOption));
-	    Assert.That(exception.InnerExceptions[0].Message, Is.EqualTo("No certificate found for the market partner with identification number 9912345000003."));
-
-	    // we expect the file to be there after a failing send
-	    Assert.That(fixture.CheckSendFile(), Is.True);
-    }
-
-    [Test]
-    public async Task SendAndReceiveTests_ReceiveOfValidFiles_NoMappingForId()
-    {
-	    fixture.CreateDefaultAppSettings("9912345000010");
-	    var configFileOption = new FileInfo(fixture.AppSettingsPath);
-
-	    var exception = Assert.ThrowsAsync<AggregateException> (() => this.fixture.Receive(configFileOption));
-
-	    Assert.That(exception.InnerExceptions[0].Message, Is.EqualTo("Receiving party 9912345000010 mapping not configured"));
-	    // we expect the file to be there after a failing send
-	    Assert.That(fixture.CheckSendFile(), Is.True);
-    }
-
-	public void Dispose()
+	[Test]
+	public async Task Receive_InboxHasMessages_ShouldSaveFilesInReceiveDirectory()
 	{
-		this.fixture?.Dispose();
+		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
+
+		var receiveStatus = await this.fixture.Receive();
+
+		Assert.That(receiveStatus.FailedMessages.Count, Is.Zero);
+		Assert.That(receiveStatus.SuccessfulMessages.Count, Is.EqualTo(4));
+
+		fixture.VerifyReceiveDirectoryIsNotEmpty();
+	}
+
+	[Test]
+	public void Receive_MissingCertificate_ShouldThrowException()
+	{
+		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithoutCertificate);
+
+		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Receive());
+
+		Assert.That(exception, Is.Not.Null);
+		Assert.That(exception!.InnerExceptions, Is.Not.Empty);
+		Assert.That(exception!.InnerExceptions[0].Message, Is.EqualTo($"No certificate found for the market partner with identification number {TestData.MarketpartnerIdWithoutCertificate}."));
+
+		fixture.VerifyReceiveDirectoryIsEmpty();
+	}
+
+	[Test]
+	public void Receive_MissingMapping_ShouldThrowException()
+	{
+		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithoutMapping);
+
+		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Receive());
+
+		Assert.That(exception, Is.Not.Null);
+		Assert.That(exception!.InnerExceptions, Is.Not.Empty);
+		Assert.That(exception!.InnerExceptions[0].Message, Is.EqualTo($"Receiving party {TestData.MarketpartnerIdWithoutMapping} mapping not configured"));
+
+		fixture.VerifyReceiveDirectoryIsEmpty();
 	}
 }

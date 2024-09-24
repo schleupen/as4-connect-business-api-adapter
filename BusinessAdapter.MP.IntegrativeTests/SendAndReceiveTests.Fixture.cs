@@ -145,10 +145,15 @@ public partial class SendAndReceiveTests
 			Assert.That(files, Is.Not.Empty);
 		}
 
+		private void DeleteDirectories()
+		{
+			if (Directory.Exists(Data.SendDirectory)) Directory.Delete(Data.SendDirectory, true);
+			if (Directory.Exists(Data.ReceiveDirectory)) Directory.Delete(Data.ReceiveDirectory, true);
+		}
+
 		public void Dispose()
 		{
-			if(Directory.Exists(Data.SendDirectory)) Directory.Delete(Data.SendDirectory, true);
-			if(Directory.Exists(Data.ReceiveDirectory)) Directory.Delete(Data.ReceiveDirectory, true);
+			this.DeleteDirectories();
 		}
 
 		public void VerifySendDirectoryContainsMsconsFile()
@@ -174,12 +179,12 @@ public partial class SendAndReceiveTests
 		public string ReceiveDirectory => Path.Combine(Environment.CurrentDirectory, id, "Receive");
 		public string AppSettingsPath => Path.Combine(Environment.CurrentDirectory, id, "appsettings.json");
 
-		public const string MarketpartnerIdWithCertifacte = "9912345000002";
-		public const string MarketpartnerIdWithoutCertifacte = "007";
+		public const string MarketpartnerIdWithCertificate = "9912345000002";
+		public const string MarketpartnerIdWithoutCertificate = "007";
 		public const string MsconsFileName = "sample_mscons.edi";
 
-		public string EdifactFileFromValidMarktpartner = $"UNA:+.? '\nUNB+UNOC:3+{MarketpartnerIdWithCertifacte}:500+{MarketpartnerIdWithCertifacte}:500+140204:1109+TSAAAAAMSCONS1++VL++++1'\nUNH+1+MSCONS:D:04B:UN:2.4a'\nBGM+7+MSCONS53945B4603B5EC5AE2FED080C0+9'\nDTM+137:201402041108:203'\nRFF+Z13:13002'\nNAD+MS+9984616000003::293'\nNAD+MR+9912345000002::293'\nUNS+D'\nNAD+DP'\nLOC+172'\nDTM+9:20131231:102'\nRFF+MG:200002'\nCCI+ACH++PMR'\nCCI+16++MRV'\nLIN+1'\nPIA+5+1-1?:1.8.0:SRW'\nQTY+220:7000'\nUNT+17+1'\nUNH+2+MSCONS:D:04B:UN:2.4a'\nBGM+7+MSCONS53945B4603B5EC5AE2FED080C0+9'\nDTM+137:201402041108:203'\nRFF+Z13:13002'\nNAD+MS+9984616000003::293'\nNAD+MR+9912345000002::293'\nUNS+D'\nNAD+DP'\nLOC+172'\nDTM+9:20131231:102'\nRFF+MG:200002'\nCCI+ACH++PMR'\nCCI+16++MRV'\nLIN+1'\nPIA+5+1-1?:1.8.0:SRW'\nQTY+220:7000'\nUNT+17+2'\nUNZ+2+TSAAAAAMSCONS1'\n\n";
-		public string EdifactFileFromUnknownMarketpartner = $"UNA:+.? '\nUNB+UNOC:3+{MarketpartnerIdWithoutCertifacte}:500+{MarketpartnerIdWithCertifacte}:500+140204:1109+TSAAAAAMSCONS1++VL++++1'\nUNH+1+MSCONS:D:04B:UN:2.4a'\nBGM+7+MSCONS53945B4603B5EC5AE2FED080C0+9'\nDTM+137:201402041108:203'\nRFF+Z13:13002'\nNAD+MS+9984616000003::293'\nNAD+MR+9912345000002::293'\nUNS+D'\nNAD+DP'\nLOC+172'\nDTM+9:20131231:102'\nRFF+MG:200002'\nCCI+ACH++PMR'\nCCI+16++MRV'\nLIN+1'\nPIA+5+1-1?:1.8.0:SRW'\nQTY+220:7000'\nUNT+17+1'\nUNH+2+MSCONS:D:04B:UN:2.4a'\nBGM+7+MSCONS53945B4603B5EC5AE2FED080C0+9'\nDTM+137:201402041108:203'\nRFF+Z13:13002'\nNAD+MS+9984616000003::293'\nNAD+MR+9912345000002::293'\nUNS+D'\nNAD+DP'\nLOC+172'\nDTM+9:20131231:102'\nRFF+MG:200002'\nCCI+ACH++PMR'\nCCI+16++MRV'\nLIN+1'\nPIA+5+1-1?:1.8.0:SRW'\nQTY+220:7000'\nUNT+17+2'\nUNZ+2+TSAAAAAMSCONS1'\n\n";
+		public string EdifactFileFromValidMarktpartner = $"UNA:+.? '\nUNB+UNOC:3+{MarketpartnerIdWithCertificate}:500+{MarketpartnerIdWithCertificate}:500+140204:1109+TSAAAAAMSCONS1++VL++++1'\nUNH+1+MSCONS:D:04B:UN:2.4a'\nBGM+7+MSCONS53945B4603B5EC5AE2FED080C0+9'\nDTM+137:201402041108:203'\nRFF+Z13:13002'\nNAD+MS+9984616000003::293'\nNAD+MR+9912345000002::293'\nUNS+D'\nNAD+DP'\nLOC+172'\nDTM+9:20131231:102'\nRFF+MG:200002'\nCCI+ACH++PMR'\nCCI+16++MRV'\nLIN+1'\nPIA+5+1-1?:1.8.0:SRW'\nQTY+220:7000'\nUNT+17+1'\nUNH+2+MSCONS:D:04B:UN:2.4a'\nBGM+7+MSCONS53945B4603B5EC5AE2FED080C0+9'\nDTM+137:201402041108:203'\nRFF+Z13:13002'\nNAD+MS+9984616000003::293'\nNAD+MR+9912345000002::293'\nUNS+D'\nNAD+DP'\nLOC+172'\nDTM+9:20131231:102'\nRFF+MG:200002'\nCCI+ACH++PMR'\nCCI+16++MRV'\nLIN+1'\nPIA+5+1-1?:1.8.0:SRW'\nQTY+220:7000'\nUNT+17+2'\nUNZ+2+TSAAAAAMSCONS1'\n\n";
+		public string EdifactFileFromUnknownMarketpartner = $"UNA:+.? '\nUNB+UNOC:3+{MarketpartnerIdWithoutCertificate}:500+{MarketpartnerIdWithCertificate}:500+140204:1109+TSAAAAAMSCONS1++VL++++1'\nUNH+1+MSCONS:D:04B:UN:2.4a'\nBGM+7+MSCONS53945B4603B5EC5AE2FED080C0+9'\nDTM+137:201402041108:203'\nRFF+Z13:13002'\nNAD+MS+9984616000003::293'\nNAD+MR+9912345000002::293'\nUNS+D'\nNAD+DP'\nLOC+172'\nDTM+9:20131231:102'\nRFF+MG:200002'\nCCI+ACH++PMR'\nCCI+16++MRV'\nLIN+1'\nPIA+5+1-1?:1.8.0:SRW'\nQTY+220:7000'\nUNT+17+1'\nUNH+2+MSCONS:D:04B:UN:2.4a'\nBGM+7+MSCONS53945B4603B5EC5AE2FED080C0+9'\nDTM+137:201402041108:203'\nRFF+Z13:13002'\nNAD+MS+9984616000003::293'\nNAD+MR+9912345000002::293'\nUNS+D'\nNAD+DP'\nLOC+172'\nDTM+9:20131231:102'\nRFF+MG:200002'\nCCI+ACH++PMR'\nCCI+16++MRV'\nLIN+1'\nPIA+5+1-1?:1.8.0:SRW'\nQTY+220:7000'\nUNT+17+2'\nUNZ+2+TSAAAAAMSCONS1'\n\n";
 
 		public string MsconsFileSendFullPath => Path.Combine(SendDirectory, MsconsFileName);
 	}
