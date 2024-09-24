@@ -1,13 +1,12 @@
-﻿namespace Schleupen.AS4.BusinessAdapter;
+﻿namespace Schleupen.AS4.BusinessAdapter.MP;
 
-using Schleupen.AS4.BusinessAdapter.MP;
-using Schleupen.AS4.BusinessAdapter.MP.Receiving;
-using Schleupen.AS4.BusinessAdapter.MP.Sending;
 using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using Schleupen.AS4.BusinessAdapter.MP.Receiving;
+using Schleupen.AS4.BusinessAdapter.MP.Sending;
 
 public partial class SendAndReceiveTests
 {

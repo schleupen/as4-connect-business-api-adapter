@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AssemblyName>Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests</AssemblyName>
+        <RootNamespace>Schleupen.AS4.BusinessAdapter.FP</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
     <PackageReference Include="JunitXml.TestLogger" Version="3.1.12" />

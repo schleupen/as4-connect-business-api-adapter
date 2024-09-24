@@ -1,14 +1,13 @@
-﻿namespace Schleupen.AS4.BusinessAdapter;
+﻿namespace Schleupen.AS4.BusinessAdapter.FP;
 
-using FP;
-using FP.Receiving;
-using FP.Sending;
-using FP.Configuration;
 using Microsoft.Extensions.Configuration;
-using NUnit.Framework;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using Schleupen.AS4.BusinessAdapter.FP.Configuration;
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
+using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 public partial class SendAndReceiveTests
 {
@@ -76,7 +75,7 @@ public partial class SendAndReceiveTests
 					        FahrplanHaendlerTyp = "PPS"
 				        }
 			        }
-		        }, 
+		        },
 		        {
 		       		"9912345000003", new List<EICMappingEntry>
 		       		{

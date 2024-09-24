@@ -1,4 +1,4 @@
-﻿namespace Schleupen.AS4.BusinessAdapter;
+﻿namespace Schleupen.AS4.BusinessAdapter.MP;
 
 using NUnit.Framework;
 
@@ -23,11 +23,11 @@ public partial class SendAndReceiveTests
 	    var configFileOption = new FileInfo(fixture.AppSettingsPath);
 
 	    await this.fixture.Receive(configFileOption);
-	    
+
 	    // we expect files to be downloaded in the configured receive directory
 	    Assert.That(fixture.CheckReceiveFileDirIsNotEmpty(), Is.True);
 	}
-    
+
     [Test]
     public async Task SendAndReceiveTests_SendOfValidFiles_WithoutCert()
     {
@@ -37,11 +37,11 @@ public partial class SendAndReceiveTests
 	    var exception = Assert.ThrowsAsync<AggregateException> (() => this.fixture.Receive(configFileOption));
 	    Assert.That(exception.InnerExceptions[0].Message, Is.EqualTo("No certificate found for the market partner with identification number 9912345000003."));
 
-	    
+
 	    // we expect the file to be there after a failing send
 	    Assert.That(fixture.CheckSendFile(), Is.True);
     }
-    
+
     [Test]
     public async Task SendAndReceiveTests_ReceiveOfValidFiles_NoMappingForId()
     {

@@ -1,9 +1,9 @@
-﻿namespace Schleupen.AS4.BusinessAdapter;
+﻿namespace Schleupen.AS4.BusinessAdapter.FP;
 
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.Hosting;
 
 public class HostApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint> 
     where TEntryPoint : class
