@@ -36,24 +36,26 @@ public partial class SendAndReceiveTests
 
     private sealed class Fixture : IDisposable
     {
-	    public string AppSettingsPath = "./appsettings.Integration.json";
+	    public class TestData
+	    {
+		    public string SendDirectory = Environment.CurrentDirectory + @"\Send";
+		    public string ReceiveDirectory = Environment.CurrentDirectory + @"\Receive";
+		    public string AppSettingsPath = Environment.CurrentDirectory + @"\appsettings.json";
+		    public const string ValidMarketpartner = "9912345000002";
+		    public const string MsconsFileName = "sample_mscons.edi";
+	    }
 
-        public void CreateDefaultAppSettings(string marketPartner = "9912345000002")
+	    public TestData Data { get; } = new TestData();
+
+        public void CreateDefaultAppSettings(string marketPartner = TestData.ValidMarketpartner)
         {
 	        var marketpartners = new List<string> {  marketPartner };
-
-	        string sendDirectory = Environment.CurrentDirectory + @"\Send";
-	        string receiveDirectory =  Environment.CurrentDirectory + @"\Receive";
-	        AppSettingsPath = Environment.CurrentDirectory + @"\appsettings.json";
-
-	        CreateAppSettingsJson(sendDirectory, receiveDirectory, marketpartners, AppSettingsPath);
+	        CreateAppSettingsJson(Data.SendDirectory, Data.ReceiveDirectory, marketpartners, Data.AppSettingsPath);
         }
 
-        public bool CheckSendFile()
+        public bool FileExistsInSendDirectory(string fileName)
         {
-	        var fileName = "sample_mscons.edi";
-	        var directory = Environment.CurrentDirectory + @"\Send";
-	        return File.Exists(Path.Combine(directory, fileName));
+	        return File.Exists(Path.Combine(Data.SendDirectory, fileName));
         }
 
         public bool CheckReceiveFileDirIsEmpty()
