@@ -2,7 +2,7 @@
 
 using NUnit.Framework;
 
-public partial class SendAndReceiveTests
+public sealed partial class SendAndReceiveTests : IDisposable
 {
     [Test]
     public async Task SendAndReceiveTests_SendOfValidFiles()
@@ -59,4 +59,9 @@ public partial class SendAndReceiveTests
 	    // we expect the file to be there after a failing send
 	    Assert.That(fixture.CheckSendFile(), Is.True);
     }
+
+	public void Dispose()
+	{
+		this.fixture?.Dispose();
+	}
 }

@@ -36,17 +36,12 @@ public partial class SendAndReceiveTests
 
     private sealed class Fixture : IDisposable
     {
-
 	    public string AppSettingsPath = "./appsettings.Integration.json";
-        public Fixture()
-        {
-
-		}
 
         public void CreateDefaultAppSettings(string marketPartner = "9912345000002")
         {
 	        var marketpartners = new List<string> {  marketPartner };
-	        
+
 	        string sendDirectory = Environment.CurrentDirectory + @"\Send";
 	        string receiveDirectory =  Environment.CurrentDirectory + @"\Receive";
 	        AppSettingsPath = Environment.CurrentDirectory + @"\appsettings.json";
@@ -67,7 +62,7 @@ public partial class SendAndReceiveTests
 	        return !Directory.EnumerateFileSystemEntries(directory).Any();
         }
 
-        public void CreateAppSettingsJson(
+        private void CreateAppSettingsJson(
 	        string sendDirectory,
 	        string receiveDirectory,
 	        List<string> marketpartners,
@@ -141,9 +136,10 @@ public partial class SendAndReceiveTests
 			configurator.ConfigureReceiving(serviceCollection, config);
 			return serviceCollection.BuildServiceProvider();
         }
-        
+
         public void Dispose()
         {
+	        // todo cleanup fs
         }
     }
 }
