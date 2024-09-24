@@ -135,7 +135,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             if (exceptions.Count > 0)
             {
                 throw new AggregateException(
-                    "At least one error occurred. Details can be found in the inner exceptions.", exceptions);
+                 "At least one error occurred. Details can be found in the inner exceptions.", exceptions);
             }
 
             return receiveStatus;

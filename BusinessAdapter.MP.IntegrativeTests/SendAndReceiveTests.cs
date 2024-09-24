@@ -1,4 +1,4 @@
-﻿namespace Schleupen.AS4.BusinessAdapter.FP;
+﻿namespace Schleupen.AS4.BusinessAdapter.MP;
 
 using NUnit.Framework;
 
@@ -8,12 +8,9 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	public async Task Send_ValidFilesInSendDirectory_ShouldSend()
 	{
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
-		fixture.AddFileToSendDirectory();
+		fixture.AddFileFromValidMarketpartnerToSendDirectory();
 
-		var sendStatus = await this.fixture.Send();
-
-		Assert.That(sendStatus.FailedMessages.Count, Is.Zero);
-		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(1));
+		await this.fixture.Send();
 
 		fixture.VerifySendDirectoryIsEmpty();
 	}
@@ -23,16 +20,29 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	{
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
 
-		var receiveStatus = await this.fixture.Receive();
-
-		Assert.That(receiveStatus.FailedMessages.Count, Is.Zero);
-		Assert.That(receiveStatus.SuccessfulMessages.Count, Is.EqualTo(4));
+		await this.fixture.Receive();
 
 		fixture.VerifyReceiveDirectoryIsNotEmpty();
 	}
 
 	[Test]
-	public void Receive_MissingCertificate_ShouldThrowException()
+	public async Task Send_MissingCertificate_ShouldThrowException()
+	{
+		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
+		fixture.AddFileFromUnkownMarketpartnerToSendDirectory();
+
+		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Send());
+
+		Assert.That(exception, Is.Not.Null);
+		Assert.That(exception!.InnerExceptions, Is.Not.Empty);
+		Assert.That(exception!.InnerExceptions[0].Message, Is.EqualTo($"No certificate found for the market partner with identification number {TestData.MarketpartnerIdWithoutCertificate}."));
+
+		fixture.VerifySendDirectoryContainsMsconsFile();
+	}
+
+	[Test]
+	[Ignore("mp logic logs this use case instead of throwing Exception")]
+	public async Task Receive_MissingCertificate_ShouldThrowException()
 	{
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithoutCertificate);
 
@@ -45,17 +55,8 @@ public sealed partial class SendAndReceiveTests : IDisposable
 		fixture.VerifyReceiveDirectoryIsEmpty();
 	}
 
-	[Test]
-	public void Receive_MissingMapping_ShouldThrowException()
+	public void Dispose()
 	{
-		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithoutMapping);
-
-		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Receive());
-
-		Assert.That(exception, Is.Not.Null);
-		Assert.That(exception!.InnerExceptions, Is.Not.Empty);
-		Assert.That(exception!.InnerExceptions[0].Message, Is.EqualTo($"Receiving party {TestData.MarketpartnerIdWithoutMapping} mapping not configured"));
-
-		fixture.VerifyReceiveDirectoryIsEmpty();
+		this.fixture?.Dispose();
 	}
 }

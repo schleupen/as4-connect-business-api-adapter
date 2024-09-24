@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.MP.UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.FP.IntegrativeTests", "BusinessAdapter.FP.IntegrativeTests\BusinessAdapter.FP.IntegrativeTests.csproj", "{84749248-5A8F-454A-B91E-2C823228840B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessAdapter.MP.IntegrativeTests", "BusinessAdapter.MP.IntegrativeTests\BusinessAdapter.MP.IntegrativeTests.csproj", "{499388FA-E934-4720-8142-86F097D0C1A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{84749248-5A8F-454A-B91E-2C823228840B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84749248-5A8F-454A-B91E-2C823228840B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84749248-5A8F-454A-B91E-2C823228840B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{499388FA-E934-4720-8142-86F097D0C1A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{499388FA-E934-4720-8142-86F097D0C1A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{499388FA-E934-4720-8142-86F097D0C1A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{499388FA-E934-4720-8142-86F097D0C1A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,5 +110,6 @@ Global
 		{A6508745-0576-46F4-BB86-5CEEC1EBB305} = {74A93D20-7C7A-4783-938E-374FCE103A9A}
 		{333F0A0A-374E-41A7-ABDA-DDE73187F187} = {8CB5B388-A5B4-4F9B-AA6D-3A3C37E905DE}
 		{84749248-5A8F-454A-B91E-2C823228840B} = {74A93D20-7C7A-4783-938E-374FCE103A9A}
+		{499388FA-E934-4720-8142-86F097D0C1A1} = {8CB5B388-A5B4-4F9B-AA6D-3A3C37E905DE}
 	EndGlobalSection
 EndGlobal
