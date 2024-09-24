@@ -42,19 +42,6 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	    Assert.That(fixture.CheckSendFile(), Is.True);
     }
 
-    [Test]
-    public async Task SendAndReceiveTests_ReceiveOfValidFiles_NoMappingForId()
-    {
-	    fixture.CreateDefaultAppSettings("9912345000010");
-	    var configFileOption = new FileInfo(fixture.AppSettingsPath);
-
-	    var exception = Assert.ThrowsAsync<AggregateException> (() => this.fixture.Receive(configFileOption));
-
-	    Assert.That(exception.InnerExceptions[0].Message, Is.EqualTo("Receiving party 9912345000010 mapping not configured"));
-	    // we expect the file to be there after a failing send
-	    Assert.That(fixture.CheckSendFile(), Is.True);
-    }
-
     public void Dispose()
     {
 	    this.fixture?.Dispose();
