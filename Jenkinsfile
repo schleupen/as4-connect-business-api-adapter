@@ -48,73 +48,120 @@ pipeline
                     bat "xcopy /y /f /S /v ${BuildPipelineLocation}\\Schleupen.AS4.BusinessAdapter\\${Version}\\ .\\build\\"
                 }
             }
+        }        
+        stage('start FakeServer') 
+        {
+            steps 
+            {
+                timeout(time: 3, unit: 'HOURS') {
+                    withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                        powershellFile(filename: ".\\Start-As4ConnectFakeServer.ps1")  
+                    }                                 
+                }
+            }
         }
-
-        stage('IntegrativeTests') {
-            stages {
-                stage('start FakeServer') {
-                    steps {
-                        timeout(time: 3, unit: 'HOURS') {
-                            withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                                powershellFile(filename: ".\\Start-As4ConnectFakeServer.ps1")  
-                            }                                 
-                        }
-                    }
+                        
+        stage('Tests') 
+        {
+            steps {
+                timeout(time: 3, unit: 'HOURS') {
+                   script {                                                                          
+                    bat "dotnet test -c Release build/BusinessAdapter.FP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.dll --logger:\"junit;LogFilePath=Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
+                    bat "dotnet test -c Release build/BusinessAdapter.MP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.IntegrativeTests.dll --logger:\"junit;LogFilePath=Schleupen.AS4.BusinessAdapter.MP.IntegrativeTests.junit.xml\" --no-build"
+                  }
+                }                          
+            }
+            post
+            {
+                always
+                {
+                    archiveArtifacts allowEmptyArchive: false, artifacts: '*.junit.xml'
+                    junit skipPublishingChecks: true, testResults: '*.junit.xml'
                 }
-                stage('Tests') {
-                    steps {
-                        timeout(time: 3, unit: 'HOURS') {
-                           script {                                                                          
-                            bat "dotnet test -c Release build/BusinessAdapter.FP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.dll --logger:\"junit;LogFilePath=Schleupen.AS4.BusinessAdapter.FP.IntegrativeTests.junit.xml\" --no-build"
-                            bat "dotnet test -c Release build/BusinessAdapter.MP.IntegrativeTests/bin/Release/net8.0/Schleupen.AS4.BusinessAdapter.MP.IntegrativeTests.dll --logger:\"junit;LogFilePath=Schleupen.AS4.BusinessAdapter.MP.IntegrativeTests.junit.xml\" --no-build"
-                          }
-                        }                          
-                    }
-                    post
-                        {
-                            always
-                            {
-                                archiveArtifacts allowEmptyArchive: false, artifacts: '*.junit.xml'
-                                junit skipPublishingChecks: true, testResults: '*.junit.xml'
-                            }
-                        }
-                }
-            }                        
-        }    
-    }
-
-    post {
-           success {
-               withCredentials([string(credentialsId: '697d0028-bb04-467b-bb3f-83699e6f49c3', variable: 'NEXUS_TOKEN')]) {
-                    bat "dotnet nuget push ./build/BusinessAdapter/bin/Release/Schleupen.AS4.BusinessAdapter.${Version}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
-                    bat "dotnet nuget push ./build/BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${Version}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
-               }                          
-
-               withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                   powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status success")
-               
-                   script
+            }
+        }
+        
+        stage('push packages') 
+        {
+            steps 
+            {                
+                script
+                {
+                   withCredentials([string(credentialsId: '697d0028-bb04-467b-bb3f-83699e6f49c3', variable: 'NEXUS_TOKEN')]) 
                    {
-                       if (env.BRANCH_NAME == 'main') {
-                            bat("git tag -a $Version ${SHA} -m ${Version}")
-                            bat("git push https://${usr}:${pwd}@github.com/schleupen/as4-connect-business-api-adapter $Version")
-                       }
+                        bat "dotnet nuget push ./build/BusinessAdapter/bin/Release/Schleupen.AS4.BusinessAdapter.${Version}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
+                        bat "dotnet nuget push ./build/BusinessAdapter.FP/bin/Release/Schleupen.AS4.BusinessAdapter.FP.${Version}.nupkg -s ${SchleupenNugetRepository}/Schleupen.CS.Nuget/index.json -k ${NEXUS_TOKEN}"
                    }
+                }
+            }
+        }
+    }
+    post 
+    {
+           success 
+           {
+               script
+               {
+                    try
+                    {
+                        withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) 
+                        {
+                              powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status success")
+                          
+                              script
+                              {
+                                  if (env.BRANCH_NAME == 'main') 
+                                  {
+                                       bat("git tag -a $Version ${SHA} -m ${Version}")
+                                       bat("git push https://${usr}:${pwd}@github.com/schleupen/as4-connect-business-api-adapter $Version")
+                                  }
+                              }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        currentBuild.result = 'FAILURE'
+                    }
+                  
+                    processBuildSucceeded()
                }
-               
-               notifyBuildSuccessful()
            }
            unstable {
-               withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                   powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status error -description unstable")
-               }
-               notifyBuildUnstable()
+              script
+              {
+                  try
+                  {
+                       withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                           powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status error -description unstable")
+                       }
+                  }     
+                  catch (Exception e)
+                    {
+                        currentBuild.result = 'FAILURE'
+                    }
+                    
+                  processBuildUnstable()
+              }
            }
            failure {
-               withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
-                   powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status failure -description failure") 
-               }
-               notifyBuildFailed()
+             script
+             {
+                  try
+                  {
+                       withCredentials([usernamePassword(credentialsId: 'Schleupen-Jenkins-AS4-GitHub', passwordVariable: 'pwd', usernameVariable: 'usr')]) {
+                           powershellFile(filename: ".\\GithubSetCommitStatus.ps1", argumentList: "-sha ${SHA} -status failure -description failure")
+                       }
+                  }     
+                  catch (Exception e)
+                    {
+                        currentBuild.result = 'FAILURE'
+                    }
+                  
+                  processBuildUnstable()
+             }
+           }
+           aborted {
+               processBuildUnstable()
            }
     }
 }
