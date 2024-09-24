@@ -113,7 +113,7 @@ public partial class SendAndReceiveTests
         {
 	        var serviceProvider = CreateServiceProvider(configFile);
 	        var sender = serviceProvider.GetRequiredService<IMpMessageReceiver>();
-
+	        
 	        await sender.ReceiveMessagesAsync(CancellationToken.None);
         }
 

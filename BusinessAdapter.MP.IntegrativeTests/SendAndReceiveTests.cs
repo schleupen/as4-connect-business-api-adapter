@@ -1,4 +1,6 @@
-﻿namespace Schleupen.AS4.BusinessAdapter.MP;
+﻿using Microsoft.Extensions.Logging;
+
+namespace Schleupen.AS4.BusinessAdapter.MP;
 
 using NUnit.Framework;
 
@@ -34,8 +36,7 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	    fixture.CreateDefaultAppSettings("9912345000003");
 	    var configFileOption = new FileInfo(fixture.AppSettingsPath);
 
-	    var exception = Assert.ThrowsAsync<AggregateException> (() => this.fixture.Receive(configFileOption));
-	    Assert.That(exception.InnerExceptions[0].Message, Is.EqualTo("No certificate found for the market partner with identification number 9912345000003."));
+	    await this.fixture.Receive(configFileOption);
 
 	    // we expect the file to be there after a failing send
 	    Assert.That(fixture.CheckSendFile(), Is.True);
