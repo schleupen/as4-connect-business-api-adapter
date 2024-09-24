@@ -104,10 +104,14 @@ public partial class SendAndReceiveTests
 	        return File.Exists(Path.Combine(directory, fileName));
         }
 
-        public bool CheckReceiveFileDirIsNotEmpty()
+        public bool CheckReceiveFileDirIsEmpty()
         {
 	        var directory = Environment.CurrentDirectory + @"\Send";
-	        return !Directory.EnumerateFileSystemEntries(directory).Any();
+	        IEnumerable<string> items = Directory.EnumerateFileSystemEntries(directory);
+	        using (IEnumerator<string> en = items.GetEnumerator())
+	        {
+		        return !en.MoveNext();
+	        }
         }
 
         public void CreateAppSettingsJson(

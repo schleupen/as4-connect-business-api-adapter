@@ -25,7 +25,7 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	    await this.fixture.Receive(configFileOption);
 
 	    // we expect files to be downloaded in the configured receive directory
-	    Assert.That(fixture.CheckReceiveFileDirIsNotEmpty(), Is.True);
+	    Assert.That(fixture.CheckReceiveFileDirIsEmpty(), Is.False);
 	}
 
     [Test]

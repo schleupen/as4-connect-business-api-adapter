@@ -31,7 +31,7 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	    Assert.That(receiveStatus.SuccessfulMessages.Count, Is.EqualTo(4));
 
 	    // we expect files to be downloaded in the configured receive directory
-	    Assert.That(fixture.CheckReceiveFileDirIsNotEmpty(), Is.True);
+	    Assert.That(fixture.CheckReceiveFileDirIsEmpty(), Is.False);
 	}
 
     [Test]
