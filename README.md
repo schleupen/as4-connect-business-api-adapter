@@ -1,5 +1,4 @@
 # AS4 Connect Business API Adapter
-
 [Schleupen AS4 Connect](https://www.schleupen.de/loesungen/services/it-services/as4-connect) is a cloud based and managed solution for AS4
 communication in the german energy market.
 ERP systems can be connected to the of Schleupen AS4 Connect using adapters.
@@ -16,7 +15,6 @@ The adapter supports the following AS4 services:
 ![image](https://github.com/schleupen/as4-connect-business-api-adapter/assets/68913205/55d9f9dd-f664-482d-8b6f-bb2106baf506)
 
 ## Develop & Testing
-
 In order to develop and test an adapter, a [fakeserver](https://github.com/schleupen/as4-connect-business-api-fakeserver-releases) implementation of
 the [AS4 Connect - API](https://developer-campus.de/tracks/integration/as4-connect-api/) is available.
 
@@ -25,7 +23,6 @@ the [AS4 Connect - API](https://developer-campus.de/tracks/integration/as4-conne
 Certificates for testing authentication will be provided by Schleupen SE.
 
 ## Compile & Publish
-
 You will need the [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
 
 To build the solution use:
@@ -55,28 +52,17 @@ The options are also documented in the executable itself. For more information e
 
 To run the adapter you will need the [client certificates](#certificates) and a [configuration](#configuration) file for the specific service.
 
-### Certificates
+Currently tested platforms:
+* Windows (requires .NET 8 Runtime)
 
+### Certificates
 For authentication we use mutual TLS (mTLS).
 You require a client certificate (issued by Schleupen SE) for each market partner.
 The certificate containing the keys to access your market partner data on our cloud system.
 
 More information can be found under [AS4 Connect - API](https://developer-campus.de/tracks/integration/as4-connect-api/) (requires free registration).
 
-### Filename convention
-
-The the FP adapter expects the files that should be send, to follow a specific convention:
-
-* **Acknowledge message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
-* **Anomaly report**: <JJJJMMTT>_<TYP>_<EIC-NAME- BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
-* **Confirmation message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
-* **Status request**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_CRQ.XML
-* **Schedule message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
-
-The FP adapter will also save the received files in the same convention.
-
 ### Configuration
-
 The basic configuration of the Adapter is handled through the use of an `appsettings.json` files.
 
 A simple example (only required values):
@@ -93,22 +79,6 @@ A simple example (only required values):
     },
     "Marketpartners": [
       "9984617000002"
-    ]
-  },
-    "EICMapping": {
-    "9984617000002": [
-      {
-        "EIC": "5790000432752",
-        "MarktpartnerTyp": "BDEW",
-        "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlerTyp": "PPS"
-      },
-      {
-        "EIC": "5790000432766",
-        "MarktpartnerTyp": "BDEW",
-        "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlerTyp": "TPS"
-      }
     ]
   }
 }
@@ -143,30 +113,6 @@ A full example:
       },
       "SleepDuration" :  "00:01:00",
       "MessageLimitCount": 1000
-  },
-    "EICMapping": {
-    "9984617000002": [
-      {
-        "EIC": "5790000432752",
-        "MarktpartnerTyp": "BDEW",
-        "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlerTyp": "PPS"
-      },
-      {
-        "EIC": "5790000432766",
-        "MarktpartnerTyp": "BDEW",
-        "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlerTyp": "TPS"
-      }
-    ],
-    "9984616000003": [
-      {
-        "EIC": "10X000000000RTEM",
-        "MarktpartnerTyp": "BDEW",
-        "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlerTyp": "PPS"
-      }
-    ]
   }
 }
 ```
@@ -191,14 +137,14 @@ A full example:
 | Receive:Retry:SleepDuration | [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-8.0)                                                   | 00:00:10       | The sleep duration between each retry. [only for service usage]                                                                                                                               |
 
 ### FP configuration
-
 The configuration of the FP Adapter required an additional `EICMapping`.
 This maps the AS4 specific Party-Id (eg. 1000000001) to X-amount of EIC-Codes (eg. "11XYYYYYY-V----V") and Party-Type (BDEW, DVGW, GS1),
 the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice versa.
 
 ```
 {
-  // Adapter,Send,Receive
+   // ...sections Adapter, Send, Receive see Configuration
+   
    "EICMapping": {
     "9984617000002": [
       {
@@ -225,8 +171,18 @@ the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
   }
 }
 ```
-Currently tested platforms:
-* Windows (requires .NET 8 Runtime)
+
+#### FP Filename 
+The the FP adapter expects the files that should be send, to follow a specific convention:
+
+* **Acknowledge message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
+* **Anomaly report**: <JJJJMMTT>_<TYP>_<EIC-NAME- BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
+* **Confirmation message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
+* **Status request**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_CRQ.XML
+* **Schedule message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
+
+The FP adapter will also save the received files in the same convention.
+
 ## Migration
 ### 1.0 to 3.0
 * use 'Schleupen.AS4.BusinessAdapter.MP.Console.exe' instead of 'Schleupen.AS4.BusinessAdapter.Console.exe'
@@ -242,4 +198,4 @@ Currently tested platforms:
 * The format of the config files has been revised in an incompatible manner (see [Migration](#Migration))
 
 ### 1.0
-* Supports MP Service in a single executable ( Schleupen.AS4.BusinessAdapter.Console.exe ) 
+* Supports MP Service in a single executable ( Schleupen.AS4.BusinessAdapter.Console.exe )
