@@ -13,7 +13,6 @@
 		<RootNamespace>Schleupen.AS4.BusinessAdapter</RootNamespace>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<SignAssembly>false</SignAssembly>
 		<DebugType>Embedded</DebugType>
 	</PropertyGroup>
 </Project>
