@@ -102,7 +102,6 @@ internal sealed partial class FpFileParserTests
     }
 
     [Test]
-    [Ignore("No file")] // TODO
     public void FpFileParser_CIM_ScheduleMessageGetsParsed_Correctly()
     {
         string pathOfFile = fixture.CreateExampleCIMScheduleMessage();
@@ -110,7 +109,9 @@ internal sealed partial class FpFileParserTests
         var outboundFpMessage = sut.Parse(pathOfFile);
 
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
-    }
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A01"));
+		Assert.That(outboundFpMessage.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2024-10-07T22:00Z/2024-10-08T22:00Z"));
+	}
 
     [Test]
     [Ignore("No file")] // TODO

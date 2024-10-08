@@ -54,8 +54,9 @@ internal sealed partial class FpFileParserTests
         
         public string CreateExampleCIMScheduleMessage()
         {
-            return "";
-        }
+			string dir = TestContext.CurrentContext.TestDirectory;
+			return Path.Combine(dir, @"Parsing/20241008_TPS_11X0-0000-0619-M_10XDE-VE-TRANSMK_002.xml");
+		}
         
         public string CreateExampleCIMAnomalyReport()
         {
