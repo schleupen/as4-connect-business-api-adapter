@@ -4,7 +4,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Xml.Linq;
 
-public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
+public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileValidator fpParsedFileValidator) : IFpFileParser
 {
 	private readonly string ESS_NAMESPACE_STRING = "urn:entsoe.eu:wgedi:ess";
 
@@ -15,7 +15,9 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper) : IFpFileParser
          XDocument doc = XDocument.Load(path);
 
          var parser = this.CreateParserFor(doc);
-         return parser.Parse(doc, fileName, path);
+         var parsedFile = parser.Parse(doc, fileName, path);
+         fpParsedFileValidator.ValidateParsedFpFile(parsedFile);
+		 return parsedFile;
     }
 
     public FpParsedPayload ParsePayload(byte[] payload)

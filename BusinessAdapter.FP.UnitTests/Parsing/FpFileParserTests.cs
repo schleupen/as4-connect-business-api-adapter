@@ -9,19 +9,21 @@ internal sealed partial class FpFileParserTests
     private readonly Fixture fixture = new();
     private FpFileParser sut = default!;
     private IFileSystemWrapper fileSystemWrapperMock = default!;
+    private IFpParsedFileValidator fpParsedFileValidator = default!;
 
     [SetUp]
     public void Setup()
     {
         fileSystemWrapperMock = new FileSystemWrapper();
+        fpParsedFileValidator = new FpParsedFileValidator();
 
-        sut = new FpFileParser(fileSystemWrapperMock);
+		sut = new FpFileParser(fileSystemWrapperMock, fpParsedFileValidator);
     }
 
     [Test]
     public void FpFileParser_ESS_ConfirmationReportGetsParsed_Correctly()
     {
-        string pathOfFile = fixture.CreateExampleESSConfirmationReport();
+        string pathOfFile = fixture.TestData.ExampleEssConfirmationReportPath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
 
@@ -40,7 +42,7 @@ internal sealed partial class FpFileParserTests
     [Test]
     public void FpFileParser_ESS_ScheduleMessageGetsParsed_Correctly()
     {
-        string pathOfFile = fixture.CreateExampleESSScheduleMessage();
+        string pathOfFile = fixture.TestData.ExampleEssScheduleMessagePath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
 
@@ -49,9 +51,9 @@ internal sealed partial class FpFileParserTests
     }
 
     [Test]
-    public void FpFileParser_ESS_ScheduleMessageGetsParsed_MissingId_ThrowsExceptin()
+    public void FpFileParser_ESS_ScheduleMessageGetsParsed_MissingId_ThrowsException()
     {
-        string pathOfFile = fixture.CreateWrongESSScheduleMessage();
+        string pathOfFile = fixture.TestData.EssScheduleMessagePathOfWrongFile;
 
         Assert.Throws<ArgumentException>(() => sut.Parse(pathOfFile));
     }
@@ -59,11 +61,11 @@ internal sealed partial class FpFileParserTests
     [Test]
     public void FpFileParser_ESS_AnomalyReportGetsParsed_Correctly()
     {
-	    string pathOfFile = fixture.CreateExampleESSAnomalyReport();
+	    string pathOfFile = fixture.TestData.ExampleEssAnomalyReportPath;
 
-	    var outboundFpMessage = sut.Parse(pathOfFile);
+		var outboundFpMessage = sut.Parse(pathOfFile);
 
-	    Assert.That(outboundFpMessage.Content, Is.Not.Empty);
+		Assert.That(outboundFpMessage.Content, Is.Not.Empty);
 	    Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A16"));
     }
 
@@ -71,7 +73,7 @@ internal sealed partial class FpFileParserTests
     [Ignore("No file")] // TODO
     public void FpFileParser_ESS_AcknowledgeMessageGetsParsed_Correctly()
     {
-	    string pathOfFile = fixture.CreateExampleESSAcknowledgeMessage();
+	    string pathOfFile = fixture.TestData.ExampleEssAcknowledgeMessagePath;
 
 	    var outboundFpMessage = sut.Parse(pathOfFile);
 
@@ -82,7 +84,7 @@ internal sealed partial class FpFileParserTests
     [Ignore("No file")] // TODO
     public void FpFileParser_ESS_StatusReportGetsParsed_Correctly()
     {
-        string pathOfFile = fixture.CreateExampleESSStatusRequest();
+        string pathOfFile = fixture.TestData.ExampleEssStatusRequestPath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
 
@@ -94,7 +96,7 @@ internal sealed partial class FpFileParserTests
     [Ignore("No file")] // TODO
     public void FpFileParser_CIM_ConfirmationReportGetsParsed_Correctly()
     {
-        string pathOfFile = fixture.CreateExampleCIMConfirmationReport();
+        string pathOfFile = fixture.TestData.ExampleCimConfirmationReportPath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
 
@@ -102,21 +104,28 @@ internal sealed partial class FpFileParserTests
     }
 
     [Test]
-    [Ignore("No file")] // TODO
     public void FpFileParser_CIM_ScheduleMessageGetsParsed_Correctly()
     {
-        string pathOfFile = fixture.CreateExampleCIMScheduleMessage();
+        string pathOfFile = fixture.TestData.ExampleCimScheduleMessagePath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
 
+
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
-    }
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A01"));
+		Assert.That(outboundFpMessage.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2024-10-07T22:00Z/2024-10-08T22:00Z"));
+		Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("2"));
+		Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("11X0-0000-0619-M"));
+		Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyRole, Is.EqualTo("A08"));
+		Assert.That(outboundFpMessage.Sender.Code, Is.EqualTo("11X0-0000-0619-M"));
+		Assert.That(outboundFpMessage.Receiver.Code, Is.EqualTo("11X0-0000-0619-M"));
+	}
 
     [Test]
     [Ignore("No file")] // TODO
     public void FpFileParser_CIM_AcknowledgeMessageGetsParsed_Correctly()
     {
-        string pathOfFile = fixture.CreateExampleCIMAcknowledgeMessage();
+        string pathOfFile = fixture.TestData.ExampleCimAcknowledgeMessagePath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
 
@@ -127,7 +136,7 @@ internal sealed partial class FpFileParserTests
     [Ignore("No file")] // TODO
     public void FpFileParser_CIM_AnomalyReportGetsParsed_Correctly()
     {
-        string pathOfFile = fixture.CreateExampleCIMAnomalyReport();
+        string pathOfFile = fixture.TestData.ExampleCimAnomalyReportPath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
 
@@ -138,7 +147,7 @@ internal sealed partial class FpFileParserTests
     [Ignore("No file")] // TODO
     public void FpFileParser_CIM_StatusReportGetsParsed_Correctly()
     {
-        string pathOfFile = fixture.CreateExampleCIMStatusRequest();
+        string pathOfFile = fixture.TestData.ExampleCimStatusRequestPath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
 

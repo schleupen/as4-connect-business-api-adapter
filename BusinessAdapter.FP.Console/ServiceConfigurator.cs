@@ -5,17 +5,17 @@ namespace Schleupen.AS4.BusinessAdapter.FP;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Schleupen.AS4.BusinessAdapter.API;
-using Schleupen.AS4.BusinessAdapter.API.Assemblers;
-using Schleupen.AS4.BusinessAdapter.Certificates;
+using API;
+using API.Assemblers;
+using Certificates;
 using Schleupen.AS4.BusinessAdapter.Configuration;
-using Schleupen.AS4.BusinessAdapter.FP.Configuration;
-using Schleupen.AS4.BusinessAdapter.FP.Configuration.Validation;
-using Schleupen.AS4.BusinessAdapter.FP.Gateways;
-using Schleupen.AS4.BusinessAdapter.FP.Parsing;
-using Schleupen.AS4.BusinessAdapter.FP.Receiving;
-using Schleupen.AS4.BusinessAdapter.FP.Sending;
-using Schleupen.AS4.BusinessAdapter.FP.Sending.Assemblers;
+using Configuration;
+using Configuration.Validation;
+using Gateways;
+using Parsing;
+using Receiving;
+using Sending;
+using Sending.Assemblers;
 
 public class ServiceConfigurator
 {
@@ -26,6 +26,7 @@ public class ServiceConfigurator
 			.AddTransient<ICertificateStoreFactory, CertificateStoreFactory>()
 			.AddTransient<IFileSystemWrapper, FileSystemWrapper>()
 			.AddTransient<IFpFileParser, FpFileParser>()
+			.AddTransient<IFpParsedFileValidator, FpParsedFileValidator>()
 			.AddTransient<IFpOutboxMessageAssembler, FpOutboxMessageAssembler>()
 			.AddTransient<IFpFileRepository, FpFileRepository>()
 			.AddTransient<IBusinessApiGatewayFactory, BusinessApiGatewayFactory>()

@@ -32,28 +32,28 @@ public class CimFileParser : IFpFileSpecificParser
 		}
 		else
 		{
-			documentType = document.Descendants(ns + "type").First().Attribute("v").Value;
+			documentType = document.Descendants(ns + "type").First().Value;
 		}
 
-		var senderIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Attribute("v")?.Value;
+		var senderIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Value;
 		if (senderIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve sender code number from file {path}.");
 		}
 
-		var senderRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Attribute("v")?.Value;
+		var senderRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Value;
 		if (senderRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve sender role from file {path}.");
 		}
 
-		var receiverIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Attribute("v")?.Value;
+		var receiverIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Value;
 		if (receiverIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver code number from file {path}.");
 		}
 
-		var receiverRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Attribute("v")?.Value;
+		var receiverRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Value;
 		if (receiverRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver role from file {path}.");
@@ -67,13 +67,18 @@ public class CimFileParser : IFpFileSpecificParser
 		}
 		else
 		{
-			var startTimeInterval = document.Descendants(ns + "sender_MarketParticipant.start").FirstOrDefault()?.Attribute("v")?.Value;
-			var endTimeInterval = document.Descendants(ns + "sender_MarketParticipant.end").FirstOrDefault()?.Attribute("v")?.Value;
+			var timeInterval = document.Descendants(ns + "schedule_Time_Period.timeInterval").FirstOrDefault();
 
-			if (startTimeInterval is not null && endTimeInterval is not null)
+			if (timeInterval != null)
 			{
-				scheduleTimeInterval = startTimeInterval + "/" + endTimeInterval;
+				var startTimeInterval = timeInterval.Descendants(ns + "start").FirstOrDefault()?.Value;
+				var endTimeInterval = timeInterval.Descendants(ns + "end").FirstOrDefault()?.Value;
+				if (startTimeInterval is not null && endTimeInterval is not null)
+				{
+					scheduleTimeInterval = startTimeInterval + "/" + endTimeInterval;
+				}
 			}
+
 		}
 
 		if (scheduleTimeInterval == null)
@@ -95,25 +100,25 @@ public class CimFileParser : IFpFileSpecificParser
 	{
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-		var senderIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Attribute("v")?.Value;
+		var senderIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Value;
 		if (senderIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve sender code number from Payload.");
 		}
 
-		var senderRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Attribute("v")?.Value;
+		var senderRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Value;
 		if (senderRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve sender role from ffrom Payload.");
 		}
 
-		var receiverIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Attribute("v")?.Value;
+		var receiverIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Value;
 		if (receiverIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver code number from Payload.");
 		}
 
-		var receiverRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Attribute("v")?.Value;
+		var receiverRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Value;
 		if (receiverRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver role from Payload.");
@@ -122,8 +127,8 @@ public class CimFileParser : IFpFileSpecificParser
 		string? scheduleTimeInterval = "";
 
 		// For acknowledge und status messages we take the date from the filename
-		var startTimeInterval = document.Descendants(ns + "sender_MarketParticipant.start").FirstOrDefault()?.Attribute("v")?.Value;
-		var endTimeInterval = document.Descendants(ns + "sender_MarketParticipant.end").FirstOrDefault()?.Attribute("v")?.Value;
+		var startTimeInterval = document.Descendants(ns + "sender_MarketParticipant.start").FirstOrDefault()?.Value;
+		var endTimeInterval = document.Descendants(ns + "sender_MarketParticipant.end").FirstOrDefault()?.Value;
 
 		if (startTimeInterval is not null && endTimeInterval is not null)
 		{
@@ -153,12 +158,12 @@ public class CimFileParser : IFpFileSpecificParser
 		{
 			case FpMessageType.Acknowledge:
 				// This should be received_market-document.revisionNumber
-				return doc.Descendants(ns + "revisionNumber").First().Attribute("v").Value;
+				return doc.Descendants(ns + "revisionNumber").First().Value;
 			case FpMessageType.Schedule:
-				return doc.Descendants(ns + "revisionNumber").First().Attribute("v").Value;
+				return doc.Descendants(ns + "revisionNumber").First().Value;
 			case FpMessageType.Confirmation:
 				// This should be confirmed_market-document.revisionNumber
-				return doc.Descendants(ns + "revisionNumber").First().Attribute("v").Value;
+				return doc.Descendants(ns + "revisionNumber").First().Value;
 			case FpMessageType.Anomaly:
 				return fpFileName.Version;
 			case FpMessageType.Status:
