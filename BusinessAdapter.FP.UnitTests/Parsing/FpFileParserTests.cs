@@ -9,13 +9,15 @@ internal sealed partial class FpFileParserTests
     private readonly Fixture fixture = new();
     private FpFileParser sut = default!;
     private IFileSystemWrapper fileSystemWrapperMock = default!;
+    private IFpParsedFileValidator fpParsedFileValidator = default!;
 
     [SetUp]
     public void Setup()
     {
         fileSystemWrapperMock = new FileSystemWrapper();
+        fpParsedFileValidator = new FpParsedFileValidator();
 
-        sut = new FpFileParser(fileSystemWrapperMock);
+		sut = new FpFileParser(fileSystemWrapperMock, fpParsedFileValidator);
     }
 
     [Test]

@@ -1,7 +1,6 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
 
 public class FpParsedFileValidator : IFpParsedFileValidator
 {
