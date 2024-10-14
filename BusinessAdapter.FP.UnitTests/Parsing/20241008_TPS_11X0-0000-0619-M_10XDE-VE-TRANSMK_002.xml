@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Schedule_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-2:scheduledocument:5:2">
     <mRID>20241008_4D-Energy_10YDE-VE-------2</mRID>
-    <revisionNumber>2</revisionNumber>
+    <revisionNumber>002</revisionNumber>
     <type>A01</type>
     <process.processType>A17</process.processType>
     <process.classificationType>A01</process.classificationType>

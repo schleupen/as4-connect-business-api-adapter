@@ -27,11 +27,11 @@ internal sealed partial class FpFileParserTests
 
         var outboundFpMessage = sut.Parse(pathOfFile);
 
-        string senderId = "5790000432752";
+        string senderId = "0X1001A1001A264";
 
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
         Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A08"));
-        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("zerotro"));
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("002"));
         Assert.That(outboundFpMessage.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2001-06-02T22:00Z/2001-06-03T22:00Z"));
         Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo(senderId));
         Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyRole, Is.EqualTo("A01"));
@@ -109,12 +109,11 @@ internal sealed partial class FpFileParserTests
         string pathOfFile = fixture.TestData.ExampleCimScheduleMessagePath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
-
-
+        
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
         Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A01"));
 		Assert.That(outboundFpMessage.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2024-10-07T22:00Z/2024-10-08T22:00Z"));
-		Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("2"));
+		Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("002"));
 		Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("11X0-0000-0619-M"));
 		Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyRole, Is.EqualTo("A08"));
 		Assert.That(outboundFpMessage.Sender.Code, Is.EqualTo("11X0-0000-0619-M"));

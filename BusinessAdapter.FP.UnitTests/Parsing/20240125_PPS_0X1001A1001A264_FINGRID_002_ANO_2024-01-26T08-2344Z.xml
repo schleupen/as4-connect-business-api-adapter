@@ -2,7 +2,7 @@
 <AnomalyReport xmlns="urn:entsoe.eu:wgedi:ess:anomalyreport:4:1">
 	<DocumentIdentification v="1234QRP"/>
 	<CreationDateTime v="2001-06-02T09:00:00Z"/>
-	<SenderIdentification v="5790000432752" codingScheme="A10"/>
+	<SenderIdentification v="0X1001A1001A264" codingScheme="A10"/>
 	<SenderRole v="A01"/>
 	<ReceiverIdentification v="10X000000000RTEM" codingScheme="A01"/>
 	<ReceiverRole v="A01"/>

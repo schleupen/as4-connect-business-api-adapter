@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScheduleDocument xmlns="urn:entsoe.eu:wgedi:ess:scheduledocument:4:1">
 	<DocumentIdentification v="1234"/>
-	<DocumentVersion v="1"/>
+	<DocumentVersion v="002"/>
 	<DocumentType v="A01"/>
 	<ProcessType v="A01"/>
 	<ScheduleClassificationType v="A01"/>
-	<SenderIdentification v="5790000432752" codingScheme="A10"/>
+	<SenderIdentification v="0X1001A1001A264" codingScheme="A10"/>
 	<SenderRole v="A01"/>
 	<ReceiverIdentification v="10X000000000RTEM" codingScheme="A01"/>
 	<ReceiverRole v="A04"/>

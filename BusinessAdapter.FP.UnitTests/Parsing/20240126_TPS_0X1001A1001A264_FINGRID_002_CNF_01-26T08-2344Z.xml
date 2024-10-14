@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ConfirmationReport xmlns="urn:entsoe.eu:wgedi:ess:confirmationreport:4:1">
-	<DocumentIdentification v="zerotro"/>
+	<DocumentIdentification v="002"/>
 	<DocumentType v="A08"/>
 	<CreationDateTime v="2001-06-02T09:00:00Z"/>
-	<SenderIdentification v="5790000432752" codingScheme="A10"/>
+	<SenderIdentification v="0X1001A1001A264" codingScheme="A10"/>
 	<SenderRole v="A01"/>
 	<ReceiverIdentification v="10X000000000RTEM" codingScheme="A01"/>
 	<ReceiverRole v="A01"/>
