@@ -52,7 +52,6 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileVal
     {
 	    XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-	    // TODO namespace is not always set
 	    if (ns!.NamespaceName.Contains(CIM_NAMESPACE_STRING))
 	    {
 		    return false;
