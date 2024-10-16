@@ -16,8 +16,8 @@ public class FpFileNameTests
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
-		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC2"));
-		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("001"));
 		Assert.That(parsed.Timestamp, Is.EqualTo("2024-01-26T08-22-52Z"));
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Acknowledge));
@@ -32,8 +32,8 @@ public class FpFileNameTests
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
-		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC2"));
-		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("001"));
 		Assert.That(parsed.Timestamp, Is.EqualTo("2024-01-26T08-22-52Z"));
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Anomaly));
@@ -48,8 +48,8 @@ public class FpFileNameTests
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
-		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC2"));
-		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("001"));
 		Assert.That(parsed.Timestamp, Is.EqualTo("2024-01-26T08-22-52Z"));
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Confirmation));
@@ -64,8 +64,8 @@ public class FpFileNameTests
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
-		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC2"));
-		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.Null);
 		Assert.That(parsed.Timestamp, Is.Null);
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Status));
@@ -80,8 +80,8 @@ public class FpFileNameTests
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
-		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC2"));
-		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
+		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("001"));
 		Assert.That(parsed.Timestamp, Is.Null);
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Schedule));

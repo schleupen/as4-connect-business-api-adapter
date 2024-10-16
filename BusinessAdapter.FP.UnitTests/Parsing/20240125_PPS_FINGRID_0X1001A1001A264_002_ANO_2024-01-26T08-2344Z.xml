@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AnomalyReport xmlns="urn:entsoe.eu:wgedi:ess:anomalyreport:4:1">
-	<DocumentIdentification v="1234QRP"/>
+	<MessageIdentification v="1234QRP"/>
 	<CreationDateTime v="2001-06-02T09:00:00Z"/>
 	<SenderIdentification v="0X1001A1001A264" codingScheme="A10"/>
 	<SenderRole v="A01"/>
@@ -8,6 +8,11 @@
 	<ReceiverRole v="A01"/>
 	<ScheduleTimeInterval v="2001-06-02T22:00Z/2001-06-03T22:00Z"/>
 	<Domain v="2Y000002347651H" codingScheme="A01"/>
+	<SendersMessageIdentification v="SM2400020241016_A02"/>
+	<SendersMessageVersion v="60"/>
+	<SendersTimeSeriesIdentification v="TS1_24001_3373_2000"/>
+	<SendersTimeSeriesVersion v="60"/>
+	<BusinessType v="A02"/>
 	<TimeSeriesAnomaly>
 		<DocumentSenderIdentification v="11X000000340533X" codingScheme="A10"/>
 		<SendersDocumentIdentification v="1234"/>

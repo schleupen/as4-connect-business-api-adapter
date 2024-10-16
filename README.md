@@ -175,11 +175,11 @@ the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
 #### FP Filename 
 The the FP adapter expects the files that should be send, to follow a specific convention:
 
-* **Acknowledge message**: <JJJJMMTT>_<TYP>_<EIC-NAME-TSO>_<EIC-NAME-BILANZKREIS>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
-* **Anomaly report**: <JJJJMMTT>_<TYP>_<EIC-NAME-TSO>_<EIC-NAME-BILANZKREIS>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
-* **Confirmation message**: <JJJJMMTT>_<TYP>_<EIC-NAME-TSO>_<EIC-NAME-BILANZKREIS>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
-* **Status request**: <JJJJMMTT>_<TYP>_<EIC-NAME-TSO>_<EIC-NAME-BILANZKREIS>_CRQ.XML
-* **Schedule message**: <JJJJMMTT>_<TYP>_<EIC-NAME-TSO>_<EIC-NAME-BILANZKREIS>_<VVV>.XML
+* **Acknowledge message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
+* **Anomaly report**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
+* **Confirmation message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
+* **Status request**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_CRQ.XML
+* **Schedule message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
 
 The FP adapter will also save the received files in the same convention.
 

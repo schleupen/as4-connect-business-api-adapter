@@ -1,10 +1,10 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
-// ACK format: <JJJJMMTT>_<TYP>_<EIC-NAME-TSO>_<EIC-NAME-BILANZKREIS>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
-// ANO format: <JJJJMMTT>_<TYP>_<EIC-NAME- TSO>_<EIC-NAME-BILANZKREIS>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
-// CON format: <JJJJMMTT>_<TYP>_<EIC-NAME-TSO>_<EIC-NAME-BILANZKREIS>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
-// Status format: <JJJJMMTT>_<TYP>_<EIC-NAME-TSO>_<EIC-NAME-BILANZKREIS>_CRQ.XML
-// Schedule format: <JJJJMMTT>_<TYP>_<EIC-NAME-TSO>_<EIC-NAME-BILANZKREIS>_<VVV>.XML
+// ACK format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
+// ANO format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
+// CON format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
+// Status format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_CRQ.XML
+// Schedule format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
 
 public record FpFileName
 {
@@ -54,8 +54,8 @@ public record FpFileName
 
 		var date = parts[0];
 		var type = parts[1];
-		var eicNameTso = parts[2];
-		var eicNameBilanzkreis = parts[3];
+		var eicNameBilanzkreis = parts[2];
+		var eicNameTso = parts[3];
 		var version = "1";
 		string? timestamp;
 		string messageTypePart;
@@ -66,13 +66,25 @@ public record FpFileName
 
 		if (isNumeric)
 		{
-			version = parts[4];
+			if (!int.TryParse(parts[4], out int versionInt))
+			{
+				throw new FormatException("Version number in filename is not numeric");
+			}
+			version = versionInt.ToString();
 			timestamp = parts.Length > 6 ? parts[6] : null;
 			messageTypePart = parts[parts.Length - 2];
 		}
 		else
 		{
 			version = parts.Length > 5 ? parts[4] : null;
+			if (version != null)
+			{
+				if (!int.TryParse(parts[4], out int versionInt))
+				{
+					throw new FormatException("Version number in filename is not numeric");
+				}
+				version = versionInt.ToString();
+			}
 			timestamp = parts.Length > 5 ? parts[5] : null;
 			messageTypePart = parts[parts.Length - 1];
 		}

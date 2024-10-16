@@ -77,7 +77,7 @@ public class FpParsedFileValidatorTests
 			new EIC("TSO002"),
 			null,
 			Path.Combine(TestContext.CurrentContext.TestDirectory,
-				@"Parsing/20240126_TPS_0X1001A1001A264_FINGRID_002_CNF_01-26T08-2344Z.xml"),
+				@"Parsing/20240126_TPS_FINGRID_0X1001A1001A264_002_CNF_01-26T08-2344Z.xml"),
 			"filePath",
 			new FpBDEWProperties(bdewDocumentType, bdewDocumentNo, "Fulfilmentdate", "0X1001A1001A264", "A01"));
 	}
