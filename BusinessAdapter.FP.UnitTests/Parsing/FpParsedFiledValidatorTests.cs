@@ -43,7 +43,7 @@ public class FpParsedFileValidatorTests
 	public void ValidateParsedFpFile_InvalidSender_ThrowsValidationException()
 	{
 		// Arrange
-		var fpFile = CreateValidFpFile("002","InvalidSender");
+		var fpFile = CreateValidFpFile("2","InvalidSender");
 
 		// Act & Assert
 		Assert.That(() => _validator.ValidateParsedFpFile(fpFile),
@@ -60,16 +60,16 @@ public class FpParsedFileValidatorTests
 		// Act & Assert
 		Assert.That(() => _validator.ValidateParsedFpFile(fpFile),
 			Throws.TypeOf<ValidationException>()
-			.With.Message.EqualTo("Parsed Document Version InvalidDocNo does not match filename Document Version 002"));
+			.With.Message.EqualTo("Parsed Document Version InvalidDocNo does not match filename Document Version 2"));
 	}
 
-	private FpFile CreateValidFpFile(string bdewDocumentNo = "002", string senderCode = "0X1001A1001A264", string bdewDocumentType = "A07")
+	private FpFile CreateValidFpFile(string bdewDocumentNo = "2", string senderCode = "0X1001A1001A264", string bdewDocumentType = "A07")
 	{
 		var fileName = new FpFileName
 		{
 			MessageType = FpMessageType.Confirmation,
 			EicNameTso = "0X1001A1001A264",
-			Version = "002"
+			Version = "2"
 		};
 
 		return new FpFile(
