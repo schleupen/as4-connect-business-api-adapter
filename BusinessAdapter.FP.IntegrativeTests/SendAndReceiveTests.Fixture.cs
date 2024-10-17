@@ -121,7 +121,7 @@ public partial class SendAndReceiveTests
 						},
 						new EICMappingEntry
 						{
-							EIC = "10X000000000RTEM",
+							EIC = "0X1001A1001A264",
 							MarktpartnerTyp = "BDEW",
 							Bilanzkreis = "FINGRID",
 							FahrplanHaendlerTyp = "PPS"
