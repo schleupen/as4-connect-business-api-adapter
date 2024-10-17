@@ -12,7 +12,7 @@ internal sealed partial class FpFileParserTests
 				@"Parsing/20240126_TPS_FINGRID_0X1001A1001A264_002_CNF_01-26T08-2344Z.xml");
 
 		public string ExampleEssAcknowledgeMessagePath =>Path.Combine(TestContext.CurrentContext.TestDirectory, 
-			@"Parsing/20241018_PPS_FINGRID_10XDE-ENBW--TNGX_001_ACK_2024-10-16T10-46-50Z.xml");
+			@"Parsing/20241018_PPS_FINGRID_10XDE-ENBW--HGJL_001_ACK_2024-10-16T10-46-50Z.xml");
 
 		public string ExampleEssScheduleMessagePath =>
 			Path.Combine(TestContext.CurrentContext.TestDirectory,
@@ -31,14 +31,14 @@ internal sealed partial class FpFileParserTests
 		public string ExampleCimConfirmationReportPath => "";
 
 		public string ExampleCimAcknowledgeMessagePath => Path.Combine(TestContext.CurrentContext.TestDirectory,
-			@"Parsing/20241016_PPS_11Y0-0000-2483-X_10XDE-VE-TRANSMK_086_ACK_2024-10-16T10-48-22Z.xml");
+			@"Parsing/20241016_PPS_11Y0-0000-2483-X_10XDE-VE-FRISMK_086_ACK_2024-10-16T10-48-22Z.xml");
 
 		public string ExampleCimScheduleMessagePath =>
 			Path.Combine(TestContext.CurrentContext.TestDirectory,
-				@"Parsing/20241008_TPS_10XDE-VE-TRANSMK_11X0-0000-0619-M_002.xml");
+				@"Parsing/20241008_TPS_10XEN-VE-FRISMK_11X0-1111-0619-M_002.xml");
 
 		public string ExampleCimAnomalyReportPath =>	Path.Combine(TestContext.CurrentContext.TestDirectory,
-			@"Parsing/20241016_PPS_10YDE-EON------1_10XDE-EON-NETZ-C_148_ANO_2024-10-15T22-00Z.xml");
+			@"Parsing/20241016_PPS_10YEN-XIN------1_10XEN-XIN-NETZ-C_148_ANO_2024-10-15T22-00Z.xml");
 
 		public string ExampleCimStatusRequestPath => "";
 	}

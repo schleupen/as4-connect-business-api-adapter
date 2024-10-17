@@ -5,9 +5,9 @@
     <type>A01</type>
     <process.processType>A17</process.processType>
     <process.classificationType>A01</process.classificationType>
-    <sender_MarketParticipant.mRID codingScheme="A01">11X0-0000-0619-M</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.mRID codingScheme="A01">11X0-1111-0619-M</sender_MarketParticipant.mRID>
     <sender_MarketParticipant.marketRole.type>A08</sender_MarketParticipant.marketRole.type>
-    <receiver_MarketParticipant.mRID codingScheme="A01">10XDE-VE-TRANSMK</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.mRID codingScheme="A01">10XEN-VE-FRISMK</receiver_MarketParticipant.mRID>
     <receiver_MarketParticipant.marketRole.type>A04</receiver_MarketParticipant.marketRole.type>
     <createdDateTime>2024-10-07T14:27:06Z</createdDateTime>
     <schedule_Time_Period.timeInterval>

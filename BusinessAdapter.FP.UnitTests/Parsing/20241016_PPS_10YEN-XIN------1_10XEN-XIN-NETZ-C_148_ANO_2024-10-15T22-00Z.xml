@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AnomalyReport_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-2:anomalydocument:5:0">
-    <mRID>20241016-10XDE-EON-NETZ-C-TPS-55407</mRID>
+    <mRID>20241016-10XEN-XIN-NETZ-C-TPS-55407</mRID>
     <createdDateTime>2024-10-16T10:54:41Z</createdDateTime>
-    <sender_MarketParticipant.mRID codingScheme="A01">10XDE-EON-NETZ-C</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.mRID codingScheme="A01">10XEN-XIN-NETZ-C</sender_MarketParticipant.mRID>
     <sender_MarketParticipant.marketRole.type>A04</sender_MarketParticipant.marketRole.type>
-    <receiver_MarketParticipant.mRID codingScheme="A01">11X0-0000-0706-U</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.mRID codingScheme="A01">11X0-1111-0706-U</receiver_MarketParticipant.mRID>
     <receiver_MarketParticipant.marketRole.type>A08</receiver_MarketParticipant.marketRole.type><schedule_Time_Period.timeInterval>
     <start>2024-10-15T22:00Z</start>
     <end>2024-10-16T22:00Z</end>
 </schedule_Time_Period.timeInterval>
-    <domain.mRID codingScheme="A01">10YDE-EON------1</domain.mRID><Anomaly_MarketDocument>
+    <domain.mRID codingScheme="A01">10YDE-XIN------1</domain.mRID><Anomaly_MarketDocument>
     <marketParticipant.mRID codingScheme="A01">20X-LU005-ECCINI</marketParticipant.mRID>
     <mRID>20X-LU005-ECCIN10YDE-EON------O1016</mRID>
     <revisionNumber>148</revisionNumber>
     <TimeSeries>
-        <mRID>rr11X0-0000-0706-Us</mRID>
+        <mRID>rr11X0-1111-0706-Us</mRID>
         <version>68</version>
         <businessType>A02</businessType>
         <product>8716867000016</product>
@@ -22,7 +22,7 @@
         <in_Domain.mRID codingScheme="A01">10YDE-EON------1</in_Domain.mRID>
         <out_Domain.mRID codingScheme="A01">10YDE-EON------1</out_Domain.mRID>
         <in_MarketParticipant.mRID codingScheme="A01">20X-LU005-ECCINI</in_MarketParticipant.mRID>
-        <out_MarketParticipant.mRID codingScheme="A01">11X0-0000-0706-U</out_MarketParticipant.mRID>
+        <out_MarketParticipant.mRID codingScheme="A01">11X0-1111-0706-U</out_MarketParticipant.mRID>
         <measurement_Unit.name>MAW</measurement_Unit.name>
         <Period>
             <timeInterval>
