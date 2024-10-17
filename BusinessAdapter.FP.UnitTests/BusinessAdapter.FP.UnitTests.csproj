@@ -18,11 +18,11 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\BusinessAdapter.FP.Console\BusinessAdapter.FP.Console.csproj" />
 	  <ProjectReference Include="..\BusinessAdapter.FP\BusinessAdapter.FP.csproj" />
-	  <Content Include="Parsing\*.*">
-	  	<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
 	</ItemGroup>
 	<ItemGroup>
+	  <Content Include="Parsing\*.xml">
+	  	<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	  <None Update="appsettings.unittests.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>

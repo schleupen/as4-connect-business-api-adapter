@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScheduleDocument xmlns="urn:entsoe.eu:wgedi:ess:scheduledocument:4:1">
-	<DocumentIdentification v="1234"/>
-	<DocumentVersion v="003"/>
-	<DocumentType v="A01"/>
+	<MessageIdentification v="1234"/>
+	<MessageVersion v="003"/>
+	<MessageType v="A01"/>
 	<ProcessType v="A01"/>
 	<ScheduleClassificationType v="A01"/>
 	<CreationDateTime v="2001-06-02T09:00:00Z"/>

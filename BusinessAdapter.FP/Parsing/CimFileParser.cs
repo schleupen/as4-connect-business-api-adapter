@@ -47,13 +47,13 @@ public class CimFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve sender role from file {path}.");
 		}
 
-		var receiverIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Value;
+		var receiverIdentification = document.Descendants(ns + "receiver_MarketParticipant.mRID").FirstOrDefault()?.Value;
 		if (receiverIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver code number from file {path}.");
 		}
 
-		var receiverRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Value;
+		var receiverRole = document.Descendants(ns + "receiver_MarketParticipant.marketRole.type").FirstOrDefault()?.Value;
 		if (receiverRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver role from file {path}.");
@@ -112,13 +112,13 @@ public class CimFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve sender role from ffrom Payload.");
 		}
 
-		var receiverIdentification = document.Descendants(ns + "sender_MarketParticipant.mRID").FirstOrDefault()?.Value;
+		var receiverIdentification = document.Descendants(ns + "receiver_MarketParticipant.mRID").FirstOrDefault()?.Value;
 		if (receiverIdentification == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver code number from Payload.");
 		}
 
-		var receiverRole = document.Descendants(ns + "sender_MarketParticipant.marketRole.type").FirstOrDefault()?.Value;
+		var receiverRole = document.Descendants(ns + "receiver_MarketParticipant.marketRole.type").FirstOrDefault()?.Value;
 		if (receiverRole == null)
 		{
 			throw new ArgumentException($"Could not retrieve receiver role from Payload.");
@@ -158,7 +158,7 @@ public class CimFileParser : IFpFileSpecificParser
 		{
 			case FpMessageType.Acknowledge:
 				// This should be received_market-document.revisionNumber
-				return doc.Descendants(ns + "revisionNumber").First().Value;
+				return doc.Descendants(ns + "received_MarketDocument.revisionNumber").First().Value;
 			case FpMessageType.Schedule:
 				return doc.Descendants(ns + "revisionNumber").First().Value;
 			case FpMessageType.Confirmation:

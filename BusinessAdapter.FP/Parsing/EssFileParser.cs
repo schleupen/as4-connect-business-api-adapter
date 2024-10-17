@@ -32,7 +32,7 @@ public class EssFileParser : IFpFileSpecificParser
 		}
 		else
 		{
-			documentType = document.Descendants(ns + "DocumentType").First().Attribute("v").Value;
+			documentType = document.Descendants(ns + "MessageType").First().Attribute("v").Value;
 		}
 
 
@@ -139,11 +139,11 @@ public class EssFileParser : IFpFileSpecificParser
 		switch (type)
 		{
 			case FpMessageType.Acknowledge:
-				return doc.Descendants(ns + "DocumentIdentification").First().Attribute("v").Value;
+				return doc.Descendants(ns + "ReceivingMessageVersion").First().Attribute("v").Value;
 			case FpMessageType.Schedule:
-				return doc.Descendants(ns + "DocumentVersion").First().Attribute("v").Value;
+				return doc.Descendants(ns + "MessageVersion").First().Attribute("v").Value;
 			case FpMessageType.Confirmation:
-				return doc.Descendants(ns + "DocumentIdentification").First().Attribute("v").Value;
+				return doc.Descendants(ns + "ConfirmedMessageVersion").First().Attribute("v").Value;
 			case FpMessageType.Anomaly:
 				return fpFileName.Version;
 			case FpMessageType.Status:
