@@ -132,6 +132,13 @@ public partial class SendAndReceiveTests
 							MarktpartnerTyp = "BDEW",
 							Bilanzkreis = "FINGRID",
 							FahrplanHaendlerTyp = "PPS"
+						},
+						new EICMappingEntry
+						{
+							EIC = "10X000000000RTEM",
+							MarktpartnerTyp = "BDEW",
+							Bilanzkreis = "FINGRID",
+							FahrplanHaendlerTyp = "PPS"
 						}
 					}
 				},
