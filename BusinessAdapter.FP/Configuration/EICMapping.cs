@@ -31,10 +31,18 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
 
     public FpParty? GetPartyOrDefault(EIC eic)
     {
-        var entry = this.SelectMany(kvp => kvp.Value, (kvp, entry) => new { Key = kvp.Key, Entry = entry })
-            .FirstOrDefault(kvp => kvp.Entry.EIC == eic.Code);
+        foreach (var entry in this)
+        {
+            var matchingEntry = entry.Value
+                .FirstOrDefault(mappingEntry => mappingEntry.EIC == eic.Code);
 
-        return entry == null ? null : ToFpParty(entry.Entry, entry.Key);
+            if (matchingEntry != null)
+            {
+                return ToFpParty(matchingEntry, entry.Key);
+            }
+        }
+        
+        return null;
     }
 
     public SendingFpParty GetSendingParty(EIC eic)

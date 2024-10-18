@@ -114,7 +114,14 @@ public partial class SendAndReceiveTests
 						},
 						new EICMappingEntry
 						{
-							EIC = "5790000432766",
+							EIC = "11XWEISWELTWS-G",
+							MarktpartnerTyp = "BDEW",
+							Bilanzkreis = "FINGRID",
+							FahrplanHaendlerTyp = "TPS"
+						},
+						new EICMappingEntry
+						{
+							EIC = "5790000432755",
 							MarktpartnerTyp = "BDEW",
 							Bilanzkreis = "FINGRID",
 							FahrplanHaendlerTyp = "TPS"
@@ -133,7 +140,7 @@ public partial class SendAndReceiveTests
 					{
 						new EICMappingEntry
 						{
-							EIC = "5790000432755",
+							EIC = "11XWEISWELTWS-C",
 							MarktpartnerTyp = "BDEW",
 							Bilanzkreis = "FINGRID",
 							FahrplanHaendlerTyp = "PPS"

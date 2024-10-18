@@ -112,7 +112,15 @@ public record FpFileName
 
 	public string ToFileName()
 	{
-		DateTime dateTimeStamp = DateTime.Parse(Date);
+		DateTime dateTimeStamp;
+		if (Date == null)
+		{
+			dateTimeStamp = DateTime.UtcNow;
+		}
+		else
+		{
+			dateTimeStamp = DateTime.Parse(Date);
+		}
 
 		if (this.MessageType == FpMessageType.Schedule)
 		{

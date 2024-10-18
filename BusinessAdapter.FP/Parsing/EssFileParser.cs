@@ -120,14 +120,13 @@ public class EssFileParser : IFpFileSpecificParser
 
 		var messageDateTime = document.Descendants(ns + "CreationDateTime").FirstOrDefault()?.Attribute("v")?.Value;
 
-		// TODO how do we get the scheduletimeinterval for acks and status messages?
-		string? scheduleTimeInterval  = document.Descendants(ns + "ScheduleTimeInterval").FirstOrDefault()?.Attribute("v")?.Value;
+		string? dateAndTime = document.Descendants(ns + "MessageDateTime").FirstOrDefault()?.Attribute("v").Value;
 
 		return new FpParsedPayload(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
 			messageDateTime,
-			scheduleTimeInterval);
+			dateAndTime);
 	}
 
 	private string ParseEssDocumentNoForMessageType(
