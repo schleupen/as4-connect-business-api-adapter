@@ -25,7 +25,7 @@ public class FpFileNameExtractor : IFpFileNameExtractor
 		if (mappedParty == null)
 		{
 			throw new InvalidDataException(
-				$"Unable to find mapping for MP: {fpMessage.Receiver.Id}:{fpMessage.Receiver.Type}");
+				$"Unable to find mapping for MP: {parsedFile.Receiver}");
 		}
 		
 		return new FpFileName()
