@@ -16,7 +16,7 @@ internal sealed partial class FpFileParserTests
 
 		public string ExampleEssScheduleMessagePath =>
 			Path.Combine(TestContext.CurrentContext.TestDirectory,
-				@"Parsing/20240125_PPS_FINGRID_0X1001A1001A264_002.xml");
+				@"Parsing/20241022_TPS_11X0-1111-0762-I_10XDE-AOE-HTCC-C_001.xml");
 
 		public string EssScheduleMessagePathOfWrongFile =>
 		    Path.Combine(TestContext.CurrentContext.TestDirectory,
@@ -26,7 +26,8 @@ internal sealed partial class FpFileParserTests
 			Path.Combine(TestContext.CurrentContext.TestDirectory,
 				@"Parsing/20240125_PPS_FINGRID_0X1001A1001A264_002_ANO_2024-01-26T08-2344Z.xml");
 
-		public string ExampleEssStatusRequestPath => "";
+		public string ExampleEssStatusRequestPath => Path.Combine(TestContext.CurrentContext.TestDirectory,
+			@"Parsing/20241022_SRQ_11X0-1111-0762-I_10XDE-AOE-HTCC-C.xml");
 
 		public string ExampleCimConfirmationReportPath => "";
 

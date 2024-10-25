@@ -48,6 +48,11 @@ internal sealed partial class FpFileParserTests
 
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
         Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A01"));
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("1"));
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("11X0-1111-0762-I"));
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyRole, Is.EqualTo("A08"));
+        Assert.That(outboundFpMessage.Sender.Code, Is.EqualTo("11X0-1111-0762-I"));
+        Assert.That(outboundFpMessage.Receiver.Code, Is.EqualTo("10XDE-AOE-HTCC-C"));
     }
 
     [Test]
@@ -86,7 +91,6 @@ internal sealed partial class FpFileParserTests
     }
 
     [Test]
-    [Ignore("No file")] // TODO
     public void FpFileParser_ESS_StatusReportGetsParsed_Correctly()
     {
         string pathOfFile = fixture.TestData.ExampleEssStatusRequestPath;
@@ -94,6 +98,12 @@ internal sealed partial class FpFileParserTests
         var outboundFpMessage = sut.Parse(pathOfFile);
 
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A59"));
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("1"));
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("11X0-1111-0762-I"));
+        Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyRole, Is.EqualTo("A08"));
+        Assert.That(outboundFpMessage.Sender.Code, Is.EqualTo("11X0-1111-0762-I"));
+        Assert.That(outboundFpMessage.Receiver.Code, Is.EqualTo("10XDE-AOE-HTCC-C"));
     }
 
     /// CIM
@@ -119,10 +129,10 @@ internal sealed partial class FpFileParserTests
         Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A01"));
 		Assert.That(outboundFpMessage.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2024-10-07T22:00Z/2024-10-08T22:00Z"));
 		Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("2"));
-		Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("11X0-1111-0619-M"));
+		Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("10XEN-VE-FRISMK"));
 		Assert.That(outboundFpMessage.BDEWProperties.BDEWSubjectPartyRole, Is.EqualTo("A08"));
-		Assert.That(outboundFpMessage.Sender.Code, Is.EqualTo("11X0-1111-0619-M"));
-		Assert.That(outboundFpMessage.Receiver.Code, Is.EqualTo("10XEN-VE-FRISMK"));
+		Assert.That(outboundFpMessage.Sender.Code, Is.EqualTo("10XEN-VE-FRISMK"));
+		Assert.That(outboundFpMessage.Receiver.Code, Is.EqualTo("11X0-1111-0619-M"));
 	}
 
     [Test]

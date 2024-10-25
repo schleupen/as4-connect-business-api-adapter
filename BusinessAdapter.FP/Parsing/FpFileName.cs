@@ -3,7 +3,7 @@
 // ACK format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
 // ANO format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
 // CON format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
-// Status format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_CRQ.XML
+// Status format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>.XML
 // Schedule format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
 
 public record FpFileName
@@ -47,7 +47,7 @@ public record FpFileName
 		var coreFilename = filename.Substring(0, filename.LastIndexOf('.'));
 		var parts = coreFilename.Split('_');
 
-		if (parts.Length < 5)
+		if (parts.Length < 4)
 		{
 			throw new FormatException("Filename does not have the expected format.");
 		}
@@ -62,6 +62,20 @@ public record FpFileName
 		FpMessageType messageType;
 
 
+		if (parts.Length == 4)
+		{
+			messageType = FpMessageType.Status;
+			return new FpFileName
+			{
+				Date = date,
+				FahrplanHaendlerTyp = type,
+				EicNameBilanzkreis = eicNameBilanzkreis,
+				EicNameTso = eicNameTso,
+				MessageType = messageType,
+				Timestamp = null,
+				Version = version,
+			};
+		}
 		var isNumeric = int.TryParse(parts[4], out _);
 
 		if (isNumeric)
@@ -94,7 +108,6 @@ public record FpFileName
 			"ACK" => FpMessageType.Acknowledge,
 			"ANO" => FpMessageType.Anomaly,
 			"CNF" => FpMessageType.Confirmation,
-			"CRQ" => FpMessageType.Status,
 			_ => FpMessageType.Schedule
 		};
 
@@ -126,6 +139,11 @@ public record FpFileName
 		{
 			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}_{Version}{XmlFileExtension}";
 		}
+		
+		if (this.MessageType == FpMessageType.Status)
+		{
+			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}{XmlFileExtension}";
+		}
 
 		var messageTypeString = ToMessageTypeValue();
 		if (!string.IsNullOrEmpty(Timestamp))
@@ -143,7 +161,6 @@ public record FpFileName
 			FpMessageType.Acknowledge => "ACK",
 			FpMessageType.Anomaly => "ANO",
 			FpMessageType.Confirmation => "CNF",
-			FpMessageType.Status => "CRQ",
 			_ => throw new NotSupportedException("")
 		};
 		return messageTypeString;

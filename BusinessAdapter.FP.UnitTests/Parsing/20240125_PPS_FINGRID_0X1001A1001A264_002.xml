@@ -5,9 +5,9 @@
 	<MessageType v="A01"/>
 	<ProcessType v="A01"/>
 	<ScheduleClassificationType v="A01"/>
-	<SenderIdentification v="0X1001A1001A264" codingScheme="A10"/>
+	<SenderIdentification v="FINGRID" codingScheme="A10"/>
 	<SenderRole v="A01"/>
-	<ReceiverIdentification v="10X000000000RTEM" codingScheme="A01"/>
+	<ReceiverIdentification v="0X1001A1001A264" codingScheme="A01"/>
 	<ReceiverRole v="A04"/>
 	<CreationDateTime v="2001-06-02T09:00:00Z"/>
 	<ScheduleTimeInterval v="2001-06-02T22:00Z/2001-06-03T22:00Z"/>

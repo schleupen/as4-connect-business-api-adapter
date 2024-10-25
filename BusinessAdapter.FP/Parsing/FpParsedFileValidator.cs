@@ -15,10 +15,13 @@ public class FpParsedFileValidator : IFpParsedFileValidator
 
 	private void ValidateFpMessageSender(string fpFilesSender, FpFileName fileName)
 	{
-		if (fileName.EicNameTso != fpFilesSender)
+		if (fileName.MessageType == FpMessageType.Schedule || fileName.MessageType == FpMessageType.Status)
 		{
-			throw new ValidationException(
-				$"Parsed SenderID {fpFilesSender} does not match filename SenderID {fileName.EicNameTso}");
+			if (fileName.EicNameBilanzkreis != fpFilesSender)
+			{
+				throw new ValidationException(
+					$"Parsed SenderID {fpFilesSender} does not match filename SenderID {fileName.EicNameBilanzkreis}");
+			}
 		}
 	}
 

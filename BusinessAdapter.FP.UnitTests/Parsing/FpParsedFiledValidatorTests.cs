@@ -43,12 +43,12 @@ public class FpParsedFileValidatorTests
 	public void ValidateParsedFpFile_InvalidSender_ThrowsValidationException()
 	{
 		// Arrange
-		var fpFile = CreateValidFpFile("2","InvalidSender");
+		var fpFile = CreateValidFpFile("1","InvalidSender", "A59");
 
 		// Act & Assert
 		Assert.That(() => _validator.ValidateParsedFpFile(fpFile),
 			Throws.TypeOf<ValidationException>()
-			.With.Message.EqualTo("Parsed SenderID InvalidSender does not match filename SenderID 0X1001A1001A264"));
+			.With.Message.EqualTo("Parsed SenderID InvalidSender does not match filename SenderID FINGRID"));
 	}
 
 	[Test]
@@ -69,9 +69,21 @@ public class FpParsedFileValidatorTests
 		{
 			MessageType = FpMessageType.Confirmation,
 			EicNameTso = "0X1001A1001A264",
-			Version = "2"
+			Version = bdewDocumentNo
 		};
 
+		if (bdewDocumentType == "A59")
+		{
+			return new FpFile(
+				new EIC(senderCode),
+				new EIC("TSO002"),
+				null,
+				Path.Combine(TestContext.CurrentContext.TestDirectory,
+					@"Parsing/20240126_TPS_FINGRID_0X1001A1001A264.xml"),
+				"filePath",
+				new FpBDEWProperties(bdewDocumentType, bdewDocumentNo, "Fulfilmentdate", "0X1001A1001A264", "A01"));
+
+		}
 		return new FpFile(
 			new EIC(senderCode),
 			new EIC("TSO002"),

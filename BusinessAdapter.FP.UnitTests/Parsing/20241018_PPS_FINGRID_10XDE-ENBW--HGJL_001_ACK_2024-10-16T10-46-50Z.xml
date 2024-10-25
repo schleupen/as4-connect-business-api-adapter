@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE AcknowledgementMessage SYSTEM "../scheduleV2r3/dtd/acknowledgement-xml.dtd">
+<!DOCTYPE ScheduleMessage SYSTEM "../scheduleV2r3/dtd/schedule-xml.dtd">
 <AcknowledgementMessage DtdVersion="2" DtdRelease="3">
     <MessageIdentification v="20241018-10XDE-ENBW--HGJL-A04-56614"/>
     <MessageDateTime v="2024-10-16T10:46:50Z"/>

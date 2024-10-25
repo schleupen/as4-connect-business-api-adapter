@@ -58,7 +58,7 @@ public class FpFileNameTests
 	[Test]
 	public void Parse_ValidStatusFilename_ShouldReturnParsedFilename()
 	{
-		string filename = "20240126_TPS_EIC1_EIC2_CRQ.XML";
+		string filename = "20240126_TPS_EIC1_EIC2.XML";
 
 		var parsed = FpFileName.Parse(filename);
 
@@ -66,7 +66,7 @@ public class FpFileNameTests
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
-		Assert.That(parsed.Version, Is.Null);
+		Assert.That(parsed.Version, Is.EqualTo("1"));
 		Assert.That(parsed.Timestamp, Is.Null);
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Status));
 	}
