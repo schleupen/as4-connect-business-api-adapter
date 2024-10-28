@@ -135,6 +135,17 @@ public record FpFileName
 			dateTimeStamp = DateTime.Parse(Date);
 		}
 
+		DateTime timeStamp;
+		if (Timestamp == null)
+		{
+			
+			timeStamp = DateTime.UtcNow;
+		}
+		else
+		{
+			timeStamp = DateTime.Parse(Timestamp);
+		}
+		
 		if (this.MessageType == FpMessageType.Schedule)
 		{
 			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}_{Version}{XmlFileExtension}";
@@ -147,7 +158,7 @@ public record FpFileName
 		
 		var messageTypeString = ToMessageTypeValue();
 	
-		return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}_{Version}_{messageTypeString}_{dateTimeStamp.ToString("yyyy-mm-ddThh-mmssZ")}_{XmlFileExtension}";
+		return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}_{Version}_{messageTypeString}_{timeStamp.ToString("yyyy-mm-ddThh-mmssZ")}_{XmlFileExtension}";
 	}
 
 	private string? ToMessageTypeValue()
