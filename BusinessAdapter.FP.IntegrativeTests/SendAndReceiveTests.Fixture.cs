@@ -172,6 +172,10 @@ public partial class SendAndReceiveTests
 		{
 			var files = Directory.EnumerateFiles(Data.ReceiveDirectory).ToList();
 			Assert.That(files, Is.Not.Empty);
+			foreach (var file in files)
+			{
+				Console.WriteLine($"following file received : {file}");
+			}
 		}
 
 		public void VerifyEmptyDirectory(string dir)

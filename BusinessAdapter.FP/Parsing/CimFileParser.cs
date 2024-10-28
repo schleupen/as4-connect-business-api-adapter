@@ -135,6 +135,7 @@ public class CimFileParser : IFpFileSpecificParser
 			scheduleTimeInterval = startTimeInterval + "/" + endTimeInterval;
 		}
 
+		var creationDateTime = document.Descendants(ns + "createdDateTime").FirstOrDefault()?.Value;
 
 		if (scheduleTimeInterval == null)
 		{
@@ -144,8 +145,8 @@ public class CimFileParser : IFpFileSpecificParser
 		return new FpParsedPayload(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
-			scheduleTimeInterval ,
-			scheduleTimeInterval);
+			creationDateTime ,
+			creationDateTime);
 	}
 
 	private string? ParseCIMDocumentNoForMessageType(

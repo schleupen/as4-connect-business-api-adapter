@@ -144,14 +144,10 @@ public record FpFileName
 		{
 			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}{XmlFileExtension}";
 		}
-
+		
 		var messageTypeString = ToMessageTypeValue();
-		if (!string.IsNullOrEmpty(Timestamp))
-		{
-			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}_{Version}_{messageTypeString}_{XmlFileExtension}";
-		}
-
-		return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}_{messageTypeString}{XmlFileExtension}";
+	
+		return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}_{Version}_{messageTypeString}_{dateTimeStamp.ToString("yyyy-mm-ddThh-mmssZ")}_{XmlFileExtension}";
 	}
 
 	private string? ToMessageTypeValue()
