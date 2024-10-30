@@ -31,7 +31,7 @@ public class FpFileNameExtractorTests
         var validityDate = "26-01-1993";
         var creationDate = "25-01-1993";
         var parsedFile = new FpParsedPayload(
-            new EIC(""),
+            new EIC("sender"),
             new EIC(receiverEicCode),
             creationDate,
             validityDate);
@@ -54,7 +54,7 @@ public class FpFileNameExtractorTests
             new EICMappingEntry()
             {
                 Bilanzkreis = "FINGRID",
-                EIC = receiverEicCode,
+                EIC = "sender",
                 FahrplanHaendlerTyp = "PPS",
                 MarktpartnerTyp = "BDEW"
             }
@@ -69,11 +69,12 @@ public class FpFileNameExtractorTests
         // Assert
         Assert.That(result.MessageType, Is.EqualTo(FpMessageType.Schedule));
         Assert.That(result.EicNameBilanzkreis, Is.EqualTo(mappedPartyMock.First().Bilanzkreis));
-        Assert.That(result.EicNameTso, Is.EqualTo(receiverEicCode));
+        Assert.That(result.EicNameTso, Is.EqualTo("sender"));
         Assert.That(result.Timestamp, Is.EqualTo(validityDate));
         Assert.That(result.Date, Is.EqualTo(creationDate));
         Assert.That(result.Version, Is.EqualTo("123"));
         Assert.That(result.FahrplanHaendlerTyp, Is.EqualTo(mappedPartyMock.First().FahrplanHaendlerTyp));
+        Assert.That(result.ToFileName(), Is.EqualTo("19930125_PPS_FINGRID_sender_123.XML"));
     }
 
     [TestCase("A07", FpMessageType.Confirmation)]

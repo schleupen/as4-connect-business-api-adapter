@@ -138,7 +138,6 @@ public record FpFileName
 		DateTime timeStamp;
 		if (Timestamp == null)
 		{
-			
 			timeStamp = DateTime.UtcNow;
 		}
 		else
@@ -148,17 +147,17 @@ public record FpFileName
 		
 		if (this.MessageType == FpMessageType.Schedule)
 		{
-			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}_{Version}{XmlFileExtension}";
+			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
 		}
 		
 		if (this.MessageType == FpMessageType.Status)
 		{
-			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}{XmlFileExtension}";
+			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
 		}
 		
 		var messageTypeString = ToMessageTypeValue();
 	
-		return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameTso}_{EicNameBilanzkreis}_{Version}_{messageTypeString}_{timeStamp.ToString("yyyy-mm-ddThh-mmssZ")}_{XmlFileExtension}";
+		return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{timeStamp.ToString("yyyy-MM-ddTHH\\-mm\\-ssZ")}_{XmlFileExtension}";
 	}
 
 	private string? ToMessageTypeValue()

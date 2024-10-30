@@ -96,7 +96,7 @@ internal sealed partial class FpFileParserTests
         string pathOfFile = fixture.TestData.ExampleEssStatusRequestPath;
 
         var outboundFpMessage = sut.Parse(pathOfFile);
-
+        
         Assert.That(outboundFpMessage.Content, Is.Not.Empty);
         Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A59"));
         Assert.That(outboundFpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("1"));
