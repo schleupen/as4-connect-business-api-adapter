@@ -11,22 +11,22 @@ public class FpFileNameExtractor(IFpFileParser fpFileParser, IOptions<EICMapping
 	{
 		var parsedFile = fpFileParser.ParseCompressedPayload(fpMessage.Payload);
 
-		var mappedParty = eicMapping.Value.GetPartyOrDefault(parsedFile.Sender);
-		if (mappedParty == null)
+		var sender = eicMapping.Value.GetPartyOrDefault(parsedFile.Sender);
+		var receiver = eicMapping.Value.GetPartyOrDefault(parsedFile.Receiver);
+		if (sender == null)
 		{
-			throw new InvalidDataException(
-				$"Unable to find mapping for MP: {parsedFile.Sender}");
+			throw new InvalidDataException($"Unable to find mapping for MP: {parsedFile.Sender}");
 		}
 
 		return new FpFileName()
 		{
 			MessageType = ToMessageType(fpMessage.BDEWProperties.BDEWDocumentType),
-			EicNameBilanzkreis = mappedParty.Bilanzkreis,
+			EicNameBilanzkreis = receiver.Bilanzkreis,
 			EicNameTso = parsedFile.Sender.Code,
 			Timestamp = parsedFile.ValidityDate,
 			Date = parsedFile.CreationDate,
 			Version = fpMessage.BDEWProperties.BDEWDocumentNo,
-			FahrplanHaendlerTyp = mappedParty.FpType
+			FahrplanHaendlerTyp = sender.FpType
 		};
 	}
 

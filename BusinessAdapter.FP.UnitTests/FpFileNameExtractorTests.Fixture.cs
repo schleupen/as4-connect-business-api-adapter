@@ -55,5 +55,9 @@ public sealed partial class FpFileNameExtractorTests
 	private sealed class TestData
 	{
 		public EICMapping SampleEicMapping => JsonSerializer.Deserialize<EICMapping>(File.ReadAllText("./Parsing/EICMapping.json"));
+		public SendingParty SenderParty = new SendingParty("sender-codenummer", "BDEW");
+		public ReceivingParty ReceiverParty = new ReceivingParty("receiver-codenummer", "BDEW");
+		public EIC ReceiverEIC = new EIC("receiver-eic-code");
+		public EIC SenderEIC = new EIC("sender-eic-code");
 	}
 }

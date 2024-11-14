@@ -11,19 +11,18 @@ public sealed partial class FpFileNameExtractorTests
 	{
 		// Arrange
 		var payload = "sample payload";
-		var receiver = "ReceiverNameMpId";
-		var receiverEicCode = "eic1";
 		var validityDate = "1993-01-26T11:03:49Z";
 		var creationDate = "1993-01-25T11:03:49Z";
 		var parsedFile = new FpPayloadInfo(
-			new EIC("sender"),
-			new EIC(receiverEicCode),
+			fixture.Data.SenderEIC,
+			fixture.Data.ReceiverEIC,
 			creationDate,
 			validityDate);
+
 		var fpMessage = new InboxFpMessage(
 			"messageId",
-			new SendingParty("sender", "BDEW"),
-			new ReceivingParty(receiver, "BDEW"),
+			fixture.Data.SenderParty,
+			fixture.Data.ReceiverParty,
 			"contentHash",
 			System.Text.Encoding.ASCII.GetBytes(payload),
 			new FpBDEWProperties(
@@ -34,13 +33,24 @@ public sealed partial class FpFileNameExtractorTests
 				"subjectPartyRole"));
 
 
-		List<EICMappingEntry> mappedPartyMock = new List<EICMappingEntry>()
+		List<EICMappingEntry> senderEntry = new List<EICMappingEntry>()
 		{
-			new EICMappingEntry()
+			new()
 			{
-				Bilanzkreis = "FINGRID",
-				EIC = "sender",
+				Bilanzkreis = "BK-Sender",
+				EIC = fixture.Data.SenderEIC.Code,
 				FahrplanHaendlerTyp = "PPS",
+				MarktpartnerTyp = "BDEW"
+			}
+		};
+
+		List<EICMappingEntry> receiverEntry = new List<EICMappingEntry>()
+		{
+			new()
+			{
+				Bilanzkreis = "BK-Receiver",
+				EIC = fixture.Data.ReceiverEIC.Code,
+				FahrplanHaendlerTyp = "TPS",
 				MarktpartnerTyp = "BDEW"
 			}
 		};
@@ -49,7 +59,8 @@ public sealed partial class FpFileNameExtractorTests
 			.Returns(parsedFile);
 		fixture.Mocks.EicMapping.Setup(x => x.Value).Returns(new EICMapping()
 		{
-			{ fpMessage.Receiver.Id, mappedPartyMock }
+			{ fixture.Data.ReceiverParty.Id, receiverEntry },
+			{ fixture.Data.SenderParty.Id, senderEntry }
 		});
 
 		// Act
@@ -57,13 +68,13 @@ public sealed partial class FpFileNameExtractorTests
 
 		// Assert
 		Assert.That(result.MessageType, Is.EqualTo(FpMessageType.Schedule));
-		Assert.That(result.EicNameBilanzkreis, Is.EqualTo(mappedPartyMock.First().Bilanzkreis));
-		Assert.That(result.EicNameTso, Is.EqualTo("sender"));
+		Assert.That(result.EicNameBilanzkreis, Is.EqualTo(receiverEntry.First().Bilanzkreis));
+		Assert.That(result.EicNameTso, Is.EqualTo(fixture.Data.SenderEIC.Code));
 		Assert.That(result.Timestamp, Is.EqualTo(validityDate));
 		Assert.That(result.Date, Is.EqualTo(creationDate));
 		Assert.That(result.Version, Is.EqualTo("123"));
-		Assert.That(result.FahrplanHaendlerTyp, Is.EqualTo(mappedPartyMock.First().FahrplanHaendlerTyp));
-		Assert.That(result.ToFileName(), Is.EqualTo("19930125_PPS_FINGRID_sender_123.xml"));
+		Assert.That(result.FahrplanHaendlerTyp, Is.EqualTo(senderEntry.First().FahrplanHaendlerTyp));
+		Assert.That(result.ToFileName(), Is.EqualTo("19930125_PPS_BK-Receiver_sender-eic-code_123.xml"));
 	}
 
 	[TestCase("A07", FpMessageType.Confirmation)]
