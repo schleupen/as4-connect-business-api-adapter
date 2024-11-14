@@ -12,7 +12,7 @@ public class FpFileNameTests
 	{
 		string filename = "20240126_TPS_EIC1_EIC2_001_ACK_2024-01-26T08-22-52Z.XML";
 
-		var parsed = FpFileName.Parse(filename);
+		var parsed = FpFileName.FromFileName(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
@@ -28,7 +28,7 @@ public class FpFileNameTests
 	{
 		string filename = "20240126_TPS_EIC1_EIC2_001_ANO_2024-01-26T08-22-52Z.XML";
 
-		var parsed = FpFileName.Parse(filename);
+		var parsed = FpFileName.FromFileName(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
@@ -44,7 +44,7 @@ public class FpFileNameTests
 	{
 		string filename = "20240126_TPS_EIC1_EIC2_001_CNF_2024-01-26T08-22-52Z.XML";
 
-		var parsed = FpFileName.Parse(filename);
+		var parsed = FpFileName.FromFileName(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
@@ -60,7 +60,7 @@ public class FpFileNameTests
 	{
 		string filename = "20240126_TPS_EIC1_EIC2.XML";
 
-		var parsed = FpFileName.Parse(filename);
+		var parsed = FpFileName.FromFileName(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
@@ -76,7 +76,7 @@ public class FpFileNameTests
 	{
 		string filename = "20240126_TPS_EIC1_EIC2_001.XML";
 
-		var parsed = FpFileName.Parse(filename);
+		var parsed = FpFileName.FromFileName(filename);
 
 		Assert.That(parsed.Date, Is.EqualTo("20240126"));
 		Assert.That(parsed.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
@@ -94,6 +94,6 @@ public class FpFileNameTests
 	[TestCase("20240126_TPS_EIC1_EIC2_001.json")]
 	public void Parse_InvalidFilename_ShouldThrowFormatException(string invalidFileName)
 	{
-		Assert.That(() => FpFileName.Parse(invalidFileName), Throws.TypeOf<FormatException>());
+		Assert.That(() => FpFileName.FromFileName(invalidFileName), Throws.TypeOf<FormatException>());
 	}
 }

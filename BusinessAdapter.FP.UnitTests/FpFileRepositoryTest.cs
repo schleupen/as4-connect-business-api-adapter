@@ -23,7 +23,7 @@ public partial class FpFileRepositoryTest
 	[Test]
 	public void GetFilesFrom_ParserThrowsException()
 	{
-		fixture.Mocks.FileParserMock.Setup(x => x.Parse(It.IsAny<string>()))
+		fixture.Mocks.FileParserMock.Setup(x => x.ParseFile(It.IsAny<string>()))
 			.Throws<InvalidOperationException>();
 
 		var repository = fixture.CreateTestObject();
@@ -41,14 +41,14 @@ public partial class FpFileRepositoryTest
 	[Test]
 	public void GetFilesFrom_ValidFile_ShouldReturn()
 	{
-		fixture.Mocks.FileParserMock.Setup(x => x.Parse(
+		fixture.Mocks.FileParserMock.Setup(x => x.ParseFile(
 			It.IsAny<string>())).Returns(
 			new FpFile(
-				new EIC("1"), 
-				new EIC("2"), 
-				Array.Empty<byte>(), 
-				"fileName", 
-				"path", 
+				new EIC("1"),
+				new EIC("2"),
+				Array.Empty<byte>(),
+				"fileName",
+				"path",
 				null!));
 
 		var repository = fixture.CreateTestObject();

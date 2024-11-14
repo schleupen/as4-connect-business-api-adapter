@@ -180,16 +180,15 @@ internal sealed partial class FpFileParserTests
 	}
 
 	[Test]
-	public void ParseCompressedPayload_ConfirmationReport_EonToViernheim_ShouldPerseCorrectly()
+	public void ParseCompressedPayload_ESS_ConfirmationReport_ShouldParseCorrectly()
 	{
-		var message = sut.ParseCompressedPayload(File.ReadAllBytes(@"C:\Users\andre.erlinghagen\Downloads\2024-11-13T09_00_56.5778588Z_A07_1.edi.gz"));
+		var message = sut.ParseCompressedPayload(File.ReadAllBytes(fixture.TestData.EssConfirmationReportGzip));
 
 		Assert.That(message.ValidityDate, Is.EqualTo("2024-11-13T09:00:54Z"));
 		Assert.That(message.Sender.Code, Is.EqualTo("10XDE-EON-NETZ-C"));
 		Assert.That(message.Receiver.Code, Is.EqualTo("11XSWVIERNHEIMVR"));
 		Assert.That(message.CreationDate, Is.EqualTo("2024-11-13T09:00:54Z"));
 	}
-
 
 	// TODO Unhappy paths are untested (missing values)...
 }

@@ -27,7 +27,7 @@ public class FpFileRepository(
 		{
 			try
 			{
-				var fpFile = parser.Parse(fp);
+				var fpFile = parser.ParseFile(fp);
 				return fpFile;
 			}
 			catch (Exception e)

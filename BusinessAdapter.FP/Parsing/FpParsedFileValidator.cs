@@ -6,7 +6,7 @@ public class FpParsedFileValidator : IFpParsedFileValidator
 {
 	public void ValidateParsedFpFile(FpFile fpFile)
 	{
-		var fileName = FpFileName.Parse(fpFile.FileName);
+		var fileName = FpFileName.FromFileName(fpFile.FileName);
 
 		ValidateFpMessageType(fpFile.BDEWProperties.BDEWDocumentType, fileName.MessageType);
 		ValidateFpMessageVersion(fpFile.BDEWProperties.BDEWDocumentNo, fileName);

@@ -10,7 +10,7 @@ public class EssFileParser : IFpFileSpecificParser
 	{
 		string xmlData = File.ReadAllText(path);
 		byte[] content = Encoding.UTF8.GetBytes(xmlData);
-		FpFileName fpFileName = FpFileName.Parse(filename);
+		FpFileName fpFileName = FpFileName.FromFileName(filename);
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
 		var documentNo = ParseEssDocumentNoForMessageType(fpFileName.MessageType, document, ns, fpFileName);
@@ -82,12 +82,12 @@ public class EssFileParser : IFpFileSpecificParser
 
 		return new FpFile(
 			new EIC(senderIdentification),
-			 new EIC(receiverIdentification),
+			new EIC(receiverIdentification),
 			content,
 			filename,
 			path,
 			properties
-			);
+		);
 	}
 
 	public FpPayloadInfo ParsePayload(XDocument document)
@@ -117,7 +117,7 @@ public class EssFileParser : IFpFileSpecificParser
 		{
 			throw new ArgumentException($"Could not retrieve receiver role from payload.");
 		}
-		
+
 		string? messageDateTime = document.Descendants(ns + "MessageDateTime").FirstOrDefault()?.Attribute("v").Value;
 
 		return new FpPayloadInfo(

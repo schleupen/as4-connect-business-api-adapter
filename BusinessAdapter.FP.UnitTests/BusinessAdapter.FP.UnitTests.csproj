@@ -26,5 +26,11 @@
 	  <None Update="appsettings.unittests.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="Parsing\2024-11-13T09_00_56.5778588Z_A07_1.edi.gz">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Parsing\EICMapping.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>
