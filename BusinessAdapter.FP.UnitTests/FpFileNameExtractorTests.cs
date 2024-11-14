@@ -30,7 +30,7 @@ public class FpFileNameExtractorTests
         var receiverEicCode = "eic1";
         var validityDate = "26-01-1993";
         var creationDate = "25-01-1993";
-        var parsedFile = new FpParsedPayload(
+        var parsedFile = new FpPayloadInfo(
             new EIC("sender"),
             new EIC(receiverEicCode),
             creationDate,
@@ -60,7 +60,7 @@ public class FpFileNameExtractorTests
             }
         };
         
-        mockParser.Setup(p => p.ParsePayload(System.Text.Encoding.ASCII.GetBytes(payload))).Returns(parsedFile);
+        mockParser.Setup(p => p.ParseCompressedPayload(System.Text.Encoding.ASCII.GetBytes(payload))).Returns(parsedFile);
         eicMapping.Value.Add(fpMessage.Receiver.Id, mappedPartyMock);
       
         // Act

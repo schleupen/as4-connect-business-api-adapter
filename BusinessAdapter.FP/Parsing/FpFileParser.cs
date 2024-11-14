@@ -4,11 +4,12 @@ using System.IO.Compression;
 using System.Text;
 using System.Xml.Linq;
 
-public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileValidator fpParsedFileValidator) : IFpFileParser
+public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileValidator fpParsedFileValidator)
+	: IFpFileParser
 {
 	private readonly string ESS_NAMESPACE_STRING = "urn:entsoe.eu:wgedi:ess";
 	private readonly string CIM_NAMESPACE_STRING = "urn:iec62325.351:tc57wg16:451";
-	
+
     public FpFile Parse(string path)
     {
          string fileName = fileSystemWrapper.GetFileName(path);
@@ -21,21 +22,18 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileVal
 		 return parsedFile;
     }
 
-    public FpParsedPayload ParsePayload(byte[] payload)
+    public FpPayloadInfo ParseCompressedPayload(byte[] payload)
     {
-	    string xml = "";
 	    using (var compressedStream = new MemoryStream(payload))
 	    using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
 	    using (var resultStream = new MemoryStream())
 	    {
 		    zipStream.CopyTo(resultStream);
-		    xml = Encoding.UTF8.GetString(resultStream.ToArray());
-
+		    var xml = Encoding.UTF8.GetString(resultStream.ToArray());
+		    XDocument doc = XDocument.Parse(xml);
+		    var parser = this.CreateParserFor(doc);
+		    return parser.ParsePayload(doc);
 	    }
-		string responseText = System.Text.Encoding.ASCII.GetString(payload);
-		XDocument doc = XDocument.Parse(xml);
-	    var parser = this.CreateParserFor(doc);
-	    return parser.ParsePayload(doc);
     }
 
     private IFpFileSpecificParser CreateParserFor(XDocument doc)

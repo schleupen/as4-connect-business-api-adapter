@@ -54,86 +54,86 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 				eicMappingMock);
 		}
 
-        [Test]
-        public async Task ReceiveAvailableMessagesAsync_ReceiveStatusIsCorrect_ForSuccesfulMessage()
-        {
-            // Arrange
-            receiveOptionsMock = Options.Create<ReceiveOptions>(new ReceiveOptions
-            {
-                Directory = "C:\\Adapter\\Receive",
-                MessageLimitCount = 10,
-                Retry = new Schleupen.AS4.BusinessAdapter.Configuration.RetryOption { Count = 3 }
-            });
-            fpMessageReceiver = new FpMessageReceiver(
-                loggerMock.Object,
-                receiveOptionsMock,
-                adapterOptionsMock,
-                businessApiGatewayFactoryMock.Object,
-                fpFileRepositoryMock.Object,
-                eicMappingMock);
-            var gatewayMock = new Mock<IBusinessApiGateway>();
-            var messages = new[] { CreateFpInboxMessage() };
-            var receiveInfo = new MessageReceiveInfo(messages);
-            var businessApiResponse = new BusinessApiResponse<InboxFpMessage>(true, CreateDummyFpMessage());
+		[Test]
+		public async Task ReceiveAvailableMessagesAsync_ReceiveStatusIsCorrect_ForSuccesfulMessage()
+		{
+			// Arrange
+			receiveOptionsMock = Options.Create<ReceiveOptions>(new ReceiveOptions
+			{
+				Directory = "C:\\Adapter\\Receive",
+				MessageLimitCount = 10,
+				Retry = new Schleupen.AS4.BusinessAdapter.Configuration.RetryOption { Count = 3 }
+			});
+			fpMessageReceiver = new FpMessageReceiver(
+				loggerMock.Object,
+				receiveOptionsMock,
+				adapterOptionsMock,
+				businessApiGatewayFactoryMock.Object,
+				fpFileRepositoryMock.Object,
+				eicMappingMock);
+			var gatewayMock = new Mock<IBusinessApiGateway>();
+			var messages = new[] { CreateFpInboxMessage() };
+			var receiveInfo = new MessageReceiveInfo(messages);
+			var businessApiResponse = new BusinessApiResponse<InboxFpMessage>(true, CreateDummyFpMessage());
 
-            businessApiGatewayFactoryMock
-                .Setup(factory => factory.CreateGateway(It.IsAny<FpParty>()))
-                .Returns(gatewayMock.Object);
-            gatewayMock
-                .Setup(g => g.QueryAvailableMessagesAsync(It.IsAny<int>()))
-                .ReturnsAsync(receiveInfo);
-            gatewayMock
-                .Setup(x => x.ReceiveMessageAsync(It.IsAny<FpInboxMessage>()))
-                .ReturnsAsync(businessApiResponse);
-            gatewayMock
-                .Setup(x => x.AcknowledgeReceivedMessageAsync(It.IsAny<InboxFpMessage>()))
-                .ReturnsAsync(new BusinessApiResponse<bool>(true, true));
-            // Act
-            var test = await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None);
-            Assert.That(test, Is.Not.Null);
-            Assert.That(test.SuccessfulMessages.Count, Is.EqualTo(1));
-            Assert.That(test.FailedMessages.Count, Is.EqualTo(0));
-            Assert.That(test.TotalMessageCount, Is.EqualTo(1));
-        }
+			businessApiGatewayFactoryMock
+				.Setup(factory => factory.CreateGateway(It.IsAny<FpParty>()))
+				.Returns(gatewayMock.Object);
+			gatewayMock
+				.Setup(g => g.QueryAvailableMessagesAsync(It.IsAny<int>()))
+				.ReturnsAsync(receiveInfo);
+			gatewayMock
+				.Setup(x => x.ReceiveMessageAsync(It.IsAny<FpInboxMessage>()))
+				.ReturnsAsync(businessApiResponse);
+			gatewayMock
+				.Setup(x => x.AcknowledgeReceivedMessageAsync(It.IsAny<InboxFpMessage>()))
+				.ReturnsAsync(new BusinessApiResponse<bool>(true, true));
+			// Act
+			var test = await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None);
+			Assert.That(test, Is.Not.Null);
+			Assert.That(test.SuccessfulMessages.Count, Is.EqualTo(1));
+			Assert.That(test.FailedMessages.Count, Is.EqualTo(0));
+			Assert.That(test.TotalMessageCount, Is.EqualTo(1));
+		}
 
-            [Test]
-        public void ReceiveAvailableMessagesAsync_ReceiveStatusIsCorrect_ForFailedAcknowledge()
-        {
-            // Arrange
-            receiveOptionsMock = Options.Create<ReceiveOptions>(new ReceiveOptions
-            {
-                Directory = "C:\\Adapter\\Receive",
-                MessageLimitCount = 10,
-                Retry = new Schleupen.AS4.BusinessAdapter.Configuration.RetryOption { Count = 3 }
-            });
-            fpMessageReceiver = new FpMessageReceiver(
-                loggerMock.Object,
-                receiveOptionsMock,
-                adapterOptionsMock,
-                businessApiGatewayFactoryMock.Object,
-                fpFileRepositoryMock.Object,
-                eicMappingMock);
-            var gatewayMock = new Mock<IBusinessApiGateway>();
-            var messages = new[] { CreateFpInboxMessage() };
-            var receiveInfo = new MessageReceiveInfo(messages);
-            var businessApiResponse = new BusinessApiResponse<InboxFpMessage>(true, CreateDummyFpMessage());
+		[Test]
+		public void ReceiveAvailableMessagesAsync_ReceiveStatusIsCorrect_ForFailedAcknowledge()
+		{
+			// Arrange
+			receiveOptionsMock = Options.Create<ReceiveOptions>(new ReceiveOptions
+			{
+				Directory = "C:\\Adapter\\Receive",
+				MessageLimitCount = 10,
+				Retry = new Schleupen.AS4.BusinessAdapter.Configuration.RetryOption { Count = 3 }
+			});
+			fpMessageReceiver = new FpMessageReceiver(
+				loggerMock.Object,
+				receiveOptionsMock,
+				adapterOptionsMock,
+				businessApiGatewayFactoryMock.Object,
+				fpFileRepositoryMock.Object,
+				eicMappingMock);
+			var gatewayMock = new Mock<IBusinessApiGateway>();
+			var messages = new[] { CreateFpInboxMessage() };
+			var receiveInfo = new MessageReceiveInfo(messages);
+			var businessApiResponse = new BusinessApiResponse<InboxFpMessage>(true, CreateDummyFpMessage());
 
-            businessApiGatewayFactoryMock
-                .Setup(factory => factory.CreateGateway(It.IsAny<FpParty>()))
-                .Returns(gatewayMock.Object);
-            gatewayMock
-                .Setup(g => g.QueryAvailableMessagesAsync(It.IsAny<int>()))
-                .ReturnsAsync(receiveInfo);
-            gatewayMock
-                .Setup(x => x.ReceiveMessageAsync(It.IsAny<FpInboxMessage>()))
-                .ReturnsAsync(businessApiResponse);
-            gatewayMock
-                .Setup(x => x.AcknowledgeReceivedMessageAsync(It.IsAny<InboxFpMessage>()))
-                .ReturnsAsync(new BusinessApiResponse<bool>(false, false));
-            // Act
-            Assert.That(async () => await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None),
-            Throws.TypeOf<AggregateException>());
-        }
+			businessApiGatewayFactoryMock
+				.Setup(factory => factory.CreateGateway(It.IsAny<FpParty>()))
+				.Returns(gatewayMock.Object);
+			gatewayMock
+				.Setup(g => g.QueryAvailableMessagesAsync(It.IsAny<int>()))
+				.ReturnsAsync(receiveInfo);
+			gatewayMock
+				.Setup(x => x.ReceiveMessageAsync(It.IsAny<FpInboxMessage>()))
+				.ReturnsAsync(businessApiResponse);
+			gatewayMock
+				.Setup(x => x.AcknowledgeReceivedMessageAsync(It.IsAny<InboxFpMessage>()))
+				.ReturnsAsync(new BusinessApiResponse<bool>(false, false));
+			// Act
+			Assert.That(async () => await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None),
+				Throws.TypeOf<AggregateException>());
+		}
 
 		[Test]
 		public void ReceiveAvailableMessagesAsync_ThrowsCatastrophicException_WhenReceiveDirectoryIsNotConfigured()
@@ -207,49 +207,50 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			var ex = Assert.ThrowsAsync<AggregateException>(async () =>
 				await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None));
 
-            // Assert
-            var innerException = ex.InnerExceptions[0];
-            Assert.That(innerException, Is.InstanceOf<Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException>());
-            Assert.That(((Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException)innerException).MarketpartnerIdentificationNumber, Is.EqualTo("TestMarketPartner"));
-        }
+			// Assert
+			var innerException = ex.InnerExceptions[0];
+			Assert.That(innerException, Is.InstanceOf<Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException>());
+			Assert.That(((Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException)innerException).MarketpartnerIdentificationNumber,
+				Is.EqualTo("TestMarketPartner"));
+		}
 
-        public FpInboxMessage CreateFpInboxMessage(
-            DateTimeOffset? createdAt = null,
-            string messageId = "TestMessageId",
-            PartyInfo? partyInfo = null,
-            string bdewDocumentNo = "12345",
-            string bdewFulfillmentDate = "2024-08-12",
-            string bdewSubjectPartyId = "PartyId123",
-            string bdewSubjectPartyRole = "Sender",
-            string bdewDocumentType = "Type1")
-        {
-            return new FpInboxMessage(
-                createdAt ?? DateTimeOffset.UtcNow,
-                messageId,
-                partyInfo ?? CreateDefaultPartyInfo(),
-                bdewDocumentNo,
-                bdewFulfillmentDate,
-                bdewSubjectPartyId,
-                bdewSubjectPartyRole,
-                bdewDocumentType);
-        }
+		public FpInboxMessage CreateFpInboxMessage(
+			DateTimeOffset? createdAt = null,
+			string messageId = "TestMessageId",
+			PartyInfo? partyInfo = null,
+			string bdewDocumentNo = "12345",
+			string bdewFulfillmentDate = "2024-08-12",
+			string bdewSubjectPartyId = "PartyId123",
+			string bdewSubjectPartyRole = "Sender",
+			string bdewDocumentType = "Type1")
+		{
+			return new FpInboxMessage(
+				createdAt ?? DateTimeOffset.UtcNow,
+				messageId,
+				partyInfo ?? CreateDefaultPartyInfo(),
+				bdewDocumentNo,
+				bdewFulfillmentDate,
+				bdewSubjectPartyId,
+				bdewSubjectPartyRole,
+				bdewDocumentType);
+		}
 
-        public InboxFpMessage CreateDummyFpMessage()
-        {
-            return new InboxFpMessage(
-                "TestMessageId",
-                new SendingParty("DefaultSendingPartyId", "DefaultSendingPartyRole"),
-                new ReceivingParty("DefaultReceivingPartyId", "DefaultReceivingPartyRole"),
-                CreateDummyMessageContent().ToString(),
-                CreateDummyMessageContent().ToArray(),
-                        new FpBDEWProperties(
-                            "docType",
-                            "docNo",
-                            "docDate",
-                            "docSubjectId",
-                            "docSubjectRole")
-               );
-        }
+		public InboxFpMessage CreateDummyFpMessage()
+		{
+			return new InboxFpMessage(
+				"TestMessageId",
+				new SendingParty("DefaultSendingPartyId", "DefaultSendingPartyRole"),
+				new ReceivingParty("DefaultReceivingPartyId", "DefaultReceivingPartyRole"),
+				CreateDummyMessageContent().ToString(),
+				CreateDummyMessageContent().ToArray(),
+				new FpBDEWProperties(
+					"docType",
+					"docNo",
+					"docDate",
+					"docSubjectId",
+					"docSubjectRole")
+			);
+		}
 
 		private PartyInfo CreateDefaultPartyInfo()
 		{
@@ -259,13 +260,13 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			);
 		}
 
-        private MemoryStream CreateDummyMessageContent()
-        {
-            string dirOfTestFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Parsing/20240125_PPS_FINGRID_0X1001A1001A264_002.xml");
-            MemoryStream ms = new MemoryStream();
-            using (FileStream file = new FileStream(dirOfTestFile, FileMode.Open, FileAccess.Read))
-                file.CopyTo(ms);
-            return ms;
-        }
-    }
+		private MemoryStream CreateDummyMessageContent()
+		{
+			string dirOfTestFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Parsing/20240125_PPS_FINGRID_0X1001A1001A264_002.xml");
+			MemoryStream ms = new MemoryStream();
+			using (FileStream file = new FileStream(dirOfTestFile, FileMode.Open, FileAccess.Read))
+				file.CopyTo(ms);
+			return ms;
+		}
+	}
 }

@@ -96,7 +96,7 @@ public class CimFileParser : IFpFileSpecificParser
 			bdewProperties);
 	}
 
-	public FpParsedPayload ParsePayload(XDocument document)
+	public FpPayloadInfo ParsePayload(XDocument document)
 	{
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
@@ -142,7 +142,7 @@ public class CimFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve fulfillment date from Payload.");
 		}
 
-		return new FpParsedPayload(
+		return new FpPayloadInfo(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
 			creationDateTime ,

@@ -90,7 +90,7 @@ public class EssFileParser : IFpFileSpecificParser
 			);
 	}
 
-	public FpParsedPayload ParsePayload(XDocument document)
+	public FpPayloadInfo ParsePayload(XDocument document)
 	{
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
@@ -120,7 +120,7 @@ public class EssFileParser : IFpFileSpecificParser
 		
 		string? messageDateTime = document.Descendants(ns + "MessageDateTime").FirstOrDefault()?.Attribute("v").Value;
 
-		return new FpParsedPayload(
+		return new FpPayloadInfo(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
 			messageDateTime,

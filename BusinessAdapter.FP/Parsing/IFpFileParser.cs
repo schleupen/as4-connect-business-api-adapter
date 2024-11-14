@@ -4,5 +4,5 @@ public interface IFpFileParser
 {
     FpFile Parse(string path);
 
-    FpParsedPayload ParsePayload(byte[] payload);
+    FpPayloadInfo ParseCompressedPayload(byte[] payload);
 }

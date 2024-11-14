@@ -5,21 +5,11 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 using Microsoft.Extensions.Options;
 
-public class FpFileNameExtractor : IFpFileNameExtractor
+public class FpFileNameExtractor(IFpFileParser fpFileParser, IOptions<EICMapping> eicMapping) : IFpFileNameExtractor
 {
-	private IFpFileParser fpFileParser;
-	private IOptions<EICMapping> eicMapping;
-
-	public FpFileNameExtractor(IFpFileParser fpFileParser,
-		IOptions<EICMapping> eicMapping)
-	{
-		this.fpFileParser = fpFileParser;
-		this.eicMapping = eicMapping;
-	}
-	
 	public FpFileName ExtractFileName(InboxFpMessage fpMessage)
 	{
-		var parsedFile = fpFileParser.ParsePayload(fpMessage.Payload);
+		var parsedFile = fpFileParser.ParseCompressedPayload(fpMessage.Payload);
 
 		var mappedParty = eicMapping.Value.GetPartyOrDefault(parsedFile.Sender);
 		if (mappedParty == null)
@@ -27,7 +17,7 @@ public class FpFileNameExtractor : IFpFileNameExtractor
 			throw new InvalidDataException(
 				$"Unable to find mapping for MP: {parsedFile.Sender}");
 		}
-		
+
 		return new FpFileName()
 		{
 			MessageType = ToMessageType(fpMessage.BDEWProperties.BDEWDocumentType),
@@ -54,7 +44,7 @@ public class FpFileNameExtractor : IFpFileNameExtractor
 				return FpMessageType.Acknowledge;
 			case "A16":
 				return FpMessageType.Anomaly;
-			case "A59": // prozessbeschreibung_fahrplananmeldung_v4.5 in A.4.1.1 
+			case "A59": // prozessbeschreibung_fahrplananmeldung_v4.5 in A.4.1.1
 				return FpMessageType.Status;
 			default:
 				throw new NotSupportedException($"Document type {bdewDocumentType} is not supported.");
