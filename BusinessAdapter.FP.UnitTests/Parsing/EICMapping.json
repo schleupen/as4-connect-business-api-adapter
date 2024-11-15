@@ -3,23 +3,6 @@
     {
       "EIC": "11XSWVIERNHEIMVR",
       "MarktpartnerTyp": "BDEW",
-      "Bilanzkreis": "11XSWVIERNHEIMVR",
-      "FahrplanHaendlerTyp": "TPS"
-    }
-  ],
-  "9911845000009": [
-    {
-      "EIC": "10XDE-VE-TRANSMK",
-      "MarktpartnerTyp": "BDEW",
-      "Bilanzkreis": "10YDE-VE-------2",
-      "FahrplanHaendlerTyp": "TPS"
-    }
-  ],
-  "4045399000077": [
-    {
-      "EIC": "10XDE-RWENET---W",
-      "MarktpartnerTyp": "GS1",
-      "Bilanzkreis": "10YDE-RWENET---I",
       "FahrplanHaendlerTyp": "TPS"
     }
   ],
@@ -27,15 +10,7 @@
     {
       "EIC": "10XDE-EON-NETZ-C",
       "MarktpartnerTyp": "GS1",
-      "Bilanzkreis": "10YDE-EON------1",
-      "FahrplanHaendlerTyp": "TPS"
-    }
-  ],
-  "9911835000001": [
-    {
-      "EIC": "10XDE-ENBW--TNGX",
-      "MarktpartnerTyp": "BDEW",
-      "Bilanzkreis": "10YDE-ENBW-----N",
+      "Bilanzkreis": "11XSWVIERNHEIMVR",
       "FahrplanHaendlerTyp": "TPS"
     }
   ]

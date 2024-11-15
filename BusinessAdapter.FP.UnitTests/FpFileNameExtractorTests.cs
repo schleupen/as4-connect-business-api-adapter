@@ -68,13 +68,13 @@ public sealed partial class FpFileNameExtractorTests
 
 		// Assert
 		Assert.That(result.MessageType, Is.EqualTo(FpMessageType.Schedule));
-		Assert.That(result.EicNameBilanzkreis, Is.EqualTo(receiverEntry.First().Bilanzkreis));
+		Assert.That(result.EicNameBilanzkreis, Is.EqualTo(senderEntry.First().Bilanzkreis));
 		Assert.That(result.EicNameTso, Is.EqualTo(fixture.Data.SenderEIC.Code));
 		Assert.That(result.Timestamp, Is.EqualTo(validityDate));
 		Assert.That(result.Date, Is.EqualTo(creationDate));
 		Assert.That(result.Version, Is.EqualTo("123"));
 		Assert.That(result.FahrplanHaendlerTyp, Is.EqualTo(senderEntry.First().FahrplanHaendlerTyp));
-		Assert.That(result.ToFileName(), Is.EqualTo("19930125_PPS_BK-Receiver_sender-eic-code_123.xml"));
+		Assert.That(result.ToFileName(), Is.EqualTo("19930125_PPS_BK-Sender_sender-eic-code_123.xml"));
 	}
 
 	[TestCase("A07", FpMessageType.Confirmation)]
@@ -112,8 +112,10 @@ public sealed partial class FpFileNameExtractorTests
 		var fileName = fileNameExtractor.ExtractFileName(message);
 
 
-		Console.WriteLine(fileName.ToFileName());
+		var fileNameString = fileName.ToFileName();
+		Console.WriteLine(fileNameString);
 		Assert.That(fileName.Date, Is.EqualTo("2024-11-13T09:00:54Z"));
-		Assert.That(fileName.ToFileName(), Does.EndWith("2024-11-13T09-00-54Z.xml"));
+		Assert.That(fileNameString, Does.EndWith($"2024-11-13T09-00-54Z.xml"));
+		Assert.That(fileNameString, Is.EqualTo("20241113_TPS_11XSWVIERNHEIMVR_10XDE-EON-NETZ-C__CNF_2024-11-13T09-00-54Z.xml"));
 	}
 }

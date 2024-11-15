@@ -11,9 +11,8 @@ public class FpFileNameExtractor(IFpFileParser fpFileParser, IOptions<EICMapping
 	{
 		var parsedFile = fpFileParser.ParseCompressedPayload(fpMessage.Payload);
 
-		var sender = eicMapping.Value.GetPartyOrDefault(parsedFile.Sender);
-		var receiver = eicMapping.Value.GetPartyOrDefault(parsedFile.Receiver);
-		if (sender == null)
+		var senderParty = eicMapping.Value.GetPartyOrDefault(parsedFile.Sender);
+		if (senderParty == null)
 		{
 			throw new InvalidDataException($"Unable to find mapping for MP: {parsedFile.Sender}");
 		}
@@ -21,12 +20,12 @@ public class FpFileNameExtractor(IFpFileParser fpFileParser, IOptions<EICMapping
 		return new FpFileName()
 		{
 			MessageType = ToMessageType(fpMessage.BDEWProperties.BDEWDocumentType),
-			EicNameBilanzkreis = receiver.Bilanzkreis,
+			EicNameBilanzkreis = senderParty.Bilanzkreis,
 			EicNameTso = parsedFile.Sender.Code,
 			Timestamp = parsedFile.ValidityDate,
 			Date = parsedFile.CreationDate,
 			Version = fpMessage.BDEWProperties.BDEWDocumentNo,
-			FahrplanHaendlerTyp = sender.FpType
+			FahrplanHaendlerTyp = senderParty.FpType
 		};
 	}
 
