@@ -17,7 +17,8 @@ public sealed partial class FpFileNameExtractorTests
 			fixture.Data.SenderEIC,
 			fixture.Data.ReceiverEIC,
 			creationDate,
-			validityDate);
+			validityDate,
+			fixture.Data.FahrplanHaendlerTyp);
 
 		var fpMessage = new InboxFpMessage(
 			"messageId",
@@ -57,31 +58,24 @@ public sealed partial class FpFileNameExtractorTests
 
 		fixture.Mocks.FpFileParser.Setup(p => p.ParseCompressedPayload(System.Text.Encoding.ASCII.GetBytes(payload)))
 			.Returns(parsedFile);
-		fixture.Mocks.EicMapping.Setup(x => x.Value).Returns(new EICMapping()
-		{
-			{ fixture.Data.ReceiverParty.Id, receiverEntry },
-			{ fixture.Data.SenderParty.Id, senderEntry }
-		});
 
 		// Act
 		var result = fixture.CreateExtractor().ExtractFileName(fpMessage);
 
 		// Assert
 		Assert.That(result.MessageType, Is.EqualTo(FpMessageType.Schedule));
-		Assert.That(result.EicNameBilanzkreis, Is.EqualTo(senderEntry.First().Bilanzkreis));
+		Assert.That(result.EicNameBilanzkreis, Is.EqualTo(fixture.Data.ReceiverEIC.Code));
 		Assert.That(result.EicNameTso, Is.EqualTo(fixture.Data.SenderEIC.Code));
 		Assert.That(result.Timestamp, Is.EqualTo(validityDate));
 		Assert.That(result.Date, Is.EqualTo(creationDate));
 		Assert.That(result.Version, Is.EqualTo("123"));
-		Assert.That(result.FahrplanHaendlerTyp, Is.EqualTo(senderEntry.First().FahrplanHaendlerTyp));
-		Assert.That(result.ToFileName(), Is.EqualTo("19930125_PPS_BK-Sender_sender-eic-code_123.xml"));
+		Assert.That(result.FahrplanHaendlerTyp, Is.EqualTo(fixture.Data.FahrplanHaendlerTyp));
+		Assert.That(result.ToFileName(), Is.EqualTo("19930125_FahrplanHaendlerTyp_receiver-eic-code_sender-eic-code_123.xml"));
 	}
 
 	[Test]
 	public void ExtractFileName_SampleEssFileAndSampleEICMapping_ShouldReturnCorrectFileName()
 	{
-		fixture.Mocks.EicMapping.Setup(x => x.Value).Returns(fixture.Data.SampleEicMapping);
-
 		FpFileNameExtractor fileNameExtractor = fixture.CreateExtractorWithFpFileParser();
 		var message = new InboxFpMessage("1337",
 			new SendingParty("4033872000058", "type"),
@@ -91,7 +85,6 @@ public sealed partial class FpFileNameExtractorTests
 			new FpBDEWProperties("A09", "", "", "", ""));
 
 		var fileName = fileNameExtractor.ExtractFileName(message);
-
 
 		var fileNameString = fileName.ToFileName();
 		Console.WriteLine(fileNameString);

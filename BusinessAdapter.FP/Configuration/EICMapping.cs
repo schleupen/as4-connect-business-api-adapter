@@ -4,28 +4,15 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
 {
     public const string SectionName = nameof(EICMapping);
 
-    public EIC? GetEICForEic(string eicCode)
-    {
-        var entry = this.SelectMany(kvp => kvp.Value)
-            .FirstOrDefault(entry => entry.EIC == eicCode);
-        return entry == null ? null : new EIC(entry.EIC);
-    }
-
-    public EIC? GetEICForMpId(string mpId)
-    {
-        var entry = this.FirstOrDefault(x => x.Key == mpId).Value?.FirstOrDefault();
-        return entry == null ? null : new EIC(entry.EIC);
-    }
-
-    public FpParty? GetParty(string identifcationNumber)
+    public FpParty? GetPartyOrDefault(string identificationNumber)
     {
         var kvp = this.SelectMany(kvp => kvp.Value,
                 (kvp, entry) => new { Key = kvp.Key, Entry = entry })
-            .Where(kvp => kvp.Key == identifcationNumber)
+            .Where(kvp => kvp.Key == identificationNumber)
             .Select(kvp => new KeyValuePair<string, EICMappingEntry>(kvp.Key, kvp.Entry))
             .ToList();
 
-        var entry = kvp.FirstOrDefault();
+        var entry = kvp.FirstOrDefault(); // TODO
         return entry.Key == null ? null : ToFpParty(entry.Value, entry.Key);
     }
 
@@ -41,7 +28,7 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
                 return ToFpParty(matchingEntry, entry.Key);
             }
         }
-        
+
         return null;
     }
 

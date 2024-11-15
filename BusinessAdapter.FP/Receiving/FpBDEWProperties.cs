@@ -36,12 +36,12 @@ public sealed record FpBDEWProperties(
 	{
 		switch (BDEWDocumentType)
 		{
+			case "A01":
+				return FpMessageType.Schedule;
 			case "A07":
 			case "A08":
 			case "A09":
 				return FpMessageType.Confirmation;
-			case "A01":
-				return FpMessageType.Schedule;
 			case "A17":
 				return FpMessageType.Acknowledge;
 			case "A16":

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ScheduleMessage SYSTEM "../scheduleV2r3/dtd/schedule-xml.dtd">
+<AcknowledgementMessage DtdVersion="2" DtdRelease="3">
+    <MessageIdentification v="20241018-10XDE-ENBW--HGJL-A04-56614"/>
+    <MessageDateTime v="2024-10-16T10:46:50Z"/>
+    <SenderIdentification v="10XDE-ENBW--HGJL" codingScheme="A01"/>
+    <SenderRole v="A04"/>
+    <ReceiverIdentification v="11XWEISWELTWS-G" codingScheme="A01"/>
+    <ReceiverRole v="A08"/>
+    <ReceivingMessageIdentification v="20241018_TPS_WEISWELTWS-GDE-ENBW--"/>
+    <ReceivingMessageVersion v="1"/>
+    <Reason>
+        <ReasonCode v="A01"/>
+        <ReasonText v="Message fully accepted"/>
+    </Reason>
+</AcknowledgementMessage>

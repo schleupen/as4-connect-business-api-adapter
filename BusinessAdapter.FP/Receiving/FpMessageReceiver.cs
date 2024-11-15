@@ -80,7 +80,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             var exceptions = new List<Exception>();
             try
             {
-                var partyReceiver = eicMapping.Value.GetParty(receiverIdentificationNumber);
+                var partyReceiver = eicMapping.Value.GetPartyOrDefault(receiverIdentificationNumber);
                 if (partyReceiver == null)
                 {
                     var errorMessage = $"Receiving party {receiverIdentificationNumber} mapping not configured";

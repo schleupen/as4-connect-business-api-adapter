@@ -90,6 +90,7 @@ public class EssFileParser : IFpFileSpecificParser
 		);
 	}
 
+	// TODO missing testcases
 	public FpPayloadInfo ParsePayload(XDocument document)
 	{
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
@@ -103,7 +104,7 @@ public class EssFileParser : IFpFileSpecificParser
 		var senderRole = document.Descendants(ns + "SenderRole").First().Attribute("v").Value;
 		if (senderRole == null)
 		{
-			throw new ArgumentException($"Could not retrieve sender role from payload.");
+			throw new ArgumentException($"Could not retrieve sender role from paylod.");
 		}
 
 		var receiverIdentification = document.Descendants(ns + "ReceiverIdentification").FirstOrDefault()?.Attribute("v")?.Value;

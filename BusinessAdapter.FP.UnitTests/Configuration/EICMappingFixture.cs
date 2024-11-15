@@ -28,8 +28,8 @@ public partial class EICMappingTest
 		{
 			EICMapping mapping = new EICMapping()
 			{
-				{ Data.Eic1.Code, Data.MappingParty1 },
-				{ Data.Eic2.Code, Data.MappingParty2 }
+				{ Data.Party1.Id, Data.MappingParty1 },
+				{ Data.Party2.Id, Data.MappingParty2 }
 			};
 			return mapping;
 		}
