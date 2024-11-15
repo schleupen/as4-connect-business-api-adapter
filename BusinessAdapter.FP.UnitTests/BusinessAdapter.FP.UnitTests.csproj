@@ -26,5 +26,26 @@
 	  <None Update="appsettings.unittests.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="Parsing\2024-11-13T09_00_56.5778588Z_A07_1.edi.gz">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Parsing\EICMapping.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Parsing\InvalidFiles\20241114_11XSWSE-DBA-VZRL_10XDE-RWENET---W_02.xml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Parsing\InvalidFiles\20241115_11XSWSE-DBA-VZRL_10XDE-RWENET---W_01.xml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Parsing\20241114_SRQ_11XSWSE-DBA-VZRL_10XDE-RWENET---W_CRQ.xml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Parsing\20241115_SRQ_11XSWSE-DBA-VZRL_10XDE-RWENET---W_CRQ.xml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Parsing\InvalidFiles\20240125_PPS_FINGRID_0X1001A1001A264_003.xml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>

@@ -11,43 +11,21 @@ public class FpFileNameExtractor(IFpFileParser fpFileParser, IOptions<EICMapping
 	{
 		var parsedFile = fpFileParser.ParseCompressedPayload(fpMessage.Payload);
 
-		var mappedParty = eicMapping.Value.GetPartyOrDefault(parsedFile.Sender);
-		if (mappedParty == null)
+		var senderParty = eicMapping.Value.GetPartyOrDefault(parsedFile.Sender);
+		if (senderParty == null)
 		{
-			throw new InvalidDataException(
-				$"Unable to find mapping for MP: {parsedFile.Sender}");
+			throw new InvalidDataException($"Unable to find mapping for MP: {parsedFile.Sender}");
 		}
 
 		return new FpFileName()
 		{
-			MessageType = ToMessageType(fpMessage.BDEWProperties.BDEWDocumentType),
-			EicNameBilanzkreis = mappedParty.Bilanzkreis,
+			MessageType = fpMessage.BDEWProperties.ToMessageType(),
+			EicNameBilanzkreis = senderParty.Bilanzkreis,
 			EicNameTso = parsedFile.Sender.Code,
 			Timestamp = parsedFile.ValidityDate,
 			Date = parsedFile.CreationDate,
 			Version = fpMessage.BDEWProperties.BDEWDocumentNo,
-			FahrplanHaendlerTyp = mappedParty.FpType
+			FahrplanHaendlerTyp = senderParty.FpType
 		};
-	}
-
-	private FpMessageType ToMessageType(string bdewDocumentType)
-	{
-		switch (bdewDocumentType)
-		{
-			case "A07":
-			case "A08":
-			case "A09":
-				return FpMessageType.Confirmation;
-			case "A01":
-				return FpMessageType.Schedule;
-			case "A17":
-				return FpMessageType.Acknowledge;
-			case "A16":
-				return FpMessageType.Anomaly;
-			case "A59": // prozessbeschreibung_fahrplananmeldung_v4.5 in A.4.1.1
-				return FpMessageType.Status;
-			default:
-				throw new NotSupportedException($"Document type {bdewDocumentType} is not supported.");
-		}
 	}
 }

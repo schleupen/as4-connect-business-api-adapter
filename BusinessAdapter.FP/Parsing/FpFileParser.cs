@@ -10,7 +10,7 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileVal
 	private readonly string ESS_NAMESPACE_STRING = "urn:entsoe.eu:wgedi:ess";
 	private readonly string CIM_NAMESPACE_STRING = "urn:iec62325.351:tc57wg16:451";
 
-    public FpFile Parse(string path)
+    public FpFile ParseFile(string path)
     {
          string fileName = fileSystemWrapper.GetFileName(path);
 

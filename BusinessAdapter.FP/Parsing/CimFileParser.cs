@@ -10,7 +10,7 @@ public class CimFileParser : IFpFileSpecificParser
 	{
 		string xmlData = File.ReadAllText(path);
 		byte[] content = Encoding.UTF8.GetBytes(xmlData);
-		FpFileName fpFileName = FpFileName.Parse(filename);
+		FpFileName fpFileName = FpFileName.FromFileName(filename);
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
 		var documentNo = ParseCIMDocumentNoForMessageType(fpFileName.MessageType, document, ns, fpFileName);

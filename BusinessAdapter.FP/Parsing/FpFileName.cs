@@ -1,5 +1,7 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
+using System.Globalization;
+
 // ACK format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
 // ANO format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
 // CON format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
@@ -8,7 +10,7 @@
 
 public record FpFileName
 {
-	private const string XmlFileExtension = ".XML";
+	private const string XmlFileExtension = ".xml";
 
 	// Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag
 	public string Date { get; init; }
@@ -32,7 +34,7 @@ public record FpFileName
 	// Meldungen zu einer Fahrplanmeldung.
 	public string? Timestamp { get; init; }
 
-	public static FpFileName Parse(string filename)
+	public static FpFileName FromFileName(string filename)
 	{
 		if (string.IsNullOrEmpty(filename))
 		{
@@ -41,7 +43,7 @@ public record FpFileName
 
 		if (!filename.EndsWith(XmlFileExtension, StringComparison.OrdinalIgnoreCase))
 		{
-			throw new FormatException("Filename doesnt end with '.xml'.");
+			throw new FormatException($"Filename doesnt end with '{XmlFileExtension}'.");
 		}
 
 		var coreFilename = filename.Substring(0, filename.LastIndexOf('.'));
@@ -59,19 +61,16 @@ public record FpFileName
 		var version = "1";
 		string? timestamp;
 		string messageTypePart;
-		FpMessageType messageType;
-
 
 		if (parts.Length == 4)
 		{
-			messageType = FpMessageType.Status;
 			return new FpFileName
 			{
 				Date = date,
 				FahrplanHaendlerTyp = type,
 				EicNameBilanzkreis = eicNameBilanzkreis,
 				EicNameTso = eicNameTso,
-				MessageType = messageType,
+				MessageType = FpMessageType.Status,
 				Timestamp = null,
 				Version = version,
 			};
@@ -103,11 +102,12 @@ public record FpFileName
 			messageTypePart = parts[parts.Length - 1];
 		}
 
-		messageType = messageTypePart switch
+		var messageType = messageTypePart switch
 		{
 			"ACK" => FpMessageType.Acknowledge,
 			"ANO" => FpMessageType.Anomaly,
 			"CNF" => FpMessageType.Confirmation,
+			"CRQ" => FpMessageType.Status,
 			_ => FpMessageType.Schedule
 		};
 
@@ -119,7 +119,7 @@ public record FpFileName
 			EicNameTso = eicNameTso,
 			MessageType = messageType,
 			Timestamp = timestamp,
-			Version = version,
+			Version = messageType == FpMessageType.Status ? "1" : version,
 		};
 	}
 
@@ -132,7 +132,7 @@ public record FpFileName
 		}
 		else
 		{
-			dateTimeStamp = DateTime.Parse(Date);
+			dateTimeStamp = DateTime.Parse(Date).ToUniversalTime();
 		}
 
 		DateTime timeStamp;
@@ -142,22 +142,22 @@ public record FpFileName
 		}
 		else
 		{
-			timeStamp = DateTime.Parse(Timestamp);
+			timeStamp = DateTime.Parse(Timestamp).ToUniversalTime();
 		}
-		
+
 		if (this.MessageType == FpMessageType.Schedule)
 		{
-			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
+			return $"{dateTimeStamp:yyyyMMdd}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
 		}
-		
+
 		if (this.MessageType == FpMessageType.Status)
 		{
-			return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
+			return $"{dateTimeStamp:yyyyMMdd}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
 		}
-		
+
 		var messageTypeString = ToMessageTypeValue();
-	
-		return $"{dateTimeStamp.ToString("yyyyMMdd")}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{timeStamp.ToString("yyyy-MM-ddTHH\\-mm\\-ssZ")}_{XmlFileExtension}";
+
+		return $"{dateTimeStamp:yyyyMMdd}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{timeStamp:yyyy-MM-ddTHH\\-mm\\-ssZ}{XmlFileExtension}";
 	}
 
 	private string? ToMessageTypeValue()

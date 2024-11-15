@@ -1,98 +1,102 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests;
 
 using NUnit.Framework;
-using Moq;
-using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 using Schleupen.AS4.BusinessAdapter.FP.Configuration;
-using Microsoft.Extensions.Options;
 
-public class FpFileNameExtractorTests
+public sealed partial class FpFileNameExtractorTests
 {
-    private Mock<IFpFileParser> mockParser;
-    private FpFileNameExtractor extractor;
-    private IOptions<EICMapping> eicMapping;
+	[Test]
+	public void ExtractFileName_ShouldReturnCorrectFpFileName()
+	{
+		// Arrange
+		var payload = "sample payload";
+		var validityDate = "1993-01-26T11:03:49Z";
+		var creationDate = "1993-01-25T11:03:49Z";
+		var parsedFile = new FpPayloadInfo(
+			fixture.Data.SenderEIC,
+			fixture.Data.ReceiverEIC,
+			creationDate,
+			validityDate);
 
-    [SetUp]
-    public void Setup()
-    {
-        mockParser = new Mock<Schleupen.AS4.BusinessAdapter.FP.Parsing.IFpFileParser>();
-        eicMapping = Options.Create<EICMapping>(new EICMapping());
-        extractor = new FpFileNameExtractor(mockParser.Object, eicMapping);
-    }
-
-    [Test]
-    public void ExtractFileName_ShouldReturnCorrectFpFileName()
-    {
-        // Arrange
-        var payload = "sample payload";
-        var receiver = "ReceiverNameMpId";
-        var receiverEicCode = "eic1";
-        var validityDate = "26-01-1993";
-        var creationDate = "25-01-1993";
-        var parsedFile = new FpPayloadInfo(
-            new EIC("sender"),
-            new EIC(receiverEicCode),
-            creationDate,
-            validityDate);
-        var fpMessage = new InboxFpMessage(
-            "messageId",
-            new SendingParty("sender", "BDEW"),
-            new ReceivingParty(receiver, "BDEW"),
-            "contentHash",
-            System.Text.Encoding.ASCII.GetBytes(payload),
-            new FpBDEWProperties(
-                "A01",
-                "123",
-                "FulfillmentDate",
-                "subjectPartyId",
-                "subjectPartyRole"));
+		var fpMessage = new InboxFpMessage(
+			"messageId",
+			fixture.Data.SenderParty,
+			fixture.Data.ReceiverParty,
+			"contentHash",
+			System.Text.Encoding.ASCII.GetBytes(payload),
+			new FpBDEWProperties(
+				"A01",
+				"123",
+				"FulfillmentDate",
+				"subjectPartyId",
+				"subjectPartyRole"));
 
 
-        List<EICMappingEntry>  mappedPartyMock = new List<EICMappingEntry>()
-        {
-            new EICMappingEntry()
-            {
-                Bilanzkreis = "FINGRID",
-                EIC = "sender",
-                FahrplanHaendlerTyp = "PPS",
-                MarktpartnerTyp = "BDEW"
-            }
-        };
-        
-        mockParser.Setup(p => p.ParseCompressedPayload(System.Text.Encoding.ASCII.GetBytes(payload))).Returns(parsedFile);
-        eicMapping.Value.Add(fpMessage.Receiver.Id, mappedPartyMock);
-      
-        // Act
-        var result = extractor.ExtractFileName(fpMessage);
+		List<EICMappingEntry> senderEntry = new List<EICMappingEntry>()
+		{
+			new()
+			{
+				Bilanzkreis = "BK-Sender",
+				EIC = fixture.Data.SenderEIC.Code,
+				FahrplanHaendlerTyp = "PPS",
+				MarktpartnerTyp = "BDEW"
+			}
+		};
 
-        // Assert
-        Assert.That(result.MessageType, Is.EqualTo(FpMessageType.Schedule));
-        Assert.That(result.EicNameBilanzkreis, Is.EqualTo(mappedPartyMock.First().Bilanzkreis));
-        Assert.That(result.EicNameTso, Is.EqualTo("sender"));
-        Assert.That(result.Timestamp, Is.EqualTo(validityDate));
-        Assert.That(result.Date, Is.EqualTo(creationDate));
-        Assert.That(result.Version, Is.EqualTo("123"));
-        Assert.That(result.FahrplanHaendlerTyp, Is.EqualTo(mappedPartyMock.First().FahrplanHaendlerTyp));
-        Assert.That(result.ToFileName(), Is.EqualTo("19930125_PPS_FINGRID_sender_123.XML"));
-    }
+		List<EICMappingEntry> receiverEntry = new List<EICMappingEntry>()
+		{
+			new()
+			{
+				Bilanzkreis = "BK-Receiver",
+				EIC = fixture.Data.ReceiverEIC.Code,
+				FahrplanHaendlerTyp = "TPS",
+				MarktpartnerTyp = "BDEW"
+			}
+		};
 
-    [TestCase("A07", FpMessageType.Confirmation)]
-    [TestCase("A08", FpMessageType.Confirmation)]
-    [TestCase("A09", FpMessageType.Confirmation)]
-    [TestCase("A01", FpMessageType.Schedule)]
-    [TestCase("A17", FpMessageType.Acknowledge)]
-    [TestCase("A16", FpMessageType.Anomaly)]
-    [TestCase("A59", FpMessageType.Status)]
-    public void ToMessageType_ShouldReturnCorrectMessageType(string documentType, FpMessageType expectedMessageType)
-    {
-        // Act
-        var result = (FpMessageType)typeof(FpFileNameExtractor)
-            .GetMethod("ToMessageType",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .Invoke(extractor, new object[] { documentType });
+		fixture.Mocks.FpFileParser.Setup(p => p.ParseCompressedPayload(System.Text.Encoding.ASCII.GetBytes(payload)))
+			.Returns(parsedFile);
+		fixture.Mocks.EicMapping.Setup(x => x.Value).Returns(new EICMapping()
+		{
+			{ fixture.Data.ReceiverParty.Id, receiverEntry },
+			{ fixture.Data.SenderParty.Id, senderEntry }
+		});
 
-        // Assert
-        Assert.That(result, Is.EqualTo(expectedMessageType));
-    }
+		// Act
+		var result = fixture.CreateExtractor().ExtractFileName(fpMessage);
+
+		// Assert
+		Assert.That(result.MessageType, Is.EqualTo(FpMessageType.Schedule));
+		Assert.That(result.EicNameBilanzkreis, Is.EqualTo(senderEntry.First().Bilanzkreis));
+		Assert.That(result.EicNameTso, Is.EqualTo(fixture.Data.SenderEIC.Code));
+		Assert.That(result.Timestamp, Is.EqualTo(validityDate));
+		Assert.That(result.Date, Is.EqualTo(creationDate));
+		Assert.That(result.Version, Is.EqualTo("123"));
+		Assert.That(result.FahrplanHaendlerTyp, Is.EqualTo(senderEntry.First().FahrplanHaendlerTyp));
+		Assert.That(result.ToFileName(), Is.EqualTo("19930125_PPS_BK-Sender_sender-eic-code_123.xml"));
+	}
+
+	[Test]
+	public void ExtractFileName_SampleEssFileAndSampleEICMapping_ShouldReturnCorrectFileName()
+	{
+		fixture.Mocks.EicMapping.Setup(x => x.Value).Returns(fixture.Data.SampleEicMapping);
+
+		FpFileNameExtractor fileNameExtractor = fixture.CreateExtractorWithFpFileParser();
+		var message = new InboxFpMessage("1337",
+			new SendingParty("4033872000058", "type"),
+			new ReceivingParty("9903025000008", "type"),
+			null,
+			File.ReadAllBytes("./Parsing/2024-11-13T09_00_56.5778588Z_A07_1.edi.gz"),
+			new FpBDEWProperties("A09", "", "", "", ""));
+
+		var fileName = fileNameExtractor.ExtractFileName(message);
+
+
+		var fileNameString = fileName.ToFileName();
+		Console.WriteLine(fileNameString);
+		Assert.That(fileName.Date, Is.EqualTo("2024-11-13T09:00:54Z"));
+		Assert.That(fileNameString, Does.EndWith($"2024-11-13T09-00-54Z.xml"));
+		Assert.That(fileNameString, Is.EqualTo("20241113_TPS_11XSWVIERNHEIMVR_10XDE-EON-NETZ-C__CNF_2024-11-13T09-00-54Z.xml"));
+	}
 }
