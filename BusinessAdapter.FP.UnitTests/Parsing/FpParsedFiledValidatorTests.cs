@@ -9,12 +9,12 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 [TestFixture]
 public class FpParsedFileValidatorTests
 {
-	private FpParsedFileValidator _validator;
+	private FpParsedFileValidator validator;
 
 	[SetUp]
 	public void Setup()
 	{
-		_validator = new FpParsedFileValidator();
+		validator = new FpParsedFileValidator();
 	}
 
 	[Test]
@@ -24,19 +24,19 @@ public class FpParsedFileValidatorTests
 		var fpFile = CreateValidFpFile();
 
 		// Act & Assert
-		Assert.That(() => _validator.ValidateParsedFpFile(fpFile), Throws.Nothing);
+		Assert.That(() => validator.ValidateParsedFpFile(fpFile), Throws.Nothing);
 	}
 
 	[Test]
 	public void ValidateParsedFpFile_InvalidMessageType_ThrowsValidationException()
 	{
 		// Arrange
-		var fpFile = CreateValidFpFile("002", "0X1001A1001A264","InvalidType" );
+		var fpFile = CreateValidFpFile("002", "0X1001A1001A264","A16" );
 
 		// Act & Assert
-		Assert.That(() => _validator.ValidateParsedFpFile(fpFile),
+		Assert.That(() => validator.ValidateParsedFpFile(fpFile),
 			Throws.TypeOf<ValidationException>()
-			.With.Message.EqualTo("Parsed DocumentType InvalidType does not match filename DocumentType Confirmation"));
+			.With.Message.EqualTo("Parsed DocumentType 'A16' does not match filename DocumentType 'Confirmation'"));
 	}
 
 	[Test]
@@ -46,7 +46,7 @@ public class FpParsedFileValidatorTests
 		var fpFile = CreateValidFpFile("1","InvalidSender", "A59");
 
 		// Act & Assert
-		Assert.That(() => _validator.ValidateParsedFpFile(fpFile),
+		Assert.That(() => validator.ValidateParsedFpFile(fpFile),
 			Throws.TypeOf<ValidationException>()
 			.With.Message.EqualTo("Parsed SenderID InvalidSender does not match filename SenderID FINGRID"));
 	}
@@ -58,9 +58,9 @@ public class FpParsedFileValidatorTests
 		var fpFile = CreateValidFpFile( "InvalidDocNo");
 
 		// Act & Assert
-		Assert.That(() => _validator.ValidateParsedFpFile(fpFile),
+		Assert.That(() => validator.ValidateParsedFpFile(fpFile),
 			Throws.TypeOf<ValidationException>()
-			.With.Message.EqualTo("Parsed Document Version InvalidDocNo does not match filename Document Version 2"));
+			.With.Message.EqualTo("Parsed Document Version 'InvalidDocNo' does not match filename Document Version '2'"));
 	}
 
 	private FpFile CreateValidFpFile(string bdewDocumentNo = "2", string senderCode = "0X1001A1001A264", string bdewDocumentType = "A07")

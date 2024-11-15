@@ -1,6 +1,7 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
 using System.ComponentModel.DataAnnotations;
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public class FpParsedFileValidator : IFpParsedFileValidator
 {
@@ -8,38 +9,35 @@ public class FpParsedFileValidator : IFpParsedFileValidator
 	{
 		var fileName = FpFileName.FromFileName(fpFile.FileName);
 
-		ValidateFpMessageType(fpFile.BDEWProperties.BDEWDocumentType, fileName.MessageType);
+		ValidateFpMessageType(fpFile.BDEWProperties, fileName.MessageType);
 		ValidateFpMessageVersion(fpFile.BDEWProperties.BDEWDocumentNo, fileName);
 		ValidateFpMessageSender(fpFile.Sender.Code, fileName);
 	}
 
 	private void ValidateFpMessageSender(string fpFilesSender, FpFileName fileName)
 	{
-		if (fileName.MessageType == FpMessageType.Schedule || fileName.MessageType == FpMessageType.Status)
+		if (fileName.MessageType is FpMessageType.Schedule or FpMessageType.Status)
 		{
 			if (fileName.EicNameBilanzkreis != fpFilesSender)
 			{
-				throw new ValidationException(
-					$"Parsed SenderID {fpFilesSender} does not match filename SenderID {fileName.EicNameBilanzkreis}");
+				throw new ValidationException($"Parsed SenderID {fpFilesSender} does not match filename SenderID {fileName.EicNameBilanzkreis}");
 			}
 		}
 	}
 
-	private void ValidateFpMessageType(string bdewDocumentType, FpMessageType fpMessageType)
+	private void ValidateFpMessageType(FpBDEWProperties bdewProperties, FpMessageType fpMessageType)
 	{
-		var validDocumentTypes = new Dictionary<FpMessageType, string[]>
+		try
 		{
-			{ FpMessageType.Acknowledge, new[] { "A17" } },
-			{ FpMessageType.Schedule, new[] { "A01" } },
-			{ FpMessageType.Confirmation, new[] { "A07", "A08", "A09" } },
-			{ FpMessageType.Anomaly, new[] { "A16" } },
-			{ FpMessageType.Status, new[] { "A59" } }
-		};
-
-		if (!validDocumentTypes.TryGetValue(fpMessageType, out var allowedDocumentTypes)
-		    || !allowedDocumentTypes.Contains(bdewDocumentType))
+			var parsedMessageType = bdewProperties.ToMessageType();
+			if (parsedMessageType != fpMessageType)
+			{
+				throw new ValidationException($"Parsed DocumentType '{bdewProperties.BDEWDocumentType}' does not match filename DocumentType '{fpMessageType}'");
+			}
+		}
+		catch (NotSupportedException e)
 		{
-			throw new ValidationException($"Parsed DocumentType {bdewDocumentType} does not match filename DocumentType {fpMessageType}");
+			throw new ValidationException($"Parsed DocumentType '{bdewProperties.BDEWDocumentType}' is unsupported", e);
 		}
 	}
 
@@ -47,7 +45,8 @@ public class FpParsedFileValidator : IFpParsedFileValidator
 	{
 		if (bdewDocumentNo != fileName.Version)
 		{
-			throw new ValidationException($"Parsed Document Version {bdewDocumentNo} does not match filename Document Version {fileName.Version}");
+			throw new ValidationException(
+				$"Parsed Document Version '{bdewDocumentNo}' does not match filename Document Version '{fileName.Version}'");
 		}
 	}
 }

@@ -19,7 +19,7 @@ public class FpFileNameExtractor(IFpFileParser fpFileParser, IOptions<EICMapping
 
 		return new FpFileName()
 		{
-			MessageType = ToMessageType(fpMessage.BDEWProperties.BDEWDocumentType),
+			MessageType = fpMessage.BDEWProperties.ToMessageType(),
 			EicNameBilanzkreis = senderParty.Bilanzkreis,
 			EicNameTso = parsedFile.Sender.Code,
 			Timestamp = parsedFile.ValidityDate,
@@ -27,26 +27,5 @@ public class FpFileNameExtractor(IFpFileParser fpFileParser, IOptions<EICMapping
 			Version = fpMessage.BDEWProperties.BDEWDocumentNo,
 			FahrplanHaendlerTyp = senderParty.FpType
 		};
-	}
-
-	private FpMessageType ToMessageType(string bdewDocumentType)
-	{
-		switch (bdewDocumentType)
-		{
-			case "A07":
-			case "A08":
-			case "A09":
-				return FpMessageType.Confirmation;
-			case "A01":
-				return FpMessageType.Schedule;
-			case "A17":
-				return FpMessageType.Acknowledge;
-			case "A16":
-				return FpMessageType.Anomaly;
-			case "A59": // prozessbeschreibung_fahrplananmeldung_v4.5 in A.4.1.1
-				return FpMessageType.Status;
-			default:
-				throw new NotSupportedException($"Document type {bdewDocumentType} is not supported.");
-		}
 	}
 }

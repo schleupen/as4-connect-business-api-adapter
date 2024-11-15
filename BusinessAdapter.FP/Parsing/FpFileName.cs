@@ -61,18 +61,16 @@ public record FpFileName
 		var version = "1";
 		string? timestamp;
 		string messageTypePart;
-		FpMessageType messageType;
 
 		if (parts.Length == 4)
 		{
-			messageType = FpMessageType.Status;
 			return new FpFileName
 			{
 				Date = date,
 				FahrplanHaendlerTyp = type,
 				EicNameBilanzkreis = eicNameBilanzkreis,
 				EicNameTso = eicNameTso,
-				MessageType = messageType,
+				MessageType = FpMessageType.Status,
 				Timestamp = null,
 				Version = version,
 			};
@@ -104,11 +102,12 @@ public record FpFileName
 			messageTypePart = parts[parts.Length - 1];
 		}
 
-		messageType = messageTypePart switch
+		var messageType = messageTypePart switch
 		{
 			"ACK" => FpMessageType.Acknowledge,
 			"ANO" => FpMessageType.Anomaly,
 			"CNF" => FpMessageType.Confirmation,
+			"CRQ" => FpMessageType.Status,
 			_ => FpMessageType.Schedule
 		};
 
@@ -120,7 +119,7 @@ public record FpFileName
 			EicNameTso = eicNameTso,
 			MessageType = messageType,
 			Timestamp = timestamp,
-			Version = version,
+			Version = messageType == FpMessageType.Status ? "1" : version,
 		};
 	}
 

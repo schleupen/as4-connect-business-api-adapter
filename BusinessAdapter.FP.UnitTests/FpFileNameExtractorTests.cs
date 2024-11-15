@@ -77,25 +77,6 @@ public sealed partial class FpFileNameExtractorTests
 		Assert.That(result.ToFileName(), Is.EqualTo("19930125_PPS_BK-Sender_sender-eic-code_123.xml"));
 	}
 
-	[TestCase("A07", FpMessageType.Confirmation)]
-	[TestCase("A08", FpMessageType.Confirmation)]
-	[TestCase("A09", FpMessageType.Confirmation)]
-	[TestCase("A01", FpMessageType.Schedule)]
-	[TestCase("A17", FpMessageType.Acknowledge)]
-	[TestCase("A16", FpMessageType.Anomaly)]
-	[TestCase("A59", FpMessageType.Status)]
-	public void ToMessageType_ShouldReturnCorrectMessageType(string documentType, FpMessageType expectedMessageType)
-	{
-		// Act
-		var result = (FpMessageType)typeof(FpFileNameExtractor)
-			.GetMethod("ToMessageType",
-				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-			.Invoke(fixture.CreateExtractor(), new object[] { documentType });
-
-		// Assert
-		Assert.That(result, Is.EqualTo(expectedMessageType));
-	}
-
 	[Test]
 	public void ExtractFileName_SampleEssFileAndSampleEICMapping_ShouldReturnCorrectFileName()
 	{

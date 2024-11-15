@@ -20,7 +20,7 @@ internal sealed partial class FpFileParserTests
 
 		public string EssScheduleMessagePathOfWrongFile =>
 			Path.Combine(TestContext.CurrentContext.TestDirectory,
-				@"Parsing/20240125_PPS_FINGRID_0X1001A1001A264_003.xml");
+				@"Parsing/InvalidFiles/20240125_PPS_FINGRID_0X1001A1001A264_003.xml");
 
 		public string ExampleEssAnomalyReportPath =>
 			Path.Combine(TestContext.CurrentContext.TestDirectory,
@@ -46,6 +46,17 @@ internal sealed partial class FpFileParserTests
 
 		public string ExampleCimStatusRequestPath => "";
 	}
+
+	private static string[] InvalidFiles()
+	{
+		return Directory.GetFiles("./Parsing/InvalidFiles");
+	}
+
+	private static string[] ValidFiles()
+	{
+		return Directory.GetFiles("./Parsing", "*.xml", SearchOption.TopDirectoryOnly);
+	}
+
 
 	private sealed class Fixture : IDisposable
 	{

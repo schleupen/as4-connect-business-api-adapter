@@ -1,5 +1,6 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Parsing;
 
+using System.ComponentModel.DataAnnotations;
 using NUnit.Framework;
 using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
@@ -188,6 +189,30 @@ internal sealed partial class FpFileParserTests
 		Assert.That(message.Sender.Code, Is.EqualTo("10XDE-EON-NETZ-C"));
 		Assert.That(message.Receiver.Code, Is.EqualTo("11XSWVIERNHEIMVR"));
 		Assert.That(message.CreationDate, Is.EqualTo("2024-11-13T09:00:54Z"));
+	}
+
+	[Test]
+	[TestCase("./Parsing/20241114_SRQ_11XSWSE-DBA-VZRL_10XDE-RWENET---W_CRQ.xml")]
+	[TestCase("./Parsing/20241115_SRQ_11XSWSE-DBA-VZRL_10XDE-RWENET---W_CRQ.xml")]
+	public void ParseFile_EssStatusRequest_WithCRQPostfix_ShouldBeParsedAsWork(string path)
+	{
+		var result = sut.ParseFile(path);
+
+		Assert.That(result.BDEWProperties.ToMessageType(), Is.EqualTo(FpMessageType.Status));
+	}
+
+	[Test]
+	public void ParseFile_InvalidFile_ThrowsException([ValueSource(nameof(InvalidFiles))] string filePath)
+	{
+		Assert.That(() => sut.ParseFile(filePath), Throws.Exception);
+	}
+
+	[Test]
+	public void ParseFile_ValidFile_ShouldNotThrow([ValueSource(nameof(ValidFiles))] string filePath)
+	{
+		var file = sut.ParseFile(filePath);
+
+		Assert.That(file, Is.Not.Null);
 	}
 
 	// TODO Unhappy paths are untested (missing values)...

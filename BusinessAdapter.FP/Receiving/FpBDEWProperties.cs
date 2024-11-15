@@ -31,4 +31,25 @@ public sealed record FpBDEWProperties(
 	/// Ein Code für die Senderrole, z. B. A08 (bei Schedule Messages) oder A04 (ACK, CNF oder ANO).
 	/// </summary>
 	public string BDEWSubjectPartyRole { get; } = BDEWSubjectPartyRole;
+
+	public FpMessageType ToMessageType()
+	{
+		switch (BDEWDocumentType)
+		{
+			case "A07":
+			case "A08":
+			case "A09":
+				return FpMessageType.Confirmation;
+			case "A01":
+				return FpMessageType.Schedule;
+			case "A17":
+				return FpMessageType.Acknowledge;
+			case "A16":
+				return FpMessageType.Anomaly;
+			case "A59": // prozessbeschreibung_fahrplananmeldung_v4.5 in A.4.1.1
+				return FpMessageType.Status;
+			default:
+				throw new NotSupportedException($"Document type '{BDEWDocumentType}' is not supported.");
+		}
+	}
 }

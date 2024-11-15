@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE StatusRequest SYSTEM "../schedulev2r3/dtd/request-xml.dtd">
+<StatusRequest DtdRelease="0" DtdVersion="1">
+  <MessageIdentification v="11XSWSE-DBA-VZR10XDE-RWENET--241114" />
+  <MessageType v="A59" />
+  <ProcessType v="A17" />
+  <SenderIdentification v="11XSWSE-DBA-VZRL" codingScheme="A01" />
+  <SenderRole v="A08" />
+  <ReceiverIdentification v="10XDE-RWENET---W" codingScheme="A01" />
+  <ReceiverRole v="A04" />
+  <MessageDateTime v="2024-11-13T15:30:13Z" />
+  <RequestedTimeInterval v="2024-11-13T23:00Z/2024-11-14T23:00Z" />
+</StatusRequest>
