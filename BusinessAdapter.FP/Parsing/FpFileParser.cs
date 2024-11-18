@@ -13,7 +13,6 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileVal
     public FpFile ParseFile(string path)
     {
          string fileName = fileSystemWrapper.GetFileName(path);
-
          XDocument doc = XDocument.Load(path);
 
          var parser = this.CreateParserFor(doc);
