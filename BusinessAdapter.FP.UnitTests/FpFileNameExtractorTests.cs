@@ -2,7 +2,6 @@
 
 using NUnit.Framework;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
-using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 
 public sealed partial class FpFileNameExtractorTests
 {
@@ -33,28 +32,6 @@ public sealed partial class FpFileNameExtractorTests
 				"subjectPartyId",
 				"subjectPartyRole"));
 
-
-		List<EICMappingEntry> senderEntry = new List<EICMappingEntry>()
-		{
-			new()
-			{
-				Bilanzkreis = "BK-Sender",
-				EIC = fixture.Data.SenderEIC.Code,
-				FahrplanHaendlerTyp = "PPS",
-				MarktpartnerTyp = "BDEW"
-			}
-		};
-
-		List<EICMappingEntry> receiverEntry = new List<EICMappingEntry>()
-		{
-			new()
-			{
-				Bilanzkreis = "BK-Receiver",
-				EIC = fixture.Data.ReceiverEIC.Code,
-				FahrplanHaendlerTyp = "TPS",
-				MarktpartnerTyp = "BDEW"
-			}
-		};
 
 		fixture.Mocks.FpFileParser.Setup(p => p.ParseCompressedPayload(System.Text.Encoding.ASCII.GetBytes(payload)))
 			.Returns(parsedFile);

@@ -53,9 +53,7 @@ public sealed partial class FpFileNameExtractorTests
 
 	private sealed class TestData
 	{
-		public EICMapping SampleEicMapping => JsonSerializer.Deserialize<EICMapping>(File.ReadAllText("./Parsing/EICMapping.json"));
 		public string FahrplanHaendlerTyp => "FahrplanHaendlerTyp";
-
 		public SendingParty SenderParty = new SendingParty("sender-codenummer", "BDEW");
 		public ReceivingParty ReceiverParty = new ReceivingParty("receiver-codenummer", "BDEW");
 		public EIC ReceiverEIC = new EIC("receiver-eic-code");
