@@ -54,6 +54,8 @@ public sealed partial class FpFileNameExtractorTests
 	private sealed class TestData
 	{
 		public string FahrplanHaendlerTyp => "FahrplanHaendlerTyp";
+		public string FulfillmentDate = "2024-11-18";
+
 		public SendingParty SenderParty = new SendingParty("sender-codenummer", "BDEW");
 		public ReceivingParty ReceiverParty = new ReceivingParty("receiver-codenummer", "BDEW");
 		public EIC ReceiverEIC = new EIC("receiver-eic-code");

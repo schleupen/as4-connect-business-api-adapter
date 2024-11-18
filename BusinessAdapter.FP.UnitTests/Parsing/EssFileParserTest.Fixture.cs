@@ -36,7 +36,7 @@ internal sealed partial class EssFileParserTest
 
 	private sealed class TestData
 	{
-		public string ExampleEssConfirmationReportPath => FilePath("20240126_TPS_FINGRID_0X1001A1001A264_002_CNF_01-26T08-2344Z.xml");
+		public string ExampleEssConfirmationReportPath => FilePath("20240126_TPS_FINGRID_0X1001A1001A264_002_CNF_2023-01-26T08-23-44Z.xml");
 
 		public string ExampleEssAcknowledgeMessagePath => FilePath("20241018_PPS_FINGRID_10XDE-ENBW--HGJL_001_ACK_2024-10-16T10-46-50Z.xml");
 
@@ -44,7 +44,7 @@ internal sealed partial class EssFileParserTest
 
 		public string EssScheduleMessagePathOfWrongFile => Path.Combine(TestContext.CurrentContext.TestDirectory, "Parsing", "InvalidFiles", "20240125_PPS_FINGRID_0X1001A1001A264_003.xml");
 
-		public string ExampleEssAnomalyReportPath => FilePath("20240125_PPS_FINGRID_0X1001A1001A264_002_ANO_2024-01-26T08-2344Z.xml");
+		public string ExampleEssAnomalyReportPath => FilePath("20240125_PPS_FINGRID_0X1001A1001A264_002_ANO_2024-01-26T08-23-44Z.xml");
 
 		public string ExampleEssStatusRequestPath => FilePath("20241022_SRQ_11X0-1111-0762-I_10XDE-AOE-HTCC-C.xml");
 

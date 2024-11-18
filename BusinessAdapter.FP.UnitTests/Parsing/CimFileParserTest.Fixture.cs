@@ -40,6 +40,6 @@ internal sealed partial class CimFileParserTest
 
 		public string ExampleCimScheduleMessagePath => Path.Combine(TestContext.CurrentContext.TestDirectory, @"Parsing/CimFiles/20241008_TPS_10XEN-VE-FRISMK_11X0-1111-0619-M_002.xml");
 
-		public string ExampleCimAnomalyReportPath => Path.Combine(TestContext.CurrentContext.TestDirectory, @"Parsing/CimFiles/20241016_PPS_10YEN-XIN------1_10XEN-XIN-NETZ-C_148_ANO_2024-10-15T22-00Z.xml");
+		public string ExampleCimAnomalyReportPath => Path.Combine(TestContext.CurrentContext.TestDirectory, @"Parsing/CimFiles/20241016_PPS_10YEN-XIN------1_10XEN-XIN-NETZ-C_148_ANO_2024-10-15T22-00-11Z.xml");
 	}
 }

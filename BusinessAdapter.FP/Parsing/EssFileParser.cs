@@ -13,54 +13,47 @@ public class EssFileParser : IFpFileSpecificParser
 		FpFileName fpFileName = FpFileName.FromFileName(filename);
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-		var documentNo = ParseEssDocumentNoForMessageType(fpFileName.MessageType, document, ns, fpFileName);
-		if (documentNo == null)
-		{
-			throw new ArgumentException($"Could not document number from file {path}.");
-		}
+		var documentNo = ParseDocumentNo(fpFileName.MessageType, document, ns, fpFileName);
+		var documentType = ParseDocumentType(document, ns, fpFileName.MessageType);
+		var senderIdentification = ParseSenderIdentification(document, ns);
+		var senderRole = ParseSenderRole(document, ns);
+		var receiverIdentification = ParseReceiverIdentification(document, ns);
+		var receiverRole = ParseReceiverRole(document, ns);
+		var scheduleTimeInterval = ParseScheduleTimeInterval(document, path, fpFileName, ns);
 
-		var documentType = "";
-		if (fpFileName.MessageType == FpMessageType.Acknowledge)
-		{
-			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
-			documentType = "A17";
-		}
-		else if (fpFileName.MessageType == FpMessageType.Anomaly)
-		{
-			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
-			documentType = "A16";
-		}
-		else
-		{
-			documentType = document.Descendants(ns + "MessageType").First().Attribute("v").Value;
-		}
+		return new FpFile(
+			new EIC(senderIdentification),
+			new EIC(receiverIdentification),
+			content,
+			filename,
+			path,
+			new FpBDEWProperties(
+				documentType,
+				documentNo,
+				scheduleTimeInterval, // TODO use YYYY-MM-DD for FulfillmentData
+				senderIdentification,
+				senderRole)
+		);
+	}
 
+	// TODO missing testcases
+	public FpPayloadInfo ParsePayload(XDocument document)
+	{
+		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-		var senderIdentification = document.Descendants(ns + "SenderIdentification").FirstOrDefault()?.Attribute("v")?.Value;
-		if (senderIdentification == null)
-		{
-			throw new ArgumentException($"Could not retrieve sender code number from file {path}.");
-		}
+		var senderIdentification = ParseSenderIdentification(document, ns);
+		var receiverIdentification = ParseReceiverIdentification(document, ns);
+		var messageDateTime = ParseMessageDateTime(document, ns);
 
-		var senderRole = document.Descendants(ns + "SenderRole").First().Attribute("v").Value;
-		if (senderRole == null)
-		{
-			throw new ArgumentException($"Could not retrieve sender role from file {path}.");
-		}
+		return new FpPayloadInfo(
+			new EIC(senderIdentification),
+			new EIC(receiverIdentification),
+			messageDateTime);
+	}
 
-		var receiverIdentification = document.Descendants(ns + "ReceiverIdentification").FirstOrDefault()?.Attribute("v")?.Value;
-		if (receiverIdentification == null)
-		{
-			throw new ArgumentException($"Could not retrieve receiver code number from file {path}.");
-		}
-
-		var receiverRole = document.Descendants(ns + "ReceiverRole").FirstOrDefault()?.Attribute("v")?.Value;
-		if (receiverRole == null)
-		{
-			throw new ArgumentException($"Could not retrieve receiver role from file {path}.");
-		}
-
-		string? scheduleTimeInterval = "";
+	private static string ParseScheduleTimeInterval(XDocument document, string path, FpFileName fpFileName, XNamespace? ns)
+	{
+		string scheduleTimeInterval;
 		// For acknowledge und status messages we take the date from the filename
 		if (fpFileName.MessageType == FpMessageType.Acknowledge || fpFileName.MessageType == FpMessageType.Status)
 		{
@@ -73,81 +66,119 @@ public class EssFileParser : IFpFileSpecificParser
 
 		if (scheduleTimeInterval == null)
 		{
-			throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
+			throw new ArgumentException($"failed to parse ScheduleTimeInterval.");
 		}
 
-		FpBDEWProperties properties =
-			new FpBDEWProperties(documentType, documentNo, scheduleTimeInterval, senderIdentification, senderRole);
-
-
-		return new FpFile(
-			new EIC(senderIdentification),
-			new EIC(receiverIdentification),
-			content,
-			filename,
-			path,
-			properties
-		);
+		return scheduleTimeInterval;
 	}
 
-	// TODO missing testcases
-	public FpPayloadInfo ParsePayload(XDocument document)
+	private string ParseDocumentType(XDocument document, XNamespace? ns, FpMessageType type)
 	{
-		XNamespace? ns = document.Root?.GetDefaultNamespace();
-
-		var senderIdentification = document.Descendants(ns + "SenderIdentification").FirstOrDefault()?.Attribute("v")?.Value;
-		if (senderIdentification == null)
+		if (type == FpMessageType.Acknowledge)
 		{
-			throw new ArgumentException($"Could not retrieve sender code number from payload.");
+			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
+			return "A17";
+		}
+		else if (type == FpMessageType.Anomaly)
+		{
+			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
+			return "A16";
 		}
 
-		var senderRole = document.Descendants(ns + "SenderRole").First().Attribute("v").Value;
-		if (senderRole == null)
-		{
-			throw new ArgumentException($"Could not retrieve sender role from paylod.");
-		}
-
-		var receiverIdentification = document.Descendants(ns + "ReceiverIdentification").FirstOrDefault()?.Attribute("v")?.Value;
-		if (receiverIdentification == null)
-		{
-			throw new ArgumentException($"Could not retrieve receiver code number from payload.");
-		}
-
-		var receiverRole = document.Descendants(ns + "ReceiverRole").FirstOrDefault()?.Attribute("v")?.Value;
-		if (receiverRole == null)
-		{
-			throw new ArgumentException($"Could not retrieve receiver role from payload.");
-		}
-
-		string? messageDateTime = document.Descendants(ns + "MessageDateTime").FirstOrDefault()?.Attribute("v").Value;
-
-		return new FpPayloadInfo(
-			new EIC(senderIdentification),
-			new EIC(receiverIdentification),
-			messageDateTime,
-			messageDateTime);
+		return document.Descendants(ns + "MessageType").First().Attribute("v").Value;
 	}
 
-	private string ParseEssDocumentNoForMessageType(
+	private string ParseDocumentNo(
 		FpMessageType type,
 		XDocument doc,
 		XNamespace? ns,
 		FpFileName fpFileName)
 	{
+		string? result;
 		switch (type)
 		{
 			case FpMessageType.Acknowledge:
-				return doc.Descendants(ns + "ReceivingMessageVersion").First().Attribute("v").Value;
+				result = doc.Descendants(ns + "ReceivingMessageVersion").First().Attribute("v").Value;
+				break;
 			case FpMessageType.Schedule:
-				return doc.Descendants(ns + "MessageVersion").First().Attribute("v").Value;
+				result = doc.Descendants(ns + "MessageVersion").First().Attribute("v").Value;
+				break;
 			case FpMessageType.Confirmation:
-				return doc.Descendants(ns + "ConfirmedMessageVersion").First().Attribute("v").Value;
+				result = doc.Descendants(ns + "ConfirmedMessageVersion").First().Attribute("v").Value;
+				break;
 			case FpMessageType.Anomaly:
-				return fpFileName.Version;
+				result = fpFileName.Version;
+				break;
 			case FpMessageType.Status:
-				return "1";
+				result = "1";
+				break;
 			default:
 				throw new ArgumentOutOfRangeException($"unkown FpMessageType: {type}");
 		}
+
+		if (result == null)
+		{
+			throw new ArgumentException($"failed to parse DocumentNo from");
+		}
+
+		return result;
+	}
+
+	private static string ParseSenderIdentification(XDocument document, XNamespace? ns)
+	{
+		var result = document.Descendants(ns + "SenderIdentification").FirstOrDefault()?.Attribute("v")?.Value;
+
+		if (result == null)
+		{
+			throw new ArgumentException($"failed to parse SenderIdentification.");
+		}
+
+		return result;
+	}
+
+	private static string ParseReceiverIdentification(XDocument document, XNamespace? ns)
+	{
+		var result = document.Descendants(ns + "ReceiverIdentification").FirstOrDefault()?.Attribute("v")?.Value;
+		if (result == null)
+		{
+			throw new ArgumentException($"failed to parse ReceiverIdentification.");
+		}
+
+		return result;
+	}
+
+	private static string ParseSenderRole(XDocument document, XNamespace? ns)
+	{
+		var result = document.Descendants(ns + "SenderRole").First().Attribute("v").Value;
+
+		if (result == null)
+		{
+			throw new ArgumentException($"failed to parse SenderRole.");
+		}
+
+		return result;
+	}
+
+	private static string? ParseReceiverRole(XDocument document, XNamespace? ns)
+	{
+		var result = document.Descendants(ns + "ReceiverRole").FirstOrDefault()?.Attribute("v")?.Value;
+
+		if (result == null)
+		{
+			throw new ArgumentException($"failed to parse ReceiverRole.");
+		}
+
+		return result;
+	}
+
+	private static DateTime ParseMessageDateTime(XDocument document, XNamespace? ns)
+	{
+		var result = document.Descendants(ns + "MessageDateTime").FirstOrDefault()?.Attribute("v").Value;
+		if (result == null)
+		{
+			throw new ArgumentException($"failed to parse MessageDateTime.");
+		}
+
+		return DateTime.Parse(result).ToUniversalTime();
 	}
 }

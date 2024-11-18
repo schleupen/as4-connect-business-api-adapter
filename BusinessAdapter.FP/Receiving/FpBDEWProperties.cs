@@ -19,6 +19,7 @@ public sealed record FpBDEWProperties(
 
 	/// <summary>
 	/// Das geplante Zeitintervall.
+	/// should be YYYY-MM-DD
 	/// </summary>
 	public string BDEWFulfillmentDate { get; } = BDEWFulfillmentDate;
 

@@ -65,13 +65,6 @@ public class FpParsedFileValidatorTests
 
 	private FpFile CreateValidFpFile(string bdewDocumentNo = "2", string senderCode = "0X1001A1001A264", string bdewDocumentType = "A07")
 	{
-		var fileName = new FpFileName
-		{
-			MessageType = FpMessageType.Confirmation,
-			EicNameTso = "0X1001A1001A264",
-			Version = bdewDocumentNo
-		};
-
 		if (bdewDocumentType == "A59")
 		{
 			return new FpFile(
@@ -89,8 +82,8 @@ public class FpParsedFileValidatorTests
 			new EIC("TSO002"),
 			null,
 			Path.Combine(TestContext.CurrentContext.TestDirectory,
-				@"Parsing/20240126_TPS_FINGRID_0X1001A1001A264_002_CNF_01-26T08-2344Z.xml"),
+				@"Parsing/20240126_TPS_FINGRID_0X1001A1001A264_002_CNF_2024-01-26T08-23-44Z.xml"),
 			"filePath",
-			new FpBDEWProperties(bdewDocumentType, bdewDocumentNo, "Fulfilmentdate", "0X1001A1001A264", "A01"));
+			new FpBDEWProperties(bdewDocumentType, bdewDocumentNo, "2024-01-26", "0X1001A1001A264", "A01"));
 	}
 }

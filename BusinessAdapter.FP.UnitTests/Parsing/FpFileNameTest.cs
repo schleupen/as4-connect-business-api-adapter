@@ -19,7 +19,7 @@ public class FpFileNameTest
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("1"));
-		Assert.That(parsed.Timestamp, Is.EqualTo("2024-01-26T08-22-52Z"));
+		Assert.That(parsed.Timestamp.Value.ToString(FpFileName.TimestampFormat), Is.EqualTo("2024-01-26T08-22-52Z"));
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Acknowledge));
 	}
 
@@ -35,7 +35,7 @@ public class FpFileNameTest
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("1"));
-		Assert.That(parsed.Timestamp, Is.EqualTo("2024-01-26T08-22-52Z"));
+		Assert.That(parsed.Timestamp.Value.ToString(FpFileName.TimestampFormat), Is.EqualTo("2024-01-26T08-22-52Z"));
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Anomaly));
 	}
 
@@ -51,7 +51,7 @@ public class FpFileNameTest
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("1"));
-		Assert.That(parsed.Timestamp, Is.EqualTo("2024-01-26T08-22-52Z"));
+		Assert.That(parsed.Timestamp.Value.ToString(FpFileName.TimestampFormat), Is.EqualTo("2024-01-26T08-22-52Z"));
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Confirmation));
 	}
 
@@ -92,8 +92,38 @@ public class FpFileNameTest
 	[TestCase(null)]
 	[TestCase("")]
 	[TestCase("20240126_TPS_EIC1_EIC2_001.json")]
+	[TestCase("20240126_TPS_EIC1_EIC2_001_CNF_2024-01-26T08-22-52.XML")]
 	public void FromFileName_InvalidFilename_ShouldThrowFormatException(string invalidFileName)
 	{
 		Assert.That(() => FpFileName.FromFileName(invalidFileName), Throws.TypeOf<FormatException>());
+	}
+
+	[Test]
+	[TestCase(null)]
+	[TestCase("")]
+	[TestCase("2024-01-26")]
+	[TestCase("20249926")]
+	public void ToFileName_InvalidDate_ShouldThrowFormatException(string date)
+	{
+		var fileName = new FpFileName()
+		{
+			MessageType = FpMessageType.Confirmation,
+			EicNameTso = "1",
+			Date = date,
+			Version = "1",
+			Timestamp = DateTime.Now,
+			EicNameBilanzkreis = "BLK",
+			FahrplanHaendlerTyp = "TPS"
+		};
+
+		Assert.That(() => fileName.ToFileName(), Throws.TypeOf<FormatException>());
+	}
+
+	[Test]
+	[TestCase("20240126_TPS_EIC1_EIC2_001_CNF_2024-01-26T08-22-52Z.XML")]
+	public void ToFileName_Valid_ShouldWork(string invalidFileName)
+	{
+		var fileName = FpFileName.FromFileName(invalidFileName);
+		Assert.DoesNotThrow(() => fileName.ToFileName());
 	}
 }

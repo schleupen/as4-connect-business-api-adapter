@@ -86,7 +86,13 @@ public class CimFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
 		}
 
-		FpBDEWProperties bdewProperties = new FpBDEWProperties(documentType, documentNo, scheduleTimeInterval, senderIdentification, senderRole);
+		FpBDEWProperties bdewProperties = new FpBDEWProperties(
+			documentType,
+			documentNo,
+			scheduleTimeInterval, // TODO : use YYYY-MM-DD for FulfillmentData
+			senderIdentification,
+			senderRole);
+
 		return new FpFile(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
@@ -135,7 +141,7 @@ public class CimFileParser : IFpFileSpecificParser
 			scheduleTimeInterval = startTimeInterval + "/" + endTimeInterval;
 		}
 
-		var creationDateTime = document.Descendants(ns + "createdDateTime").FirstOrDefault()?.Value;
+		var creationDateTime = ParseCreationDateTime(document, ns);
 
 		if (scheduleTimeInterval == null)
 		{
@@ -145,8 +151,14 @@ public class CimFileParser : IFpFileSpecificParser
 		return new FpPayloadInfo(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
-			creationDateTime ,
 			creationDateTime);
+	}
+
+	private static DateTime ParseCreationDateTime(XDocument document, XNamespace? ns)
+	{
+		var value = document.Descendants(ns + "createdDateTime").FirstOrDefault()?.Value;
+
+		return DateTime.Parse(value);
 	}
 
 	private string? ParseCIMDocumentNoForMessageType(

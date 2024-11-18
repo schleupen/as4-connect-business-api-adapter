@@ -100,10 +100,9 @@ internal sealed partial class EssFileParserTest
 	{
 		var message = fixture.CreateTestObject().ParsePayload(XDocument.Load(fixture.TestData.EssConfirmationReportPath));
 
-		Assert.That(message.ValidityDate, Is.EqualTo("2024-11-13T09:00:54Z"));
+		Assert.That(message.MessageDateTime, Is.EqualTo(DateTime.Parse("2024-11-13T09:00:54Z").ToUniversalTime()));
 		Assert.That(message.Sender.Code, Is.EqualTo("10XDE-EON-NETZ-C"));
 		Assert.That(message.Receiver.Code, Is.EqualTo("11XSWVIERNHEIMVR"));
-		Assert.That(message.CreationDate, Is.EqualTo("2024-11-13T09:00:54Z"));
 	}
 
 	// TODO Unhappy paths are untested (missing values)...

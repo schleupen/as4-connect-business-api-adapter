@@ -12,13 +12,13 @@ public class FpFileNameExtractor(IFpFileParser fpFileParser)
 
 		return new FpFileName()
 		{
-			MessageType = fpMessage.BDEWProperties.ToMessageType(),
+			Date = fpMessage.BDEWProperties.BDEWFulfillmentDate.Replace("-", string.Empty).Trim(),
+			FahrplanHaendlerTyp = parsedFile.FahrplanHaendlerTyp,
 			EicNameBilanzkreis = parsedFile.Receiver.Code,
 			EicNameTso = parsedFile.Sender.Code,
-			Timestamp = parsedFile.ValidityDate,
-			Date = parsedFile.CreationDate,
 			Version = fpMessage.BDEWProperties.BDEWDocumentNo,
-			FahrplanHaendlerTyp = parsedFile.FahrplanHaendlerTyp
+			MessageType = fpMessage.BDEWProperties.ToMessageType(),
+			Timestamp = parsedFile.MessageDateTime,
 		};
 	}
 }

@@ -1,6 +1,7 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
-using Schleupen.AS4.BusinessAdapter.FP.Receiving;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 // Acknowledgement (Schedule):		<JJJJMMDD>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_<VVV>_ACK_<YYYYMM-DDTHH-MM-SSZ>.XML
 // Acknowledgement (StatusRequest):	<JJJJMMDD>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_ACK_<YYYY-MMDDTHH-MM-SSZ>.XML
@@ -11,9 +12,12 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public record FpFileName
 {
+	private Regex dateRegEx = new("((19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01]))");
+	public const string TimestampFormat = "yyyy-MM-ddTHH\\-mm\\-ssZ";
+
 	private const string XmlFileExtension = ".xml";
 
-	// Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag [JJJJMMTT ]
+	// Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag [ JJJJMMTT ]
 	public string Date { get; init; }
 
 	public string EicNameBilanzkreis { get; init; }
@@ -32,13 +36,13 @@ public record FpFileName
 	// Zeitpunkt der Erstellung der Anomaly bzw. Confirmation Meldung.
 	// Der Zeitstempel dient zur Unterscheidung mehrerer Anomaly- (und ggf. auch Confirmation-)
 	// Meldungen zu einer Fahrplanmeldung.
-	public string? Timestamp { get; init; }
+	public DateTime? Timestamp { get; init; }
 
 	public static FpFileName FromFileName(string filename)
 	{
 		if (string.IsNullOrEmpty(filename))
 		{
-			throw new FormatException("Filename does is null or empty.");
+			throw new FormatException("Filename is null or empty.");
 		}
 
 		if (!filename.EndsWith(XmlFileExtension, StringComparison.OrdinalIgnoreCase))
@@ -75,6 +79,7 @@ public record FpFileName
 				Version = version,
 			};
 		}
+
 		var isNumeric = int.TryParse(parts[4], out _);
 
 		if (isNumeric)
@@ -83,6 +88,7 @@ public record FpFileName
 			{
 				throw new FormatException("Version number in filename is not numeric");
 			}
+
 			version = versionInt.ToString();
 			timestamp = parts.Length > 6 ? parts[6] : null;
 			messageTypePart = parts[parts.Length - 2];
@@ -96,8 +102,10 @@ public record FpFileName
 				{
 					throw new FormatException("Version number in filename is not numeric");
 				}
+
 				version = versionInt.ToString();
 			}
+
 			timestamp = parts.Length > 5 ? parts[5] : null;
 			messageTypePart = parts[parts.Length - 1];
 		}
@@ -111,6 +119,7 @@ public record FpFileName
 			_ => FpMessageType.Schedule
 		};
 
+
 		return new FpFileName
 		{
 			Date = date,
@@ -118,14 +127,14 @@ public record FpFileName
 			EicNameBilanzkreis = eicNameBilanzkreis,
 			EicNameTso = eicNameTso,
 			MessageType = messageType,
-			Timestamp = timestamp,
+			Timestamp = timestamp == null ? null : DateTime.ParseExact(timestamp, TimestampFormat, CultureInfo.InvariantCulture, DateTimeStyles.None).ToUniversalTime(),
 			Version = messageType == FpMessageType.Status ? "1" : version,
 		};
 	}
 
 	public string ToFileName()
 	{
-		var dateTimeStamp = GetDatePrefix();
+		var datePrefix = GetDatePrefix();
 
 		switch (this.MessageType)
 		{
@@ -134,11 +143,12 @@ public record FpFileName
 			case FpMessageType.Confirmation:
 				var messageTypeString = GetMessageTypeValue();
 				var timeStamp = GetTimestampPostfix();
-				return $"{dateTimeStamp}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{timeStamp}{XmlFileExtension}";
+				return
+					$"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{timeStamp}{XmlFileExtension}";
 			case FpMessageType.Schedule:
-				return $"{dateTimeStamp}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
+				return $"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
 			case FpMessageType.Status:
-				return $"{dateTimeStamp}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
+				return $"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
 			default:
 				throw new ArgumentOutOfRangeException();
 		}
@@ -146,32 +156,29 @@ public record FpFileName
 
 	private string GetTimestampPostfix()
 	{
-		DateTime timeStamp;
 		if (Timestamp == null)
 		{
-			timeStamp = DateTime.UtcNow;
-		}
-		else
-		{
-			timeStamp = DateTime.Parse(Timestamp).ToUniversalTime();
+			throw new FormatException("MessageDateTime is null");
 		}
 
-		return $"{timeStamp:yyyy-MM-ddTHH\\-mm\\-ssZ}";
+		return Timestamp.Value.
+			ToUniversalTime()
+			.ToString(TimestampFormat);
 	}
 
 	private string GetDatePrefix()
 	{
-		DateTime dateTimeStamp;
 		if (Date == null)
 		{
-			dateTimeStamp = DateTime.UtcNow;
-		}
-		else
-		{
-			dateTimeStamp = DateTime.Parse(Date).ToUniversalTime();
+			throw new FormatException("Data is null");
 		}
 
-		return $"{dateTimeStamp:yyyyMMdd}";
+		if (!this.dateRegEx.IsMatch(this.Date))
+		{
+			throw new FormatException("Data is not in format YYYYMMDD");
+		}
+
+		return Date;
 	}
 
 	private string? GetMessageTypeValue()
