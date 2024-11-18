@@ -1,5 +1,7 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
+
 // Acknowledgement (Schedule):		<JJJJMMDD>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_<VVV>_ACK_<YYYYMM-DDTHH-MM-SSZ>.XML
 // Acknowledgement (StatusRequest):	<JJJJMMDD>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_ACK_<YYYY-MMDDTHH-MM-SSZ>.XML
 // Anomaly Report:					<JJJJMMTT>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
@@ -11,7 +13,7 @@ public record FpFileName
 {
 	private const string XmlFileExtension = ".xml";
 
-	// Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag
+	// Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag [JJJJMMTT ]
 	public string Date { get; init; }
 
 	public string EicNameBilanzkreis { get; init; }
@@ -20,10 +22,9 @@ public record FpFileName
 
 	public string? Version { get; init; }
 
-	// Typ des Händlerfahrplans (3 Zeichen)
-	// Typen:
-	//        - TPS Trade-responsible Party Schedule BKV-Fahrplan
-	//        - PPS Production-responsible Party Schedule Erzeugerfahrplan
+	// TPS Trade-responsible Party Schedule BKV-Fahrplan
+	// PPS Production-responsible Party Schedule Erzeugerfahrplan
+	// SRQ StatusRequest
 	public string FahrplanHaendlerTyp { get; init; }
 
 	public FpMessageType MessageType { get; init; }
