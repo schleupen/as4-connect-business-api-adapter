@@ -1,12 +1,11 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
-using System.Globalization;
-
-// ACK format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
-// ANO format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
-// CON format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
-// Status format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>.XML
-// Schedule format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
+// Acknowledgement (Schedule):		<JJJJMMDD>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_<VVV>_ACK_<YYYYMM-DDTHH-MM-SSZ>.XML
+// Acknowledgement (StatusRequest):	<JJJJMMDD>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_ACK_<YYYY-MMDDTHH-MM-SSZ>.XML
+// Anomaly Report:					<JJJJMMTT>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
+// Confirmation Report:				<JJJJMMTT>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
+// Status Request:					<JJJJMMDD>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>.XML
+// Schedule format:					<JJJJMMTT>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
 
 public record FpFileName
 {
