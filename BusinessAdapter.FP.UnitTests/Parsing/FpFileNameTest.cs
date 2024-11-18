@@ -8,7 +8,7 @@ using Schleupen.AS4.BusinessAdapter.FP.Parsing;
 public class FpFileNameTest
 {
 	[Test]
-	public void FromFileName_ValidAckFilename_ShouldReturnParsedFilename()
+	public void FromFileName_AcknowledgementMessage_ShouldReturnParsedFilename()
 	{
 		string filename = "20240126_TPS_EIC1_EIC2_001_ACK_2024-01-26T08-22-52Z.XML";
 
@@ -24,7 +24,7 @@ public class FpFileNameTest
 	}
 
 	[Test]
-	public void FromFileName_ValidAnoFilename_ShouldReturnParsedFilename()
+	public void FromFileName_AnomalyReport_ShouldReturnParsedFilename()
 	{
 		string filename = "20240126_TPS_EIC1_EIC2_001_ANO_2024-01-26T08-22-52Z.XML";
 
@@ -40,7 +40,7 @@ public class FpFileNameTest
 	}
 
 	[Test]
-	public void FromFileName_ValidCnfFilename_ShouldReturnParsedFilename()
+	public void FromFileName_ValidConfirmationReport_ShouldReturnParsedFilename()
 	{
 		string filename = "20240126_TPS_EIC1_EIC2_001_CNF_2024-01-26T08-22-52Z.XML";
 
@@ -56,7 +56,7 @@ public class FpFileNameTest
 	}
 
 	[Test]
-	public void FromFileName_ValidStatusFilename_ShouldReturnParsedFilename()
+	public void FromFileName_StatusRequest_ShouldReturnParsedFilename()
 	{
 		string filename = "20240126_TPS_EIC1_EIC2.XML";
 
@@ -72,7 +72,7 @@ public class FpFileNameTest
 	}
 
 	[Test]
-	public void FromFileName_ValidScheduleFilename_ShouldReturnParsedFilename()
+	public void FromFileName_ScheduleMessage_ShouldReturnParsedFilename()
 	{
 		string filename = "20240126_TPS_EIC1_EIC2_001.XML";
 

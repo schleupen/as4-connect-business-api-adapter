@@ -124,16 +124,27 @@ public record FpFileName
 
 	public string ToFileName()
 	{
-		DateTime dateTimeStamp;
-		if (Date == null)
-		{
-			dateTimeStamp = DateTime.UtcNow;
-		}
-		else
-		{
-			dateTimeStamp = DateTime.Parse(Date).ToUniversalTime();
-		}
+		var dateTimeStamp = GetDatePrefix();
 
+		switch (this.MessageType)
+		{
+			case FpMessageType.Anomaly:
+			case FpMessageType.Acknowledge:
+			case FpMessageType.Confirmation:
+				var messageTypeString = GetMessageTypeValue();
+				var timeStamp = GetTimestampPostfix();
+				return $"{dateTimeStamp}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{timeStamp}{XmlFileExtension}";
+			case FpMessageType.Schedule:
+				return $"{dateTimeStamp}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
+			case FpMessageType.Status:
+				return $"{dateTimeStamp}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
+	}
+
+	private string GetTimestampPostfix()
+	{
 		DateTime timeStamp;
 		if (Timestamp == null)
 		{
@@ -144,22 +155,25 @@ public record FpFileName
 			timeStamp = DateTime.Parse(Timestamp).ToUniversalTime();
 		}
 
-		if (this.MessageType == FpMessageType.Schedule)
-		{
-			return $"{dateTimeStamp:yyyyMMdd}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
-		}
-
-		if (this.MessageType == FpMessageType.Status)
-		{
-			return $"{dateTimeStamp:yyyyMMdd}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
-		}
-
-		var messageTypeString = ToMessageTypeValue();
-
-		return $"{dateTimeStamp:yyyyMMdd}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{timeStamp:yyyy-MM-ddTHH\\-mm\\-ssZ}{XmlFileExtension}";
+		return $"{timeStamp:yyyy-MM-ddTHH\\-mm\\-ssZ}";
 	}
 
-	private string? ToMessageTypeValue()
+	private string GetDatePrefix()
+	{
+		DateTime dateTimeStamp;
+		if (Date == null)
+		{
+			dateTimeStamp = DateTime.UtcNow;
+		}
+		else
+		{
+			dateTimeStamp = DateTime.Parse(Date).ToUniversalTime();
+		}
+
+		return $"{dateTimeStamp:yyyyMMdd}";
+	}
+
+	private string? GetMessageTypeValue()
 	{
 		string? messageTypeString = MessageType switch
 		{
