@@ -44,7 +44,9 @@ internal sealed partial class EssFileParserTest
 
 		public string EssScheduleMessagePathOfWrongFile => Path.Combine(TestContext.CurrentContext.TestDirectory, "Parsing", "InvalidFiles", "20240125_PPS_FINGRID_0X1001A1001A264_003.xml");
 
-		public string ExampleEssAnomalyReportPath => FilePath("20240125_PPS_FINGRID_0X1001A1001A264_002_ANO_2024-01-26T08-23-44Z.xml");
+		public string AnomalyReportPath => FilePath("20241105_TPS_10YDE-VE-------2_10XDE-VE-TRANSMK_001_ANO_2024-11-05T09-10-46Z.XML");
+
+		public string AnomalyReportV41Path => FilePath("20240125_PPS_FINGRID_0X1001A1001A264_002_ANO_2024-01-26T08-23-44Z.xml");
 
 		public string ExampleEssStatusRequestPath => FilePath("20241022_SRQ_11X0-1111-0762-I_10XDE-AOE-HTCC-C.xml");
 

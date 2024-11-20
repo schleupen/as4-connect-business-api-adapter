@@ -12,7 +12,7 @@ internal sealed partial class CimFileParserTest
 
 		Assert.That(message, Is.Not.Null);
 		Assert.That(message!.Content, Is.Not.Empty);
-		Assert.That(message.BDEWProperties.BDEWDocumentType, Is.EqualTo("A01"));
+		Assert.That(message.BDEWProperties.BDEWDocumentType, Is.EqualTo(BDEWDocumentTypes.A01));
 		Assert.That(message.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2024-10-07T22:00Z/2024-10-08T22:00Z"));
 		Assert.That(message.BDEWProperties.BDEWDocumentNo, Is.EqualTo("2"));
 		Assert.That(message.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("10XEN-VE-FRISMK"));
@@ -28,7 +28,7 @@ internal sealed partial class CimFileParserTest
 
 		Assert.That(fpMessage, Is.Not.Null);
 		Assert.That(fpMessage!.Content, Is.Not.Empty);
-		Assert.That(fpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A17"));
+		Assert.That(fpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo(BDEWDocumentTypes.A17));
 		Assert.That(fpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("86"));
 		Assert.That(fpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("10XDE-VE-FRISMK"));
 		Assert.That(fpMessage.BDEWProperties.BDEWSubjectPartyRole, Is.EqualTo("A04"));
@@ -43,7 +43,7 @@ internal sealed partial class CimFileParserTest
 
 		Assert.That(fpMessage, Is.Not.Null);
 		Assert.That(fpMessage!.Content, Is.Not.Empty);
-		Assert.That(fpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo("A16"));
+		Assert.That(fpMessage.BDEWProperties.BDEWDocumentType, Is.EqualTo(BDEWDocumentTypes.A16));
 		Assert.That(fpMessage.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2024-10-15T22:00Z/2024-10-16T22:00Z"));
 		Assert.That(fpMessage.BDEWProperties.BDEWDocumentNo, Is.EqualTo("148"));
 		Assert.That(fpMessage.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("10XEN-XIN-NETZ-C"));

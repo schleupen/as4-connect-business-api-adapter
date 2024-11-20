@@ -36,7 +36,7 @@ public class FpFileNameTest
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("1"));
 		Assert.That(parsed.Timestamp.Value.ToString(FpFileName.TimestampFormat), Is.EqualTo("2024-01-26T08-22-52Z"));
-		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Anomaly));
+		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.AnomalyReport));
 	}
 
 	[Test]
@@ -52,7 +52,7 @@ public class FpFileNameTest
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("1"));
 		Assert.That(parsed.Timestamp.Value.ToString(FpFileName.TimestampFormat), Is.EqualTo("2024-01-26T08-22-52Z"));
-		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Confirmation));
+		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.ConfirmationReport));
 	}
 
 	[Test]
@@ -68,7 +68,7 @@ public class FpFileNameTest
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("1"));
 		Assert.That(parsed.Timestamp, Is.Null);
-		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Status));
+		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.StatusRequest));
 	}
 
 	[Test]
@@ -107,7 +107,7 @@ public class FpFileNameTest
 	{
 		var fileName = new FpFileName()
 		{
-			MessageType = FpMessageType.Confirmation,
+			MessageType = FpMessageType.ConfirmationReport,
 			EicNameTso = "1",
 			Date = date,
 			Version = "1",
@@ -120,10 +120,18 @@ public class FpFileNameTest
 	}
 
 	[Test]
-	[TestCase("20240126_TPS_EIC1_EIC2_001_CNF_2024-01-26T08-22-52Z.XML")]
-	public void ToFileName_Valid_ShouldWork(string invalidFileName)
+	[TestCase("20240126_TPS_EIC1_EIC2_001_CNF_2024-01-26T08-22-52Z.xml")]
+	[TestCase("20240126_TPS_EIC1_EIC2_001_ACK_2024-01-26T08-22-52Z.xml")]
+	[TestCase("20240126_TPS_EIC1_EIC2_001.xml")]
+	public void ToFileName_Valid_ShouldWork(string validFileName)
 	{
-		var fileName = FpFileName.FromFileName(invalidFileName);
-		Assert.DoesNotThrow(() => fileName.ToFileName());
+		var fileName = FpFileName.FromFileName(validFileName);
+		var fileNameString = fileName.ToFileName();
+		Assert.That(fileNameString, Is.EqualTo(validFileName));
+	}
+
+	public void x()
+	{
+
 	}
 }

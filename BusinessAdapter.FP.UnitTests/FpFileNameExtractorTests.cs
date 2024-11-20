@@ -16,6 +16,7 @@ public sealed partial class FpFileNameExtractorTests
 			fixture.Data.SenderEIC,
 			fixture.Data.ReceiverEIC,
 			DateTime.Parse(messageDateTime),
+			FpMessageType.Schedule,
 			fixture.Data.FahrplanHaendlerTyp);
 
 		var fpMessage = new InboxFpMessage(
@@ -50,7 +51,7 @@ public sealed partial class FpFileNameExtractorTests
 	}
 
 	[Test]
-	public void ExtractFileName_SampleEssFileAndSampleEICMapping_ShouldReturnCorrectFileName()
+	public void ExtractFileName_EssConfirmationReport_ShouldReturnCorrectFileName()
 	{
 		FpFileNameExtractor fileNameExtractor = fixture.CreateExtractorWithFpFileParser();
 		var message = new InboxFpMessage("1337",
@@ -58,7 +59,7 @@ public sealed partial class FpFileNameExtractorTests
 			new ReceivingParty("9903025000008", "type"),
 			null,
 			File.ReadAllBytes("./Parsing/2024-11-13T09_00_56.5778588Z_A07_1.edi.gz"),
-			new FpBDEWProperties("A09", "", "2024-11-13", "", ""));
+			new FpBDEWProperties("A09", "1", "2024-11-13", "", ""));
 
 		var fileName = fileNameExtractor.ExtractFileName(message);
 
@@ -66,6 +67,6 @@ public sealed partial class FpFileNameExtractorTests
 		Console.WriteLine(fileNameString);
 		Assert.That(fileName.Date, Is.EqualTo("20241113"));
 		Assert.That(fileNameString, Does.EndWith($"2024-11-13T09-00-54Z.xml"));
-		Assert.That(fileNameString, Is.EqualTo("20241113_TPS_11XSWVIERNHEIMVR_10XDE-EON-NETZ-C__CNF_2024-11-13T09-00-54Z.xml"));
+		Assert.That(fileNameString, Is.EqualTo("20241113_TPS_11XSWVIERNHEIMVR_10XDE-EON-NETZ-C_001_CNF_2024-11-13T09-00-54Z.xml"));
 	}
 }

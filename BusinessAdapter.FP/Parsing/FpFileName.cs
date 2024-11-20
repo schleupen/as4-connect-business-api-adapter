@@ -74,7 +74,7 @@ public record FpFileName
 				FahrplanHaendlerTyp = type,
 				EicNameBilanzkreis = eicNameBilanzkreis,
 				EicNameTso = eicNameTso,
-				MessageType = FpMessageType.Status,
+				MessageType = FpMessageType.StatusRequest,
 				Timestamp = null,
 				Version = version,
 			};
@@ -113,9 +113,9 @@ public record FpFileName
 		var messageType = messageTypePart switch
 		{
 			"ACK" => FpMessageType.Acknowledge,
-			"ANO" => FpMessageType.Anomaly,
-			"CNF" => FpMessageType.Confirmation,
-			"CRQ" => FpMessageType.Status,
+			"ANO" => FpMessageType.AnomalyReport,
+			"CNF" => FpMessageType.ConfirmationReport,
+			"CRQ" => FpMessageType.StatusRequest,
 			_ => FpMessageType.Schedule
 		};
 
@@ -127,8 +127,10 @@ public record FpFileName
 			EicNameBilanzkreis = eicNameBilanzkreis,
 			EicNameTso = eicNameTso,
 			MessageType = messageType,
-			Timestamp = timestamp == null ? null : DateTime.ParseExact(timestamp, TimestampFormat, CultureInfo.InvariantCulture, DateTimeStyles.None).ToUniversalTime(),
-			Version = messageType == FpMessageType.Status ? "1" : version,
+			Timestamp = timestamp == null
+				? null
+				: DateTime.ParseExact(timestamp, TimestampFormat, CultureInfo.InvariantCulture, DateTimeStyles.None).ToUniversalTime(),
+			Version = messageType == FpMessageType.StatusRequest ? "1" : version,
 		};
 	}
 
@@ -138,20 +140,23 @@ public record FpFileName
 
 		switch (this.MessageType)
 		{
-			case FpMessageType.Anomaly:
+			case FpMessageType.AnomalyReport:
 			case FpMessageType.Acknowledge:
-			case FpMessageType.Confirmation:
-				var messageTypeString = GetMessageTypeValue();
-				var timeStamp = GetTimestampPostfix();
+			case FpMessageType.ConfirmationReport:
 				return
-					$"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{timeStamp}{XmlFileExtension}";
+					$"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{GetVersion()}_{GetMessageTypeValue()}_{GetTimestampPostfix()}{XmlFileExtension}";
 			case FpMessageType.Schedule:
-				return $"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
-			case FpMessageType.Status:
+				return $"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{GetVersion()}{XmlFileExtension}";
+			case FpMessageType.StatusRequest:
 				return $"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
 			default:
 				throw new ArgumentOutOfRangeException();
 		}
+	}
+
+	private string GetVersion()
+	{
+		return Version.PadLeft(3, '0');
 	}
 
 	private string GetTimestampPostfix()
@@ -161,8 +166,7 @@ public record FpFileName
 			throw new FormatException("MessageDateTime is null");
 		}
 
-		return Timestamp.Value.
-			ToUniversalTime()
+		return Timestamp.Value.ToUniversalTime()
 			.ToString(TimestampFormat);
 	}
 
@@ -186,10 +190,84 @@ public record FpFileName
 		string? messageTypeString = MessageType switch
 		{
 			FpMessageType.Acknowledge => "ACK",
-			FpMessageType.Anomaly => "ANO",
-			FpMessageType.Confirmation => "CNF",
+			FpMessageType.AnomalyReport => "ANO",
+			FpMessageType.ConfirmationReport => "CNF",
 			_ => throw new NotSupportedException("")
 		};
 		return messageTypeString;
+	}
+
+	public static FpFileName ScheduleMessageFileName(string Date, string EicNameBilanzkreis, string EicNameTso, string version)
+	{
+		return new FpFileName
+		{
+			Date = Date,
+			FahrplanHaendlerTyp = "TPS",
+			EicNameBilanzkreis = EicNameBilanzkreis,
+			EicNameTso = EicNameTso,
+			Version = version,
+			MessageType = FpMessageType.Schedule
+		};
+	}
+
+	public static FpFileName AcknowledgeMessageForScheduleFileName(string Date, string EicNameBilanzkreis, string EicNameTso, string version, DateTime timestamp)
+	{
+		return new FpFileName
+		{
+			Date = Date,
+			FahrplanHaendlerTyp = "TPS",
+			EicNameBilanzkreis = EicNameBilanzkreis,
+			EicNameTso = EicNameTso,
+			Version = version,
+			MessageType = FpMessageType.Acknowledge
+		};
+	}
+
+	public static FpFileName AcknowledgeMessageForStatusRequestFileName(string Date, string EicNameBilanzkreis, string EicNameTso, DateTime timestamp)
+	{
+		return new FpFileName
+		{
+			Date = Date,
+			FahrplanHaendlerTyp = "SRQ",
+			EicNameBilanzkreis = EicNameBilanzkreis,
+			EicNameTso = EicNameTso,
+			MessageType = FpMessageType.Acknowledge
+		};
+	}
+
+	public static FpFileName StatusRequestFileName(string Date, string EicNameBilanzkreis, string EicNameTso)
+	{
+		return new FpFileName
+		{
+			Date = Date,
+			FahrplanHaendlerTyp = "SRQ",
+			EicNameBilanzkreis = EicNameBilanzkreis,
+			EicNameTso = EicNameTso,
+			MessageType = FpMessageType.StatusRequest
+		};
+	}
+
+	public static FpFileName AnomalyReportFileName(string Date, string EicNameBilanzkreis, string EicNameTso, string version, DateTime timestamp)
+	{
+		return new FpFileName
+		{
+			Date = Date,
+			FahrplanHaendlerTyp = "TPS",
+			EicNameBilanzkreis = EicNameBilanzkreis,
+			EicNameTso = EicNameTso,
+			MessageType = FpMessageType.AnomalyReport
+		};
+	}
+
+	public static FpFileName ConfirmationReportFileName(string Date, string EicNameBilanzkreis, string EicNameTso, string version, DateTime timestamp)
+	{
+		return new FpFileName
+		{
+			Date = Date,
+			FahrplanHaendlerTyp = "SRQ",
+			EicNameBilanzkreis = EicNameBilanzkreis,
+			EicNameTso = EicNameTso,
+			MessageType = FpMessageType.ConfirmationReport
+		};
 	}
 }

@@ -23,12 +23,12 @@ public class CimFileParser : IFpFileSpecificParser
 		if (fpFileName.MessageType == FpMessageType.Acknowledge)
 		{
 			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
-			documentType = "A17";
+			documentType = BDEWDocumentTypes.A17;
 		}
-		else if (fpFileName.MessageType == FpMessageType.Anomaly)
+		else if (fpFileName.MessageType == FpMessageType.AnomalyReport)
 		{
 			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
-			documentType = "A16";
+			documentType = BDEWDocumentTypes.A16;
 		}
 		else
 		{
@@ -61,7 +61,7 @@ public class CimFileParser : IFpFileSpecificParser
 
 		string? scheduleTimeInterval = "";
 		// For acknowledge und status messages we take the date from the filename
-		if (fpFileName.MessageType == FpMessageType.Acknowledge || fpFileName.MessageType == FpMessageType.Status)
+		if (fpFileName.MessageType == FpMessageType.Acknowledge || fpFileName.MessageType == FpMessageType.StatusRequest)
 		{
 			scheduleTimeInterval = fpFileName.Date;
 		}
@@ -151,7 +151,9 @@ public class CimFileParser : IFpFileSpecificParser
 		return new FpPayloadInfo(
 			new EIC(senderIdentification),
 			new EIC(receiverIdentification),
-			creationDateTime);
+			creationDateTime,
+			FpMessageType.Acknowledge, // TODO
+			"TPS"); // TODO
 	}
 
 	private static DateTime ParseCreationDateTime(XDocument document, XNamespace? ns)
@@ -174,12 +176,12 @@ public class CimFileParser : IFpFileSpecificParser
 				return doc.Descendants(ns + "received_MarketDocument.revisionNumber").First().Value;
 			case FpMessageType.Schedule:
 				return doc.Descendants(ns + "revisionNumber").First().Value;
-			case FpMessageType.Confirmation:
+			case FpMessageType.ConfirmationReport:
 				// This should be confirmed_market-document.revisionNumber
 				return doc.Descendants(ns + "revisionNumber").First().Value;
-			case FpMessageType.Anomaly:
+			case FpMessageType.AnomalyReport:
 				return fpFileName.Version;
-			case FpMessageType.Status:
+			case FpMessageType.StatusRequest:
 				return "1"; // Is this correct?
 			default:
 				throw new ArgumentOutOfRangeException();

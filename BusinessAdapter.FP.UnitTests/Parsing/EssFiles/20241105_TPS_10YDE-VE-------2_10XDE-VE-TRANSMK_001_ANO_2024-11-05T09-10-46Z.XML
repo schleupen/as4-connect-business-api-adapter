@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE AnomalyReport SYSTEM "../scheduleV2r3/dtd/anomaly-xml.dtd">
+<AnomalyReport DtdVersion="2" DtdRelease="3">
+    <MessageIdentification v="20241106-10XDE-VE-TRANSMK-42427"/>
+    <MessageDateTime v="2024-11-05T08:10:46Z"/>
+    <SenderIdentification v="10XDE-VE-TRANSMK" codingScheme="A01"/>
+    <SenderRole v="A04"/>
+    <ReceiverIdentification v="11XSWHETT-V----V" codingScheme="A01"/>
+    <ReceiverRole v="A08"/>
+    <ScheduleTimeInterval v="2024-11-05T23:00Z/2024-11-06T23:00Z"/>
+</AnomalyReport>

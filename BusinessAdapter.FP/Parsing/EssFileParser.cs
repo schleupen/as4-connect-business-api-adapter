@@ -1,5 +1,7 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Text;
 using System.Xml.Linq;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
@@ -13,13 +15,14 @@ public class EssFileParser : IFpFileSpecificParser
 		FpFileName fpFileName = FpFileName.FromFileName(filename);
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-		var documentNo = ParseDocumentNo(fpFileName.MessageType, document, ns, fpFileName);
-		var documentType = ParseDocumentType(document, ns, fpFileName.MessageType);
+		var messageType = fpFileName.MessageType;
+
+		var documentNo = ParseDocumentNo(messageType, document, ns, fpFileName);
+		var documentType = ParseDocumentType(messageType, document, ns);
 		var senderIdentification = ParseSenderIdentification(document, ns);
 		var senderRole = ParseSenderRole(document, ns);
 		var receiverIdentification = ParseReceiverIdentification(document, ns);
-		var receiverRole = ParseReceiverRole(document, ns);
-		var scheduleTimeInterval = ParseScheduleTimeInterval(document, path, fpFileName, ns);
+		var fulfillmentDate = ParseFulfillmentDate(messageType, document, fpFileName.Date, ns);
 
 		return new FpFile(
 			new EIC(senderIdentification),
@@ -30,7 +33,7 @@ public class EssFileParser : IFpFileSpecificParser
 			new FpBDEWProperties(
 				documentType,
 				documentNo,
-				scheduleTimeInterval, // TODO use YYYY-MM-DD for FulfillmentData
+				fulfillmentDate,
 				senderIdentification,
 				senderRole)
 		);
@@ -41,51 +44,98 @@ public class EssFileParser : IFpFileSpecificParser
 	{
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-		var senderIdentification = ParseSenderIdentification(document, ns);
-		var receiverIdentification = ParseReceiverIdentification(document, ns);
-		var messageDateTime = ParseMessageDateTime(document, ns);
+		var messageType = ParseMessageType(document, ns);
 
 		return new FpPayloadInfo(
-			new EIC(senderIdentification),
-			new EIC(receiverIdentification),
-			messageDateTime);
+			new EIC(ParseSenderIdentification(document, ns)),
+			new EIC(ParseReceiverIdentification(document, ns)),
+			ParseMessageDateTime(document, ns),
+			messageType,
+			GetFahrplanhaendlerTyp(messageType, document, ns));
 	}
 
-	private static string ParseScheduleTimeInterval(XDocument document, string path, FpFileName fpFileName, XNamespace? ns)
+	private string GetFahrplanhaendlerTyp(FpMessageType messageType, XDocument doc, XNamespace? ns)
 	{
-		string scheduleTimeInterval;
-		// For acknowledge und status messages we take the date from the filename
-		if (fpFileName.MessageType == FpMessageType.Acknowledge || fpFileName.MessageType == FpMessageType.Status)
+		switch (messageType)
 		{
-			scheduleTimeInterval = fpFileName.Date;
+			case FpMessageType.Acknowledge:
+				return "TPS"; // this is only correct for acknowledge messages received in response to a schedule message. To identify the correct types (TPS, SRQ) we need to establish persistence for outgoing messages
+			case FpMessageType.AnomalyReport:
+			case FpMessageType.ConfirmationReport:
+			case FpMessageType.Schedule:
+				return "TPS";
+			case FpMessageType.StatusRequest:
+				return "SRQ";
+			default:
+				throw new ArgumentOutOfRangeException(nameof(messageType), messageType, null);
+		}
+	}
+
+	private FpMessageType ParseMessageType(XDocument document, XNamespace? ns)
+	{
+		var rootName = document.Root?.Name.LocalName;
+
+		switch (rootName)
+		{
+			case "AnomalyReport":
+				return FpMessageType.AnomalyReport;
+			case "StatusRequest":
+				return FpMessageType.StatusRequest;
+			case "ConfirmationReport":
+				return FpMessageType.ConfirmationReport;
+			case "ScheduleMessage":
+				return FpMessageType.Schedule;
+			case "AcknowledgementMessage":
+				return FpMessageType.Acknowledge;
+			default:
+				throw new ValidationException($"failed to parse MessageType (XmlRoot: '{rootName}').");
+		}
+	}
+
+	private static string ParseFulfillmentDate(FpMessageType messageType, XDocument document, string dateFromFileName, XNamespace? ns)
+	{
+		// For acknowledge und status messages we take the date from the filename
+		if (messageType == FpMessageType.Acknowledge || messageType == FpMessageType.StatusRequest)
+		{
+			if (DateTime.TryParseExact(dateFromFileName, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture,
+				    DateTimeStyles.AssumeUniversal, out DateTime toDate))
+			{
+				return toDate.ToUniversalTime().ToString("yyyy-MM-dd");
+			}
 		}
 		else
 		{
-			scheduleTimeInterval = document.Descendants(ns + "ScheduleTimeInterval").FirstOrDefault()?.Attribute("v")?.Value;
+			var scheduleTimeInterval = ParseElementValueOrThrow(document, ns, "ScheduleTimeInterval");
+
+			var parts = scheduleTimeInterval.Split('/');
+			if (parts.Length == 2)
+			{
+				var to = parts[1];
+
+				if (DateTime.TryParse(to, out DateTime toDate))
+				{
+					return toDate.ToUniversalTime().ToString("yyyy-MM-dd");
+				}
+			}
 		}
 
-		if (scheduleTimeInterval == null)
-		{
-			throw new ArgumentException($"failed to parse ScheduleTimeInterval.");
-		}
-
-		return scheduleTimeInterval;
+		throw new ValidationException($"failed to parse ScheduleTimeInterval.");
 	}
 
-	private string ParseDocumentType(XDocument document, XNamespace? ns, FpMessageType type)
+	private string ParseDocumentType(FpMessageType type, XDocument doc, XNamespace? ns)
 	{
 		if (type == FpMessageType.Acknowledge)
 		{
 			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
-			return "A17";
+			return BDEWDocumentTypes.A17;
 		}
-		else if (type == FpMessageType.Anomaly)
+		else if (type == FpMessageType.AnomalyReport)
 		{
 			// Tabelle 6-1 AG-FPM_Regelungen-zum-sicheren-Austausch-im-Fahrplanprozess_v2.1_DE_Final_2023-10-01
-			return "A16";
+			return BDEWDocumentTypes.A16;
 		}
 
-		return document.Descendants(ns + "MessageType").First().Attribute("v").Value;
+		return ParseElementValueOrThrow(doc, ns, "MessageType");
 	}
 
 	private string ParseDocumentNo(
@@ -98,18 +148,18 @@ public class EssFileParser : IFpFileSpecificParser
 		switch (type)
 		{
 			case FpMessageType.Acknowledge:
-				result = doc.Descendants(ns + "ReceivingMessageVersion").First().Attribute("v").Value;
+				result = ParseElementValueOrThrow(doc, ns, "ReceivingMessageVersion");
 				break;
 			case FpMessageType.Schedule:
-				result = doc.Descendants(ns + "MessageVersion").First().Attribute("v").Value;
+				result = ParseElementValueOrThrow(doc, ns, "MessageVersion");
 				break;
-			case FpMessageType.Confirmation:
-				result = doc.Descendants(ns + "ConfirmedMessageVersion").First().Attribute("v").Value;
+			case FpMessageType.ConfirmationReport:
+				result = ParseElementValueOrThrow(doc, ns, "ConfirmedMessageVersion");
 				break;
-			case FpMessageType.Anomaly:
+			case FpMessageType.AnomalyReport:
 				result = fpFileName.Version;
 				break;
-			case FpMessageType.Status:
+			case FpMessageType.StatusRequest:
 				result = "1";
 				break;
 			default:
@@ -118,7 +168,7 @@ public class EssFileParser : IFpFileSpecificParser
 
 		if (result == null)
 		{
-			throw new ArgumentException($"failed to parse DocumentNo from");
+			throw new ValidationException($"failed to parse DocumentNo from");
 		}
 
 		return result;
@@ -126,59 +176,36 @@ public class EssFileParser : IFpFileSpecificParser
 
 	private static string ParseSenderIdentification(XDocument document, XNamespace? ns)
 	{
-		var result = document.Descendants(ns + "SenderIdentification").FirstOrDefault()?.Attribute("v")?.Value;
-
-		if (result == null)
-		{
-			throw new ArgumentException($"failed to parse SenderIdentification.");
-		}
-
-		return result;
+		return ParseElementValueOrThrow(document, ns, "SenderIdentification");
 	}
 
 	private static string ParseReceiverIdentification(XDocument document, XNamespace? ns)
 	{
-		var result = document.Descendants(ns + "ReceiverIdentification").FirstOrDefault()?.Attribute("v")?.Value;
-		if (result == null)
+		return ParseElementValueOrThrow(document, ns, "ReceiverIdentification");
+	}
+
+	private static string ParseElementValueOrThrow(XDocument document, XNamespace? ns, string elementName)
+	{
+		// TODO better use XPath?
+		var value = document.Descendants(ns + elementName).SingleOrDefault()?.Attribute("v")?.Value;
+
+		if (value == null)
 		{
-			throw new ArgumentException($"failed to parse ReceiverIdentification.");
+			throw new ValidationException($"failed to parse '{elementName}'.");
 		}
 
-		return result;
+		return value;
 	}
 
 	private static string ParseSenderRole(XDocument document, XNamespace? ns)
 	{
-		var result = document.Descendants(ns + "SenderRole").First().Attribute("v").Value;
-
-		if (result == null)
-		{
-			throw new ArgumentException($"failed to parse SenderRole.");
-		}
-
-		return result;
-	}
-
-	private static string? ParseReceiverRole(XDocument document, XNamespace? ns)
-	{
-		var result = document.Descendants(ns + "ReceiverRole").FirstOrDefault()?.Attribute("v")?.Value;
-
-		if (result == null)
-		{
-			throw new ArgumentException($"failed to parse ReceiverRole.");
-		}
-
-		return result;
+		return ParseElementValueOrThrow(document, ns, "SenderRole");
 	}
 
 	private static DateTime ParseMessageDateTime(XDocument document, XNamespace? ns)
 	{
-		var result = document.Descendants(ns + "MessageDateTime").FirstOrDefault()?.Attribute("v").Value;
-		if (result == null)
-		{
-			throw new ArgumentException($"failed to parse MessageDateTime.");
-		}
+		var value = ParseElementValueOrThrow(document, ns, "MessageDateTime");
 
-		return DateTime.Parse(result).ToUniversalTime();
+		return DateTime.Parse(value).ToUniversalTime();
 	}
 }
