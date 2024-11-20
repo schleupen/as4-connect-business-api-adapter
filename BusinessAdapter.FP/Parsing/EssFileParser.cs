@@ -22,7 +22,7 @@ public class EssFileParser : IFpFileSpecificParser
 		var senderIdentification = ParseSenderIdentification(document, ns);
 		var senderRole = ParseSenderRole(document, ns);
 		var receiverIdentification = ParseReceiverIdentification(document, ns);
-		var fulfillmentDate = ParseFulfillmentDate(messageType, document, fpFileName.Date, ns);
+		var fulfillmentDate = ParseBDEWFulfillmentDate(messageType, document, fpFileName.Date, ns);
 
 		return new FpFile(
 			new EIC(senderIdentification),
@@ -92,7 +92,7 @@ public class EssFileParser : IFpFileSpecificParser
 		}
 	}
 
-	private static string ParseFulfillmentDate(FpMessageType messageType, XDocument document, string dateFromFileName, XNamespace? ns)
+	private static string ParseBDEWFulfillmentDate(FpMessageType messageType, XDocument document, string dateFromFileName, XNamespace? ns)
 	{
 		// For acknowledge und status messages we take the date from the filename
 		if (messageType == FpMessageType.Acknowledge || messageType == FpMessageType.StatusRequest)

@@ -1,5 +1,7 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Text;
 using System.Xml.Linq;
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
@@ -59,32 +61,7 @@ public class CimFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve receiver role from file {path}.");
 		}
 
-		string? scheduleTimeInterval = "";
-		// For acknowledge und status messages we take the date from the filename
-		if (fpFileName.MessageType == FpMessageType.Acknowledge || fpFileName.MessageType == FpMessageType.StatusRequest)
-		{
-			scheduleTimeInterval = fpFileName.Date;
-		}
-		else
-		{
-			var timeInterval = document.Descendants(ns + "schedule_Time_Period.timeInterval").FirstOrDefault();
-
-			if (timeInterval != null)
-			{
-				var startTimeInterval = timeInterval.Descendants(ns + "start").FirstOrDefault()?.Value;
-				var endTimeInterval = timeInterval.Descendants(ns + "end").FirstOrDefault()?.Value;
-				if (startTimeInterval is not null && endTimeInterval is not null)
-				{
-					scheduleTimeInterval = startTimeInterval + "/" + endTimeInterval;
-				}
-			}
-
-		}
-
-		if (scheduleTimeInterval == null)
-		{
-			throw new ArgumentException($"Could not retrieve fulfillment date from file {path}.");
-		}
+		var scheduleTimeInterval = ParseBDEWFulfillmentDate(document, path, fpFileName, ns);
 
 		FpBDEWProperties bdewProperties = new FpBDEWProperties(
 			documentType,
@@ -100,6 +77,50 @@ public class CimFileParser : IFpFileSpecificParser
 			filename,
 			path,
 			bdewProperties);
+	}
+
+	private static string? ParseBDEWFulfillmentDate(XDocument document, string path, FpFileName fpFileName, XNamespace? ns)
+	{
+		// For acknowledge und status messages we take the date from the filename
+		if (fpFileName.MessageType == FpMessageType.Acknowledge || fpFileName.MessageType == FpMessageType.StatusRequest)
+		{
+			if (DateTime.TryParseExact(fpFileName.Date, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture,
+				    DateTimeStyles.AssumeUniversal, out DateTime toDate))
+			{
+				return toDate.ToUniversalTime().ToString("yyyy-MM-dd");
+			}
+		}
+		else
+		{
+			var timeInterval = document.Descendants(ns + "schedule_Time_Period.timeInterval").FirstOrDefault();
+
+			if (timeInterval != null)
+			{
+				var endTimeInterval = timeInterval.Descendants(ns + "end").FirstOrDefault()?.Value;
+				if (endTimeInterval is not null)
+				{
+					if (DateTime.TryParse(endTimeInterval, out DateTime toDate))
+					{
+						return toDate.ToUniversalTime().ToString("yyyy-MM-dd");
+					}
+				}
+			}
+		}
+
+		throw new ValidationException("could not parse BDEWFulfillmentDate");
+	}
+
+	private static string ParseElementValueOrThrow(XDocument document, XNamespace? ns, string elementName)
+	{
+		// TODO better use XPath?
+		var value = document.Descendants(ns + elementName).SingleOrDefault()?.Attribute("v")?.Value;
+
+		if (value == null)
+		{
+			throw new ValidationException($"failed to parse '{elementName}'.");
+		}
+
+		return value;
 	}
 
 	public FpPayloadInfo ParsePayload(XDocument document)
