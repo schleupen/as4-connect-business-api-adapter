@@ -13,9 +13,10 @@ public class CimFileParser : IFpFileSpecificParser
 		string xmlData = File.ReadAllText(path);
 		byte[] content = Encoding.UTF8.GetBytes(xmlData);
 		FpFileName fpFileName = FpFileName.FromFileName(filename);
+		var messageType = fpFileName.MessageType;
 		XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-		var documentNo = ParseCIMDocumentNoForMessageType(fpFileName.MessageType, document, ns, fpFileName);
+		var documentNo = ParseCimDocumentNoForMessageType(fpFileName.MessageType, document, ns, fpFileName);
 		if (documentNo == null)
 		{
 			throw new ArgumentException($"Could not document number from file {path}.");
@@ -61,12 +62,12 @@ public class CimFileParser : IFpFileSpecificParser
 			throw new ArgumentException($"Could not retrieve receiver role from file {path}.");
 		}
 
-		var scheduleTimeInterval = ParseBDEWFulfillmentDate(document, path, fpFileName, ns);
+		var bdewFulfillmentDate = ParseBDEWFulfillmentDate(document, messageType, fpFileName.Date, ns);
 
 		FpBDEWProperties bdewProperties = new FpBDEWProperties(
 			documentType,
 			documentNo,
-			scheduleTimeInterval, // TODO : use YYYY-MM-DD for FulfillmentData
+			bdewFulfillmentDate,
 			senderIdentification,
 			senderRole);
 
@@ -79,35 +80,67 @@ public class CimFileParser : IFpFileSpecificParser
 			bdewProperties);
 	}
 
-	private static string? ParseBDEWFulfillmentDate(XDocument document, string path, FpFileName fpFileName, XNamespace? ns)
+	private static string ParseBDEWFulfillmentDate(XDocument document, FpMessageType messageType, string fileDate, XNamespace? ns)
 	{
-		// For acknowledge und status messages we take the date from the filename
-		if (fpFileName.MessageType == FpMessageType.Acknowledge || fpFileName.MessageType == FpMessageType.StatusRequest)
+		switch (messageType)
 		{
-			if (DateTime.TryParseExact(fpFileName.Date, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture,
-				    DateTimeStyles.AssumeUniversal, out DateTime toDate))
-			{
-				return toDate.ToUniversalTime().ToString("yyyy-MM-dd");
-			}
-		}
-		else
-		{
-			var timeInterval = document.Descendants(ns + "schedule_Time_Period.timeInterval").FirstOrDefault();
-
-			if (timeInterval != null)
-			{
-				var endTimeInterval = timeInterval.Descendants(ns + "end").FirstOrDefault()?.Value;
-				if (endTimeInterval is not null)
+			case FpMessageType.Acknowledge:
+			case FpMessageType.StatusRequest:
+				if (DateTime.TryParseExact(fileDate,
+					    "yyyyMMdd",
+					    System.Globalization.CultureInfo.InvariantCulture,
+					    DateTimeStyles.AssumeUniversal, out DateTime fileDateParsed))
 				{
-					if (DateTime.TryParse(endTimeInterval, out DateTime toDate))
-					{
-						return toDate.ToUniversalTime().ToString("yyyy-MM-dd");
-					}
+					return fileDateParsed.ToHyphenDate();
 				}
-			}
+
+				break;
+			case FpMessageType.ConfirmationReport:
+				var cnfTimeInterval = ParseTimeInterval(document, ns, "schedule_Period.timeInterval");
+				return cnfTimeInterval.End.ToHyphenDate();
+			case FpMessageType.Schedule:
+			case FpMessageType.AnomalyReport:
+				var timeInterval = ParseTimeInterval(document, ns, "schedule_Time_Period.timeInterval");
+				return timeInterval.End.ToHyphenDate();
+			default:
+				throw new ArgumentOutOfRangeException(nameof(messageType), messageType, null);
 		}
+
 
 		throw new ValidationException("could not parse BDEWFulfillmentDate");
+	}
+
+	private static (DateTime Start, DateTime End) ParseTimeInterval(XDocument document, XNamespace? ns, string elementName)
+	{
+		var timeInterval = document.Descendants(ns + elementName).FirstOrDefault();
+		if (timeInterval == null)
+		{
+			throw new ValidationException($"Element '{elementName}' not found");
+		}
+
+		var startTimeInterval = timeInterval.Descendants(ns + "start").FirstOrDefault()?.Value;
+		var endTimeInterval = timeInterval.Descendants(ns + "end").FirstOrDefault()?.Value;
+
+		if (startTimeInterval is null)
+		{
+			throw new ValidationException($"Element '{elementName}.start' not found");
+		}
+		if (endTimeInterval is null)
+		{
+			throw new ValidationException($"Element '{elementName}.end' not found");
+		}
+
+		if (!DateTime.TryParse(startTimeInterval, out DateTime startDate))
+		{
+			throw new ValidationException($"could not parse value '{startTimeInterval}' from '{elementName}.start' as date.");
+		}
+
+		if (!DateTime.TryParse(endTimeInterval, out DateTime endDate))
+		{
+			throw new ValidationException($"could not parse value '{startTimeInterval}' from '{elementName}.end' as state'");
+		}
+
+		return (startDate, endDate);
 	}
 
 	private static string ParseElementValueOrThrow(XDocument document, XNamespace? ns, string elementName)
@@ -184,7 +217,7 @@ public class CimFileParser : IFpFileSpecificParser
 		return DateTime.Parse(value);
 	}
 
-	private string? ParseCIMDocumentNoForMessageType(
+	private static string? ParseCimDocumentNoForMessageType(
 		FpMessageType type,
 		XDocument doc,
 		XNamespace? ns,

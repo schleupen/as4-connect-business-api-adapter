@@ -77,13 +77,13 @@ internal sealed partial class CimFileParserTest
 
 		Assert.That(file, Is.Not.Null);
 		Assert.That(file!.Content, Is.Not.Empty);
-		Assert.That(file.BDEWProperties.BDEWDocumentType, Is.EqualTo(BDEWDocumentTypes.A16));
-		Assert.That(file.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2024-10-16"));
-		Assert.That(file.BDEWProperties.BDEWDocumentNo, Is.EqualTo("148"));
-		Assert.That(file.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("10XEN-XIN-NETZ-C"));
+		Assert.That(file.BDEWProperties.BDEWDocumentType, Is.EqualTo(BDEWDocumentTypes.A09));
+		Assert.That(file.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2024-11-04"));
+		Assert.That(file.BDEWProperties.BDEWDocumentNo, Is.EqualTo("1337"));
+		Assert.That(file.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("10XDE-EON-NETZ-C"));
 		Assert.That(file.BDEWProperties.BDEWSubjectPartyRole, Is.EqualTo("A04"));
-		Assert.That(file.Sender.Code, Is.EqualTo("10XEN-XIN-NETZ-C"));
-		Assert.That(file.Receiver.Code, Is.EqualTo("11X0-1111-0706-U"));
+		Assert.That(file.Sender.Code, Is.EqualTo(file.BDEWProperties.BDEWSubjectPartyId));
+		Assert.That(file.Receiver.Code, Is.EqualTo("11X0-0000-0706-U"));
 	}
 
 	// TODO missing ParsePayload tests cases

@@ -100,7 +100,7 @@ public class EssFileParser : IFpFileSpecificParser
 			if (DateTime.TryParseExact(dateFromFileName, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture,
 				    DateTimeStyles.AssumeUniversal, out DateTime toDate))
 			{
-				return toDate.ToUniversalTime().ToString("yyyy-MM-dd");
+				return toDate.ToHyphenDate();
 			}
 		}
 		else
@@ -114,7 +114,7 @@ public class EssFileParser : IFpFileSpecificParser
 
 				if (DateTime.TryParse(to, out DateTime toDate))
 				{
-					return toDate.ToUniversalTime().ToString("yyyy-MM-dd");
+					return toDate.ToHyphenDate();
 				}
 			}
 		}
