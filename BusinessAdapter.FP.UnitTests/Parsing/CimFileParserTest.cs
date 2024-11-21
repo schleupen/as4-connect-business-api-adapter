@@ -79,7 +79,7 @@ internal sealed partial class CimFileParserTest
 		Assert.That(file!.Content, Is.Not.Empty);
 		Assert.That(file.BDEWProperties.BDEWDocumentType, Is.EqualTo(BDEWDocumentTypes.A09));
 		Assert.That(file.BDEWProperties.BDEWFulfillmentDate, Is.EqualTo("2024-11-04"));
-		Assert.That(file.BDEWProperties.BDEWDocumentNo, Is.EqualTo("1337"));
+		Assert.That(file.BDEWProperties.BDEWDocumentNo, Is.EqualTo("007"));
 		Assert.That(file.BDEWProperties.BDEWSubjectPartyId, Is.EqualTo("10XDE-EON-NETZ-C"));
 		Assert.That(file.BDEWProperties.BDEWSubjectPartyRole, Is.EqualTo("A04"));
 		Assert.That(file.Sender.Code, Is.EqualTo(file.BDEWProperties.BDEWSubjectPartyId));

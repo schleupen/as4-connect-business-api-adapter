@@ -12,7 +12,7 @@
 		<end>2024-11-04T23:00Z</end>
 	</schedule_Period.timeInterval>
 	<confirmed_MarketDocument.mRID>241104_X0-0000-0706-_XDE-EON-NE</confirmed_MarketDocument.mRID>
-	<confirmed_MarketDocument.revisionNumber>1337</confirmed_MarketDocument.revisionNumber>
+	<confirmed_MarketDocument.revisionNumber>7</confirmed_MarketDocument.revisionNumber>
 	<domain.mRID codingScheme="A01">10YDE-EON------1</domain.mRID>
 	<Reason>
 		<code>A06</code>
