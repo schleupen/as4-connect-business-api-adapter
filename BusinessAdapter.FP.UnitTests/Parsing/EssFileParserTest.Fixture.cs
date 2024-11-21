@@ -24,6 +24,11 @@ internal sealed partial class EssFileParserTest
 			path);
 	}
 
+	private FpPayloadInfo ParsePayload(string filePath)
+	{
+		return fixture.CreateTestObject().ParsePayload(XDocument.Load(filePath));
+	}
+
 	private sealed class Fixture
 	{
 		public TestData TestData { get; } = new();

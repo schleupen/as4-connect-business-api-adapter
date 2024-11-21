@@ -24,6 +24,11 @@ internal sealed partial class CimFileParserTest
 			path);
 	}
 
+	private FpPayloadInfo ParsePayload(string path)
+	{
+		return fixture.CreateTestObject().ParsePayload(XDocument.Load(path));
+	}
+
 	private sealed class Fixture
 	{
 		public TestData TestData { get; } = new();
@@ -49,7 +54,7 @@ internal sealed partial class CimFileParserTest
 
 		public string AnomalyReportPath => CimFilePath("20241016_PPS_10YEN-XIN------1_10XEN-XIN-NETZ-C_148_ANO_2024-10-15T22-00-11Z.xml");
 
-		public string ConfirmationReportPath => CimFilePath("20241104_TPS_11X0-0000-0706-U_10XDE-EON-NETZ-C_1_CNF_2024-11-03T14-18-21Z.xml");
+		public string ConfirmationReportPath => CimFilePath("20241104_TPS_11X0-0000-0706-U_10XDE-EON-NETZ-C_007_CNF_2024-11-03T14-18-21Z.xml");
 
 		public string StatusRequestPath => CimFilePath("20241104_SRQ_11X0-0000-0619-M_10XDE-VE-TRANSMK.xml");
 	}

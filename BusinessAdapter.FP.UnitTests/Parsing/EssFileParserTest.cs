@@ -108,7 +108,7 @@ internal sealed partial class EssFileParserTest
 	[Test]
 	public void ParsePayload_ConfirmationReport_ShouldBeParseCorrectly()
 	{
-		var message = fixture.CreateTestObject().ParsePayload(XDocument.Load(fixture.TestData.EssConfirmationReportPath));
+		var message = ParsePayload(fixture.TestData.EssConfirmationReportPath);
 
 		Assert.That(message.MessageDateTime, Is.EqualTo(DateTime.Parse("2024-11-13T09:00:54Z").ToUniversalTime()));
 		Assert.That(message.Sender.Code, Is.EqualTo("10XDE-EON-NETZ-C"));
@@ -120,7 +120,7 @@ internal sealed partial class EssFileParserTest
 	[Test]
 	public void ParsePayload_Schedule_ShouldBeParseCorrectly()
 	{
-		var message = fixture.CreateTestObject().ParsePayload(XDocument.Load(fixture.TestData.ExampleEssScheduleMessagePath));
+		var message = ParsePayload(fixture.TestData.ExampleEssScheduleMessagePath);
 
 		Assert.That(message.MessageDateTime, Is.EqualTo(DateTime.Parse("2024-10-25T10:00:19Z").ToUniversalTime()));
 		Assert.That(message.Sender.Code, Is.EqualTo("11X0-1111-0762-I"));
@@ -132,7 +132,7 @@ internal sealed partial class EssFileParserTest
 	[Test]
 	public void ParsePayload_StatusRequest_ShouldBeParseCorrectly()
 	{
-		var message = fixture.CreateTestObject().ParsePayload(XDocument.Load(fixture.TestData.ExampleEssStatusRequestPath));
+		var message = ParsePayload(fixture.TestData.ExampleEssStatusRequestPath);
 
 		Assert.That(message.MessageDateTime, Is.EqualTo(DateTime.Parse("2024-10-25T10:00:30Z").ToUniversalTime()));
 		Assert.That(message.Sender.Code, Is.EqualTo("11X0-1111-0762-I"));
@@ -142,22 +142,23 @@ internal sealed partial class EssFileParserTest
 	}
 
 	[Test]
-	public void ParsePayload_AcknowledgeOfSchedule_ShouldBeParseCorrectly()
+	public void ParsePayload_Acknowledge_ShouldBeParseCorrectly()
 	{
-		var message = fixture.CreateTestObject().ParsePayload(XDocument.Load(fixture.TestData.ExampleEssAcknowledgeMessagePath));
+		var message = ParsePayload(fixture.TestData.ExampleEssAcknowledgeMessagePath);
 
 		Assert.That(message.MessageDateTime, Is.EqualTo(DateTime.Parse("2024-10-16T10:46:50Z").ToUniversalTime()));
 		Assert.That(message.Sender.Code, Is.EqualTo("10XDE-ENBW--HGJL"));
 		Assert.That(message.Receiver.Code, Is.EqualTo("11XWEISWELTWS-G"));
 		Assert.That(message.FahrplanHaendlerTyp, Is.EqualTo("TPS"));
-		Assert.That(message.MessageType, Is.EqualTo(FpMessageType.Acknowledge));
+
 	}
 
 	[Test]
 	public void ParsePayload_AnomalyReport_ShouldBeParseCorrectly()
 	{
-		var message = fixture.CreateTestObject().ParsePayload(XDocument.Load(fixture.TestData.AnomalyReportPath));
+		var message = ParsePayload(fixture.TestData.AnomalyReportPath);
 
+		Assert.That(message.MessageType, Is.EqualTo(FpMessageType.AnomalyReport));
 		Assert.That(message.MessageDateTime, Is.EqualTo(DateTime.Parse("2024-11-05T08:10:46Z").ToUniversalTime()));
 		Assert.That(message.Sender.Code, Is.EqualTo("10XDE-VE-TRANSMK"));
 		Assert.That(message.Receiver.Code, Is.EqualTo("11XSWHETT-V----V"));
