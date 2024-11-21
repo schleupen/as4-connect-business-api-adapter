@@ -19,7 +19,7 @@ public class FpFileNameTest
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("1"));
-		Assert.That(parsed.Timestamp.Value.ToString(FpFileName.TimestampFormat), Is.EqualTo("2024-01-26T08-22-52Z"));
+		Assert.That(parsed.Timestamp.Value.ToFileTimestamp(), Is.EqualTo("2024-01-26T08-22-52Z"));
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.Acknowledge));
 	}
 
@@ -35,7 +35,7 @@ public class FpFileNameTest
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("1"));
-		Assert.That(parsed.Timestamp.Value.ToString(FpFileName.TimestampFormat), Is.EqualTo("2024-01-26T08-22-52Z"));
+		Assert.That(parsed.Timestamp.Value.ToFileTimestamp(), Is.EqualTo("2024-01-26T08-22-52Z"));
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.AnomalyReport));
 	}
 
@@ -51,7 +51,7 @@ public class FpFileNameTest
 		Assert.That(parsed.EicNameBilanzkreis, Is.EqualTo("EIC1"));
 		Assert.That(parsed.EicNameTso, Is.EqualTo("EIC2"));
 		Assert.That(parsed.Version, Is.EqualTo("1"));
-		Assert.That(parsed.Timestamp.Value.ToString(FpFileName.TimestampFormat), Is.EqualTo("2024-01-26T08-22-52Z"));
+		Assert.That(parsed.Timestamp.Value.ToFileTimestamp(), Is.EqualTo("2024-01-26T08-22-52Z"));
 		Assert.That(parsed.MessageType, Is.EqualTo(FpMessageType.ConfirmationReport));
 	}
 

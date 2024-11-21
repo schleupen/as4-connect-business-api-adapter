@@ -13,7 +13,6 @@ using System.Text.RegularExpressions;
 public record FpFileName
 {
 	private Regex dateRegEx = new("((19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01]))");
-	public const string TimestampFormat = "yyyy-MM-ddTHH\\-mm\\-ssZ";
 
 	private const string XmlFileExtension = ".xml";
 
@@ -129,7 +128,7 @@ public record FpFileName
 			MessageType = messageType,
 			Timestamp = timestamp == null
 				? null
-				: DateTime.ParseExact(timestamp, TimestampFormat, CultureInfo.InvariantCulture, DateTimeStyles.None).ToUniversalTime(),
+				: DateTime.ParseExact(timestamp, DateTimeFormat.FileTimestamp, CultureInfo.InvariantCulture, DateTimeStyles.None).ToUniversalTime(),
 			Version = messageType == FpMessageType.StatusRequest ? "1" : version,
 		};
 	}
@@ -156,6 +155,10 @@ public record FpFileName
 
 	private string GetVersion()
 	{
+		if (Version == null)
+		{
+			throw new FormatException("Version is null");
+		}
 		return Version.PadLeft(3, '0');
 	}
 
@@ -166,8 +169,7 @@ public record FpFileName
 			throw new FormatException("MessageDateTime is null");
 		}
 
-		return Timestamp.Value.ToUniversalTime()
-			.ToString(TimestampFormat);
+		return Timestamp.Value.ToFileTimestamp();
 	}
 
 	private string GetDatePrefix()

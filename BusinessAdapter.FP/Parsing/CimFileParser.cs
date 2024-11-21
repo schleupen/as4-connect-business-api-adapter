@@ -86,10 +86,7 @@ public class CimFileParser : IFpFileSpecificParser
 		{
 			case FpMessageType.Acknowledge:
 			case FpMessageType.StatusRequest:
-				if (DateTime.TryParseExact(fileDate,
-					    "yyyyMMdd",
-					    System.Globalization.CultureInfo.InvariantCulture,
-					    DateTimeStyles.AssumeUniversal, out DateTime fileDateParsed))
+				if (DateTime.TryParseExact(fileDate, DateTimeFormat.FileDate, System.Globalization.CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTime fileDateParsed))
 				{
 					return fileDateParsed.ToHyphenDate();
 				}
