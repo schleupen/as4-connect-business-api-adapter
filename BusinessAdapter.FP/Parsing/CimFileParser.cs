@@ -193,13 +193,11 @@ public class CimFileParser : IFpFileSpecificParser
 		switch (type)
 		{
 			case FpMessageType.Acknowledge:
-				// This should be received_market-document.revisionNumber
 				return doc.Descendants(ns + "received_MarketDocument.revisionNumber").First().Value;
 			case FpMessageType.Schedule:
 				return doc.Descendants(ns + "revisionNumber").First().Value;
 			case FpMessageType.ConfirmationReport:
-				// This should be confirmed_market-document.revisionNumber
-				return doc.Descendants(ns + "revisionNumber").First().Value;
+				return doc.Descendants(ns + "confirmed_MarketDocument.revisionNumber").First().Value;
 			case FpMessageType.AnomalyReport:
 				return fpFileName.Version;
 			case FpMessageType.StatusRequest:
