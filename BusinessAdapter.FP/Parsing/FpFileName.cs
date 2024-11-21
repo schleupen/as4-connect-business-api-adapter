@@ -1,7 +1,6 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Parsing;
 
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 // Acknowledgement (Schedule):		<JJJJMMDD>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_<VVV>_ACK_<YYYYMM-DDTHH-MM-SSZ>.XML
 // Acknowledgement (StatusRequest):	<JJJJMMDD>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_ACK_<YYYY-MMDDTHH-MM-SSZ>.XML
@@ -12,8 +11,6 @@ using System.Text.RegularExpressions;
 
 public record FpFileName
 {
-	private Regex dateRegEx = new("((19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01]))");
-
 	private const string XmlFileExtension = ".xml";
 
 	// Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag [ JJJJMMTT ]
@@ -176,12 +173,13 @@ public record FpFileName
 	{
 		if (Date == null)
 		{
-			throw new FormatException("Data is null");
+			throw new FormatException("Date is null");
 		}
 
-		if (!this.dateRegEx.IsMatch(this.Date))
+		if (!DateTime.TryParseExact(Date, DateTimeFormat.FileDate, System.Globalization.CultureInfo.InvariantCulture,
+			    DateTimeStyles.AssumeUniversal, out DateTime toDate))
 		{
-			throw new FormatException("Data is not in format YYYYMMDD");
+			throw new FormatException($"invalid date format '{Date}' [format: '{DateTimeFormat.FileDate}']");
 		}
 
 		return Date;
@@ -197,79 +195,5 @@ public record FpFileName
 			_ => throw new NotSupportedException("")
 		};
 		return messageTypeString;
-	}
-
-	public static FpFileName ScheduleMessageFileName(string Date, string EicNameBilanzkreis, string EicNameTso, string version)
-	{
-		return new FpFileName
-		{
-			Date = Date,
-			FahrplanHaendlerTyp = "TPS",
-			EicNameBilanzkreis = EicNameBilanzkreis,
-			EicNameTso = EicNameTso,
-			Version = version,
-			MessageType = FpMessageType.Schedule
-		};
-	}
-
-	public static FpFileName AcknowledgeMessageForScheduleFileName(string Date, string EicNameBilanzkreis, string EicNameTso, string version, DateTime timestamp)
-	{
-		return new FpFileName
-		{
-			Date = Date,
-			FahrplanHaendlerTyp = "TPS",
-			EicNameBilanzkreis = EicNameBilanzkreis,
-			EicNameTso = EicNameTso,
-			Version = version,
-			MessageType = FpMessageType.Acknowledge
-		};
-	}
-
-	public static FpFileName AcknowledgeMessageForStatusRequestFileName(string Date, string EicNameBilanzkreis, string EicNameTso, DateTime timestamp)
-	{
-		return new FpFileName
-		{
-			Date = Date,
-			FahrplanHaendlerTyp = "SRQ",
-			EicNameBilanzkreis = EicNameBilanzkreis,
-			EicNameTso = EicNameTso,
-			MessageType = FpMessageType.Acknowledge
-		};
-	}
-
-	public static FpFileName StatusRequestFileName(string Date, string EicNameBilanzkreis, string EicNameTso)
-	{
-		return new FpFileName
-		{
-			Date = Date,
-			FahrplanHaendlerTyp = "SRQ",
-			EicNameBilanzkreis = EicNameBilanzkreis,
-			EicNameTso = EicNameTso,
-			MessageType = FpMessageType.StatusRequest
-		};
-	}
-
-	public static FpFileName AnomalyReportFileName(string Date, string EicNameBilanzkreis, string EicNameTso, string version, DateTime timestamp)
-	{
-		return new FpFileName
-		{
-			Date = Date,
-			FahrplanHaendlerTyp = "TPS",
-			EicNameBilanzkreis = EicNameBilanzkreis,
-			EicNameTso = EicNameTso,
-			MessageType = FpMessageType.AnomalyReport
-		};
-	}
-
-	public static FpFileName ConfirmationReportFileName(string Date, string EicNameBilanzkreis, string EicNameTso, string version, DateTime timestamp)
-	{
-		return new FpFileName
-		{
-			Date = Date,
-			FahrplanHaendlerTyp = "SRQ",
-			EicNameBilanzkreis = EicNameBilanzkreis,
-			EicNameTso = EicNameTso,
-			MessageType = FpMessageType.ConfirmationReport
-		};
 	}
 }

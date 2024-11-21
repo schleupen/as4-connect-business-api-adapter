@@ -58,17 +58,17 @@ public class FpFileRepository(
 	}
 
 	// TODO missing unittests
-	public string StoreXmlFileTo(InboxFpMessage fpMessage, string receiveDirectoryPath)
+	public string WriteInboxMessage(InboxFpMessage fpMessage, string receiveDirectoryPath)
 	{
 		var fileName = fileNameExtractor.ExtractFileName(fpMessage);
-		var finalFileName = fileName.ToFileName();
-		string messagePath = Path.Combine(receiveDirectoryPath, finalFileName);
-		if (File.Exists(messagePath))
+
+		var filePath = Path.Combine(receiveDirectoryPath, fileName.ToFileName());
+		if (File.Exists(filePath))
 		{
-			logger.LogWarning("file '{MessagePath}' already exists and will be overriden.", messagePath);
+			logger.LogWarning("file '{MessagePath}' already exists and will be overriden.", filePath);
 		}
 
-		using (StreamWriter xmlStream = new StreamWriter(File.Open(messagePath, FileMode.Create)))
+		using (StreamWriter xmlStream = new StreamWriter(File.Open(filePath, FileMode.Create)))
 		{
 			using (var compressedStream = new MemoryStream(fpMessage.Payload))
 			using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
@@ -79,6 +79,6 @@ public class FpFileRepository(
 			}
 		}
 
-		return messagePath;
+		return filePath;
 	}
 }

@@ -103,6 +103,7 @@ public class FpFileNameTest
 	[TestCase("")]
 	[TestCase("2024-01-26")]
 	[TestCase("20249926")]
+	[TestCase("20240101:12")]
 	public void ToFileName_InvalidDate_ShouldThrowFormatException(string date)
 	{
 		var fileName = new FpFileName()
@@ -128,10 +129,5 @@ public class FpFileNameTest
 		var fileName = FpFileName.FromFileName(validFileName);
 		var fileNameString = fileName.ToFileName();
 		Assert.That(fileNameString, Is.EqualTo(validFileName));
-	}
-
-	public void x()
-	{
-
 	}
 }

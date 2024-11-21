@@ -8,17 +8,17 @@ public class FpFileNameExtractor(IFpFileParser fpFileParser)
 {
 	public FpFileName ExtractFileName(InboxFpMessage fpMessage)
 	{
-		var parsedFile = fpFileParser.ParseCompressedPayload(fpMessage.Payload);
+		var payloadInfo = fpFileParser.ParseCompressedPayload(fpMessage.Payload);
 
 		return new FpFileName()
 		{
 			Date = fpMessage.BDEWProperties.BDEWFulfillmentDate.Replace("-", string.Empty).Trim(),
-			FahrplanHaendlerTyp = parsedFile.FahrplanHaendlerTyp,
-			EicNameBilanzkreis = parsedFile.Receiver.Code,
-			EicNameTso = parsedFile.Sender.Code,
+			FahrplanHaendlerTyp = payloadInfo.FahrplanHaendlerTyp,
+			EicNameBilanzkreis = payloadInfo.Receiver.Code,
+			EicNameTso = payloadInfo.Sender.Code,
 			Version = fpMessage.BDEWProperties.BDEWDocumentNo,
 			MessageType = fpMessage.BDEWProperties.ToMessageType(),
-			Timestamp = parsedFile.MessageDateTime,
+			Timestamp = payloadInfo.MessageDateTime,
 		};
 	}
 }

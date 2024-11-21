@@ -8,6 +8,6 @@ public interface IFpFileRepository
 
 	void DeleteFile(string filePath);
 
-	string StoreXmlFileTo(InboxFpMessage fpMessage, string receiveDirectoryPath);
+	string WriteInboxMessage(InboxFpMessage fpMessage, string receiveDirectoryPath);
 }
 
