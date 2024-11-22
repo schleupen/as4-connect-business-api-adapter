@@ -110,7 +110,7 @@ pipeline
                           
                               script
                               {
-                                  if (env.BRANCH_NAME == 'main') 
+                                  if (env.GIT_BRANCH == 'main') 
                                   {
                                        echo "git tag version..."
                                        bat("git tag -a $Version ${SHA} -m ${Version}")
