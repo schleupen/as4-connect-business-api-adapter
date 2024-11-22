@@ -91,7 +91,7 @@ A full example:
   "Adapter": {
     "As4ConnectEndpoint": "https://as4.connect.api",
     "Marketpartners": [
-      "9984617000002"
+      "9900000000001"
     ],
     "CertificateStoreLocation": "LocalMachine",
     "CertificateStoreName": "My"
@@ -138,29 +138,40 @@ A full example:
 
 ### FP configuration
 The configuration of the FP Adapter required an additional `EICMapping`.
-This maps the AS4 specific Party-Id (eg. "1000000001") to X-amount of EIC-Codes (e.g. "11XYYYYYY-V----V") and Party-Type (BDEW, DVGW, GS1) and vice versa.
+This maps the EIC-Codes (e.g. `11XYYYYYY-V----V`) to the AS4 specific Party-Id (e.g. `9900000000001`) including the Party-Type (`BDEW`,`DVGW`, `GS1`) and vice versa.
 
+**Example:** The send directory contains a file with sender EIC `11XSBBBBBBB----N` and receiver EIC `10XDE-EON-NETZ-C`. 
+In that case the adapter looks up a client certificate for `9900000000001@BDEW` and sends a message to `4033872000058@GS1`.
+It is possible to map multiple EIC Code (e.g. `11XSAAAAAAA----N` and `11XSBBBBBBB----N`) to the same Party-Id (e.g. `9900000000001`)
 ```
 {
    // ...sections Adapter, Send, Receive see Configuration
    
-   "EICMapping": {
-    "9984617000002": [
-      {
-        "EIC": "5790000432752",
-        "MarktpartnerTyp": "BDEW",
-      },
-      {
-        "EIC": "5790000432766",
-        "MarktpartnerTyp": "BDEW",
-      }
-    ],
-    "9984616000003": [
-      {
-        "EIC": "10X000000000RTEM",
-        "MarktpartnerTyp": "BDEW",
-      }
-    ]
+  {
+    "EICMapping": {
+      "9900000000001": [
+        {
+          "EIC": "11XSAAAAAAA----N",
+          "MarktpartnerTyp": "BDEW"
+        },
+        {
+          "EIC": "11XSBBBBBBB----N",
+          "MarktpartnerTyp": "BDEW"
+        }
+      ],
+      "4033872000058": [
+        {
+          "EIC": "10XDE-EON-NETZ-C",
+          "MarktpartnerTyp": "GS1"
+        }
+      ],
+      "9911835000001": [
+        {
+          "EIC": "10XDE-ENBW--TNGX",
+          "MarktpartnerTyp": "BDEW"
+        }
+      ]
+    }
   }
 }
 ```
