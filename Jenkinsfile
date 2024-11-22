@@ -112,8 +112,12 @@ pipeline
                               {
                                   if (env.BRANCH_NAME == 'main') 
                                   {
+                                       echo "git tag version..."
                                        bat("git tag -a $Version ${SHA} -m ${Version}")
                                        bat("git push https://${usr}:${pwd}@github.com/schleupen/as4-connect-business-api-adapter $Version")
+                                       echo "git tag version done."
+                                  } else {
+                                       echo "git tag skipped"
                                   }
                               }
                         }
