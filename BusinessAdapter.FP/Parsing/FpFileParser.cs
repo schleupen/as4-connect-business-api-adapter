@@ -7,13 +7,9 @@ using System.Xml.Linq;
 public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileValidator fpParsedFileValidator)
 	: IFpFileParser
 {
-	private readonly string ESS_NAMESPACE_STRING = "urn:entsoe.eu:wgedi:ess";
-	private readonly string CIM_NAMESPACE_STRING = "urn:iec62325.351:tc57wg16:451";
-
     public FpFile ParseFile(string path)
     {
          string fileName = fileSystemWrapper.GetFileName(path);
-
          XDocument doc = XDocument.Load(path);
 
          var parser = this.CreateParserFor(doc);
@@ -50,7 +46,7 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileVal
     {
 	    XNamespace? ns = document.Root?.GetDefaultNamespace();
 
-	    if (ns!.NamespaceName.Contains(CIM_NAMESPACE_STRING))
+	    if (ns!.NamespaceName.Contains(CimFileParser.XmlNamespace))
 	    {
 		    return false;
 	    }

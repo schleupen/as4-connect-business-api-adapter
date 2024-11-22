@@ -36,12 +36,12 @@ public sealed partial class FpFileNameExtractorTests
 
 		public FpFileNameExtractor CreateExtractor()
 		{
-			return new FpFileNameExtractor(Mocks.FpFileParser.Object, Mocks.EicMapping.Object);
+			return new FpFileNameExtractor(Mocks.FpFileParser.Object);
 		}
 
 		public FpFileNameExtractor CreateExtractorWithFpFileParser()
 		{
-			return new FpFileNameExtractor(new FpFileParser(Mocks.FileSystem.Object, new FpParsedFileValidator()), Mocks.EicMapping.Object);
+			return new FpFileNameExtractor(new FpFileParser(Mocks.FileSystem.Object, new FpParsedFileValidator()));
 		}
 	}
 
@@ -49,12 +49,13 @@ public sealed partial class FpFileNameExtractorTests
 	{
 		public Mock<IFileSystemWrapper> FileSystem = new Mock<IFileSystemWrapper>();
 		public Mock<IFpFileParser> FpFileParser = new Mock<IFpFileParser>();
-		public Mock<IOptions<EICMapping>> EicMapping = new Mock<IOptions<EICMapping>>();
 	}
 
 	private sealed class TestData
 	{
-		public EICMapping SampleEicMapping => JsonSerializer.Deserialize<EICMapping>(File.ReadAllText("./Parsing/EICMapping.json"));
+		public string FahrplanHaendlerTyp => "FahrplanHaendlerTyp";
+		public string FulfillmentDate = "2024-11-18";
+
 		public SendingParty SenderParty = new SendingParty("sender-codenummer", "BDEW");
 		public ReceivingParty ReceiverParty = new ReceivingParty("receiver-codenummer", "BDEW");
 		public EIC ReceiverEIC = new EIC("receiver-eic-code");

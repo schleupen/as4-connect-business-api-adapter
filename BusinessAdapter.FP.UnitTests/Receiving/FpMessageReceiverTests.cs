@@ -37,9 +37,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			{
 				new EICMappingEntry()
 				{
-					Bilanzkreis = "FINGRID",
 					EIC = "asga",
-					FahrplanHaendlerTyp = "PPS",
 					MarktpartnerTyp = "BDEW"
 				}
 			};
@@ -262,7 +260,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 
 		private MemoryStream CreateDummyMessageContent()
 		{
-			string dirOfTestFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Parsing/20240125_PPS_FINGRID_0X1001A1001A264_002.xml");
+			string dirOfTestFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Parsing/EssFiles/20240125_PPS_FINGRID_0X1001A1001A264_002.xml");
 			MemoryStream ms = new MemoryStream();
 			using (FileStream file = new FileStream(dirOfTestFile, FileMode.Open, FileAccess.Read))
 				file.CopyTo(ms);

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Confirmation_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-2:confirmationdocument:5:0">
+	<mRID>20241104-10XDE-EON-NETZ-C-60266</mRID>
+	<type>A09</type>
+	<createdDateTime>2024-11-03T14:18:21Z</createdDateTime>
+	<sender_MarketParticipant.mRID codingScheme="A01">10XDE-EON-NETZ-C</sender_MarketParticipant.mRID>
+	<sender_MarketParticipant.marketRole.type>A04</sender_MarketParticipant.marketRole.type>
+	<receiver_MarketParticipant.mRID codingScheme="A01">11X0-0000-0706-U</receiver_MarketParticipant.mRID>
+	<receiver_MarketParticipant.marketRole.type>A08</receiver_MarketParticipant.marketRole.type>
+	<schedule_Period.timeInterval>
+		<start>2024-11-03T23:00Z</start>
+		<end>2024-11-04T23:00Z</end>
+	</schedule_Period.timeInterval>
+	<confirmed_MarketDocument.mRID>241104_X0-0000-0706-_XDE-EON-NE</confirmed_MarketDocument.mRID>
+	<confirmed_MarketDocument.revisionNumber>7</confirmed_MarketDocument.revisionNumber>
+	<domain.mRID codingScheme="A01">10YDE-EON------1</domain.mRID>
+	<Reason>
+		<code>A06</code>
+		<text>Schedule global position accepted</text>
+	</Reason>
+</Confirmation_MarketDocument>

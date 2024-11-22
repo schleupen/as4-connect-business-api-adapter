@@ -2,17 +2,18 @@
 
 using System.Globalization;
 
-// ACK format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
-// ANO format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
-// CON format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
-// Status format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>.XML
-// Schedule format: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
+// Acknowledgement (Schedule):		<yyyyMMdd>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_<VVV>_ACK_<yyyy-MM-ddTHH-mm-ssZ>.XML
+// Acknowledgement (StatusRequest):	<yyyyMMdd>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_ACK_<yyyy-MM-ddTHH-mm-ssZ>.XML
+// Anomaly Report:					<yyyyMMdd>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-MM-ddTHH-mm-ssZ>.XML
+// Confirmation Report:				<yyyyMMdd>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-MM-ddTHH-mm-ssZ>.XML
+// Status Request:					<yyyyMMdd>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>.XML
+// Schedule format:					<yyyyMMdd>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
 
 public record FpFileName
 {
 	private const string XmlFileExtension = ".xml";
 
-	// Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag
+	// Gültigkeitsdatum des Fahrplans, bezogen auf den realen Kalendertag [ JJJJMMTT ]
 	public string Date { get; init; }
 
 	public string EicNameBilanzkreis { get; init; }
@@ -21,10 +22,9 @@ public record FpFileName
 
 	public string? Version { get; init; }
 
-	// Typ des Händlerfahrplans (3 Zeichen)
-	// Typen:
-	//        - TPS Trade-responsible Party Schedule BKV-Fahrplan
-	//        - PPS Production-responsible Party Schedule Erzeugerfahrplan
+	// TPS Trade-responsible Party Schedule BKV-Fahrplan
+	// PPS Production-responsible Party Schedule Erzeugerfahrplan
+	// SRQ StatusRequest
 	public string FahrplanHaendlerTyp { get; init; }
 
 	public FpMessageType MessageType { get; init; }
@@ -32,13 +32,13 @@ public record FpFileName
 	// Zeitpunkt der Erstellung der Anomaly bzw. Confirmation Meldung.
 	// Der Zeitstempel dient zur Unterscheidung mehrerer Anomaly- (und ggf. auch Confirmation-)
 	// Meldungen zu einer Fahrplanmeldung.
-	public string? Timestamp { get; init; }
+	public DateTime? Timestamp { get; init; }
 
 	public static FpFileName FromFileName(string filename)
 	{
 		if (string.IsNullOrEmpty(filename))
 		{
-			throw new FormatException("Filename does is null or empty.");
+			throw new FormatException("Filename is null or empty.");
 		}
 
 		if (!filename.EndsWith(XmlFileExtension, StringComparison.OrdinalIgnoreCase))
@@ -70,11 +70,12 @@ public record FpFileName
 				FahrplanHaendlerTyp = type,
 				EicNameBilanzkreis = eicNameBilanzkreis,
 				EicNameTso = eicNameTso,
-				MessageType = FpMessageType.Status,
+				MessageType = FpMessageType.StatusRequest,
 				Timestamp = null,
 				Version = version,
 			};
 		}
+
 		var isNumeric = int.TryParse(parts[4], out _);
 
 		if (isNumeric)
@@ -83,6 +84,7 @@ public record FpFileName
 			{
 				throw new FormatException("Version number in filename is not numeric");
 			}
+
 			version = versionInt.ToString();
 			timestamp = parts.Length > 6 ? parts[6] : null;
 			messageTypePart = parts[parts.Length - 2];
@@ -96,8 +98,10 @@ public record FpFileName
 				{
 					throw new FormatException("Version number in filename is not numeric");
 				}
+
 				version = versionInt.ToString();
 			}
+
 			timestamp = parts.Length > 5 ? parts[5] : null;
 			messageTypePart = parts[parts.Length - 1];
 		}
@@ -105,11 +109,12 @@ public record FpFileName
 		var messageType = messageTypePart switch
 		{
 			"ACK" => FpMessageType.Acknowledge,
-			"ANO" => FpMessageType.Anomaly,
-			"CNF" => FpMessageType.Confirmation,
-			"CRQ" => FpMessageType.Status,
+			"ANO" => FpMessageType.AnomalyReport,
+			"CNF" => FpMessageType.ConfirmationReport,
+			"CRQ" => FpMessageType.StatusRequest,
 			_ => FpMessageType.Schedule
 		};
+
 
 		return new FpFileName
 		{
@@ -118,55 +123,75 @@ public record FpFileName
 			EicNameBilanzkreis = eicNameBilanzkreis,
 			EicNameTso = eicNameTso,
 			MessageType = messageType,
-			Timestamp = timestamp,
-			Version = messageType == FpMessageType.Status ? "1" : version,
+			Timestamp = timestamp == null
+				? null
+				: DateTime.ParseExact(timestamp, DateTimeFormat.FileTimestamp, CultureInfo.InvariantCulture, DateTimeStyles.None).ToUniversalTime(),
+			Version = messageType == FpMessageType.StatusRequest ? "1" : version,
 		};
 	}
 
 	public string ToFileName()
 	{
-		DateTime dateTimeStamp;
-		if (Date == null)
-		{
-			dateTimeStamp = DateTime.UtcNow;
-		}
-		else
-		{
-			dateTimeStamp = DateTime.Parse(Date).ToUniversalTime();
-		}
+		var datePrefix = GetDatePrefix();
 
-		DateTime timeStamp;
-		if (Timestamp == null)
+		switch (this.MessageType)
 		{
-			timeStamp = DateTime.UtcNow;
+			case FpMessageType.AnomalyReport:
+			case FpMessageType.Acknowledge:
+			case FpMessageType.ConfirmationReport:
+				return
+					$"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{GetVersion()}_{GetMessageTypeValue()}_{GetTimestampPostfix()}{XmlFileExtension}";
+			case FpMessageType.Schedule:
+				return $"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{GetVersion()}{XmlFileExtension}";
+			case FpMessageType.StatusRequest:
+				return $"{datePrefix}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
+			default:
+				throw new ArgumentOutOfRangeException();
 		}
-		else
-		{
-			timeStamp = DateTime.Parse(Timestamp).ToUniversalTime();
-		}
-
-		if (this.MessageType == FpMessageType.Schedule)
-		{
-			return $"{dateTimeStamp:yyyyMMdd}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}{XmlFileExtension}";
-		}
-
-		if (this.MessageType == FpMessageType.Status)
-		{
-			return $"{dateTimeStamp:yyyyMMdd}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}{XmlFileExtension}";
-		}
-
-		var messageTypeString = ToMessageTypeValue();
-
-		return $"{dateTimeStamp:yyyyMMdd}_{FahrplanHaendlerTyp}_{EicNameBilanzkreis}_{EicNameTso}_{Version}_{messageTypeString}_{timeStamp:yyyy-MM-ddTHH\\-mm\\-ssZ}{XmlFileExtension}";
 	}
 
-	private string? ToMessageTypeValue()
+	private string GetVersion()
+	{
+		if (Version == null)
+		{
+			throw new FormatException("Version is null");
+		}
+		return Version.PadLeft(3, '0');
+	}
+
+	private string GetTimestampPostfix()
+	{
+		if (Timestamp == null)
+		{
+			throw new FormatException("MessageDateTime is null");
+		}
+
+		return Timestamp.Value.ToFileTimestamp();
+	}
+
+	private string GetDatePrefix()
+	{
+		if (Date == null)
+		{
+			throw new FormatException("Date is null");
+		}
+
+		if (!DateTime.TryParseExact(Date, DateTimeFormat.FileDate, System.Globalization.CultureInfo.InvariantCulture,
+			    DateTimeStyles.AssumeUniversal, out DateTime toDate))
+		{
+			throw new FormatException($"invalid date format '{Date}' [format: '{DateTimeFormat.FileDate}']");
+		}
+
+		return Date;
+	}
+
+	private string? GetMessageTypeValue()
 	{
 		string? messageTypeString = MessageType switch
 		{
 			FpMessageType.Acknowledge => "ACK",
-			FpMessageType.Anomaly => "ANO",
-			FpMessageType.Confirmation => "CNF",
+			FpMessageType.AnomalyReport => "ANO",
+			FpMessageType.ConfirmationReport => "CNF",
 			_ => throw new NotSupportedException("")
 		};
 		return messageTypeString;

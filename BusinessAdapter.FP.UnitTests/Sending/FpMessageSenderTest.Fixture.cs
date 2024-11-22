@@ -237,8 +237,8 @@ public partial class FpMessageSenderTest
 				.Returns<IEnumerable<FpFile>>(x => new List<FpOutboxMessage>(
 					x.Select(x => new FpOutboxMessage(
 						Guid.NewGuid(),
-						new SendingFpParty(x.Sender.Code, "type", "FpType", "Bilanzkrieis"),
-						new ReceivingFpParty(x.Receiver.Code, "type", "FpType", "Bilanzkrieis"),
+						new SendingFpParty(x.Sender.Code, "type"),
+						new ReceivingFpParty(x.Receiver.Code, "type"),
 						x.Content,
 						x.FileName,
 						x.FilePath,

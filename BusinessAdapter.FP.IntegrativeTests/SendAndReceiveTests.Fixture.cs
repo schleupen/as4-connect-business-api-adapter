@@ -109,43 +109,31 @@ public partial class SendAndReceiveTests
 						{
 							EIC = "5790000432752",
 							MarktpartnerTyp = "BDEW",
-							Bilanzkreis = "FINGRID",
-							FahrplanHaendlerTyp = "PPS"
 						},
 						new EICMappingEntry
 						{
 							EIC = "11XWEISWELTWS-G",
 							MarktpartnerTyp = "BDEW",
-							Bilanzkreis = "FINGRID",
-							FahrplanHaendlerTyp = "TPS"
 						},
 						new EICMappingEntry
 						{
 							EIC = "5790000432755",
 							MarktpartnerTyp = "BDEW",
-							Bilanzkreis = "FINGRID",
-							FahrplanHaendlerTyp = "TPS"
 						},
 						new EICMappingEntry
 						{
 							EIC = "0X1001A1001A264",
 							MarktpartnerTyp = "BDEW",
-							Bilanzkreis = "FINGRID",
-							FahrplanHaendlerTyp = "PPS"
 						},
 						new EICMappingEntry
 						{
 							EIC = "10X000000000RTEM",
 							MarktpartnerTyp = "BDEW",
-							Bilanzkreis = "FINGRID",
-							FahrplanHaendlerTyp = "PPS"
 						},
 						new EICMappingEntry
 						{
 							EIC = "10XDE-ENBW--HGJL",
 							MarktpartnerTyp = "BDEW",
-							Bilanzkreis = "FINGRID",
-							FahrplanHaendlerTyp = "PPS"
 						}
 					}
 				},
@@ -156,8 +144,6 @@ public partial class SendAndReceiveTests
 						{
 							EIC = "11XWEISWELTWS-C",
 							MarktpartnerTyp = "BDEW",
-							Bilanzkreis = "FINGRID",
-							FahrplanHaendlerTyp = "PPS"
 						}
 					}
 				}

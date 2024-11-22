@@ -4,6 +4,4 @@ public class EICMappingEntry
 {
     public string EIC { get; set; }
     public string MarktpartnerTyp { get; set; }
-    public string Bilanzkreis { get; set; }
-    public string FahrplanHaendlerTyp { get; set; }
 }

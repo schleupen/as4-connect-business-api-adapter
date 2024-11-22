@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<StatusRequest_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-5:statusrequestdocument:4:0">
+    <mRID>20241104_4D-Energy_10YDE-VE-------2</mRID>
+    <type>A59</type>
+    <sender_MarketParticipant.mRID codingScheme="A01">11X0-0000-0619-M</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.marketRole.type>A08</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme="A01">10XDE-VE-TRANSMK</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>A04</receiver_MarketParticipant.marketRole.type>
+    <createdDateTime>2024-11-04T15:05:06Z</createdDateTime>
+    <AttributeInstanceComponent>
+        <attribute>subject_MarketParticipant.mRID</attribute>
+        <attributeValue>11X0-0000-0619-M</attributeValue>
+    </AttributeInstanceComponent>
+    <AttributeInstanceComponent>
+        <attribute>subject_MarketParticipant.marketRole.type</attribute>
+        <attributeValue>A08</attributeValue>
+    </AttributeInstanceComponent>
+    <AttributeInstanceComponent>
+        <attribute>schedule_Time_Period.timeInterval</attribute>
+        <attributeValue>2024-11-03T23:00Z/2024-11-04T23:00Z</attributeValue>
+    </AttributeInstanceComponent>
+</StatusRequest_MarketDocument>

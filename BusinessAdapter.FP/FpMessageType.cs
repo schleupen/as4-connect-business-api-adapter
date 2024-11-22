@@ -4,7 +4,7 @@ public enum FpMessageType
 {
     Acknowledge,
     Schedule,
-    Confirmation,
-    Anomaly,
-    Status
+    ConfirmationReport,
+    AnomalyReport,
+    StatusRequest
 }

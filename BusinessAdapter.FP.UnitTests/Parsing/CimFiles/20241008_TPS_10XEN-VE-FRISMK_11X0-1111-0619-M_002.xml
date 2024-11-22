@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Schedule_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-2:scheduledocument:5:2">
+    <mRID>20241008_4D-Energy_10YDE-VE-------2</mRID>
+    <revisionNumber>2</revisionNumber>
+    <type>A01</type>
+    <process.processType>A17</process.processType>
+    <process.classificationType>A01</process.classificationType>
+    <sender_MarketParticipant.mRID codingScheme="A01">10XEN-VE-FRISMK</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.marketRole.type>A08</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme="A01">11X0-1111-0619-M</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>A04</receiver_MarketParticipant.marketRole.type>
+    <createdDateTime>2024-10-07T14:27:06Z</createdDateTime>
+    <schedule_Time_Period.timeInterval>
+        <start>2024-10-07T22:00Z</start>
+        <end>2024-10-08T22:00Z</end>
+    </schedule_Time_Period.timeInterval>
+    <domain.mRID codingScheme="A01">10YDE-VE-------2</domain.mRID>
+    <subject_MarketParticipant.mRID codingScheme="A01">11X0-0000-0619-M</subject_MarketParticipant.mRID>
+    <subject_MarketParticipant.marketRole.type>A08</subject_MarketParticipant.marketRole.type>
+</Schedule_MarketDocument>

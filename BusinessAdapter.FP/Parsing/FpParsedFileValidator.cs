@@ -16,7 +16,7 @@ public class FpParsedFileValidator : IFpParsedFileValidator
 
 	private void ValidateFpMessageSender(string fpFilesSender, FpFileName fileName)
 	{
-		if (fileName.MessageType is FpMessageType.Schedule or FpMessageType.Status)
+		if (fileName.MessageType is FpMessageType.Schedule or FpMessageType.StatusRequest)
 		{
 			if (fileName.EicNameBilanzkreis != fpFilesSender)
 			{

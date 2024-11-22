@@ -28,17 +28,9 @@ public class EICMappingOptionsValidator : IValidateOptions<Configuration.EICMapp
 			}
 			foreach (var mappingEntry in keyValuePair.Value)
 			{
-				if (mappingEntry.Bilanzkreis.IsNullOrEmpty())
-				{
-					return ValidateOptionsResult.Fail($"Empty Bilanzkreis for {keyValuePair.Key}.");
-				}
 				if (mappingEntry.EIC.IsNullOrEmpty())
 				{
 					return ValidateOptionsResult.Fail($"Empty EIC for {keyValuePair.Key}.");
-				}
-				if (mappingEntry.FahrplanHaendlerTyp.IsNullOrEmpty())
-				{
-					return ValidateOptionsResult.Fail($"Empty FahrplanHaendlerTyp for {keyValuePair.Key}.");
 				}
 				if (mappingEntry.MarktpartnerTyp.IsNullOrEmpty())
 				{

@@ -8,17 +8,18 @@ public sealed record FpBDEWProperties(
 	string BDEWSubjectPartyRole)
 {
 	/// <summary>
-	/// Der Dokument-Typ (z.B: Confirmation, Schedule, Anomaly)
+	/// Der Dokument-Typ (z.B: A01, A17 ...)
 	/// </summary>
 	public string BDEWDocumentType { get; } = BDEWDocumentType;
 
 	/// <summary>
-	/// Datenaustauschreferenz (DAR) aus UNB DE0020
+	/// Version (z.B: MessageVersion, ReceivingMessageVersion )
 	/// </summary>
 	public string BDEWDocumentNo { get; } = BDEWDocumentNo;
 
 	/// <summary>
 	/// Das geplante Zeitintervall.
+	/// should be YYYY-MM-DD
 	/// </summary>
 	public string BDEWFulfillmentDate { get; } = BDEWFulfillmentDate;
 
@@ -36,18 +37,18 @@ public sealed record FpBDEWProperties(
 	{
 		switch (BDEWDocumentType)
 		{
-			case "A07":
-			case "A08":
-			case "A09":
-				return FpMessageType.Confirmation;
-			case "A01":
+			case BDEWDocumentTypes.A01:
 				return FpMessageType.Schedule;
-			case "A17":
+			case BDEWDocumentTypes.A07:
+			case BDEWDocumentTypes.A08:
+			case BDEWDocumentTypes.A09:
+				return FpMessageType.ConfirmationReport;
+			case BDEWDocumentTypes.A17:
 				return FpMessageType.Acknowledge;
-			case "A16":
-				return FpMessageType.Anomaly;
-			case "A59": // prozessbeschreibung_fahrplananmeldung_v4.5 in A.4.1.1
-				return FpMessageType.Status;
+			case BDEWDocumentTypes.A16:
+				return FpMessageType.AnomalyReport;
+			case BDEWDocumentTypes.A59: // prozessbeschreibung_fahrplananmeldung_v4.5 in A.4.1.1
+				return FpMessageType.StatusRequest;
 			default:
 				throw new NotSupportedException($"Document type '{BDEWDocumentType}' is not supported.");
 		}
