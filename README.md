@@ -192,13 +192,13 @@ It is possible to map multiple EIC Code (e.g. `11XSAAAAAAA----N` and `11XSBBBBBB
 
 The FP adapter expects the files that should be sent, to follow a specific convention:
 
-| MessageTyp         | BDEWDocumentType | Filename                                                                                                    |
-|--------------------|------------------|-------------------------------------------------------------------------------------------------------------|
-| Acknowledge        | A17              | \<yyyyMMdd>\_\<TYP>\_<EIC-NAME-BILANZKREIS>\_<EIC-NAME-TSO>\_\<VVV>\_ACK\_<yyyy-MM-ddThh-mm-ssZ>.XML</code> |
-| AnomalyReport      | A16              | \<yyyyMMdd>\_\<TYP>\_<EIC-NAME-BILANZKREIS>\_<EIC-NAME-TSO>\_\<VVV>\_ANO\_<yyyy-MM-ddThh-mm-ssZ>.XML</code> |
-| ConfirmationReport | A07, A08, A09    | \<yyyyMMdd>\_\<TYP>\_<EIC-NAME-BILANZKREIS>\_<EIC-NAME-TSO>\_\<VVV>\_CNF\_<yyyy-MM-ddThh-mm-ssZ>.XML</code> |
-| StatusRequest      | A59              | \<yyyyMMdd>\_\<TYP>\_<EIC-NAME-BILANZKREIS>\_<EIC-NAME-TSO>\_CRQ.XML</code>                                 |
-| Schedule           | A01              | \<yyyyMMdd>\_\<TYP>\_<EIC-NAME-BILANZKREIS>\_<EIC-NAME-TSO>\_\<VVV>.XML</code>                              |
+| MessageTyp         | BDEWDocumentType | Filename                                                                                                     |
+|--------------------|------------------|--------------------------------------------------------------------------------------------------------------|
+| Acknowledge        | A17              | \<yyyyMMdd>\_\<TYP>\_\<EIC-NAME-BILANZKREIS>\_\<EIC-NAME-TSO>\_\<VVV>\_ACK\_\<yyyy-MM-ddThh-mm-ssZ>.XML</code> |
+| AnomalyReport      | A16              | \<yyyyMMdd>\_\<TYP>\_\<EIC-NAME-BILANZKREIS>\_\<EIC-NAME-TSO>\_\<VVV>\_ANO\_\<yyyy-MM-ddThh-mm-ssZ>.XML</code>  |
+| ConfirmationReport | A07, A08, A09    | \<yyyyMMdd>\_\<TYP>\_\<EIC-NAME-BILANZKREIS>\_\<EIC-NAME-TSO>\_\<VVV>\_CNF\_\<yyyy-MM-ddThh-mm-ssZ>.XML</code>  |
+| StatusRequest      | A59              | \<yyyyMMdd>\_\<TYP>\_\<EIC-NAME-BILANZKREIS>\_\<EIC-NAME-TSO>\_CRQ.XML</code>                                  |
+| Schedule           | A01              | \<yyyyMMdd>\_\<TYP>\_\<EIC-NAME-BILANZKREIS>\_\<EIC-NAME-TSO>\_\<VVV>.XML</code>                               |
 
 The FP adapter will also save the received files in the same convention.
 
