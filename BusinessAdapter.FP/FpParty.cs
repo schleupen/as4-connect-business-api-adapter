@@ -1,6 +1,6 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP;
 
-public record FpParty(string Id, string Type, string FpType, string Bilanzkreis) : Party(Id, Type)
+public record FpParty(string Id, string Type) : Party(Id, Type)
 {
     public string AsKey()
     {

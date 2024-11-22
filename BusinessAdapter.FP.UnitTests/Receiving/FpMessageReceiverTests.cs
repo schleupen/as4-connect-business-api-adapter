@@ -37,9 +37,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			{
 				new EICMappingEntry()
 				{
-					Bilanzkreis = "FINGRID",
 					EIC = "asga",
-					FahrplanHaendlerTyp = "PPS",
 					MarktpartnerTyp = "BDEW"
 				}
 			};

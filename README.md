@@ -138,8 +138,7 @@ A full example:
 
 ### FP configuration
 The configuration of the FP Adapter required an additional `EICMapping`.
-This maps the AS4 specific Party-Id (eg. 1000000001) to X-amount of EIC-Codes (eg. "11XYYYYYY-V----V") and Party-Type (BDEW, DVGW, GS1),
-the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice versa.
+This maps the AS4 specific Party-Id (eg. "1000000001") to X-amount of EIC-Codes (e.g. "11XYYYYYY-V----V") and Party-Type (BDEW, DVGW, GS1) and vice versa.
 
 ```
 {
@@ -150,22 +149,16 @@ the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
       {
         "EIC": "5790000432752",
         "MarktpartnerTyp": "BDEW",
-        "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlerTyp": "PPS"
       },
       {
         "EIC": "5790000432766",
         "MarktpartnerTyp": "BDEW",
-        "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlerTyp": "TPS"
       }
     ],
     "9984616000003": [
       {
         "EIC": "10X000000000RTEM",
         "MarktpartnerTyp": "BDEW",
-        "Bilanzkreis": "FINGRID",
-        "FahrplanHaendlerTyp": "PPS"
       }
     ]
   }
@@ -173,7 +166,7 @@ the FahrplanHaendlerTyp(eg. PPS) and the Bilanzkreis (eg. FINGRID) and vice vers
 ```
 
 #### FP Filename 
-The the FP adapter expects the files that should be send, to follow a specific convention:
+The FP adapter expects the files that should be sent, to follow a specific convention:
 
 * **Acknowledge message**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ACK_<yyyy-mmddThh-mm-ssZ>.XML
 * **Anomaly report**: <JJJJMMTT>_<TYP>_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML

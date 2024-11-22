@@ -48,17 +48,16 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
 
     private SendingFpParty ToSendingParty(FpParty sendingParty)
     {
-        return new SendingFpParty(sendingParty.Id, sendingParty.Type, sendingParty.FpType, sendingParty.Bilanzkreis);
+        return new SendingFpParty(sendingParty.Id, sendingParty.Type);
     }
 
     private ReceivingFpParty ToReceivingParty(FpParty receivingParty)
     {
-        return new ReceivingFpParty(receivingParty.Id, receivingParty.Type, receivingParty.FpType,
-            receivingParty.Bilanzkreis);
+        return new ReceivingFpParty(receivingParty.Id, receivingParty.Type);
     }
 
     private FpParty ToFpParty(EICMappingEntry entry, string mpId)
     {
-        return new FpParty(mpId, entry.MarktpartnerTyp, entry.FahrplanHaendlerTyp, entry.Bilanzkreis);
+        return new FpParty(mpId, entry.MarktpartnerTyp);
     }
 }

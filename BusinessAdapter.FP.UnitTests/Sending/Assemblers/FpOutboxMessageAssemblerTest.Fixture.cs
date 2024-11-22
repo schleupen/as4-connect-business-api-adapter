@@ -47,8 +47,8 @@ public partial class FpOutboxMessageAssemblerTest
 
 	private sealed class TestData
 	{
-		public static SendingFpParty Sender = new SendingFpParty(PartyId1, PartyType, "FpType", "Bilanzkreis");
-		public static ReceivingFpParty Receiver = new ReceivingFpParty(PartyId2, PartyType, "FpType", "Bilanzkreis");
+		public static SendingFpParty Sender = new SendingFpParty(PartyId1, PartyType);
+		public static ReceivingFpParty Receiver = new ReceivingFpParty(PartyId2, PartyType);
 		public static readonly FpBDEWProperties BDEWProperties = new FpBDEWProperties("1", "2", "3", "4", "5");
 
 		public EICMapping Mapping = new EICMapping()
@@ -62,25 +62,21 @@ public partial class FpOutboxMessageAssemblerTest
 		public const string PartyId1 = "party_id_1";
 		public const string PartyId2 = "party_id_2";
 		public const string EICCodeReceiver = "eic_2";
-		
-		public static List<EICMappingEntry> MappingParty1 = new List<EICMappingEntry>()
-		{
+
+		public static List<EICMappingEntry> MappingParty1 =
+		[
 			new EICMappingEntry()
 			{
-				Bilanzkreis = Sender.Bilanzkreis,
 				EIC = EICCodeSender,
-				FahrplanHaendlerTyp = Sender.FpType,
 				MarktpartnerTyp = Sender.Type
 			}
-		};
-		
-		public static List<EICMappingEntry> MappingParty2 = new List<EICMappingEntry>()
+		];
+
+		private static List<EICMappingEntry> MappingParty2 = new()
 		{
 			new EICMappingEntry()
 			{
-				Bilanzkreis = Receiver.Bilanzkreis,
 				EIC = EICCodeReceiver,
-				FahrplanHaendlerTyp = Receiver.FpType,
 				MarktpartnerTyp = Receiver.Type
 			}
 		};

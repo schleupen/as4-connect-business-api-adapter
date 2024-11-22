@@ -52,29 +52,25 @@ public partial class EICMappingTest
 	{
 		public readonly EIC Eic1 = new EIC("eic1");
 		public readonly EIC Eic2 = new EIC("eic2");
-		public readonly FpParty Party1 = new FpParty("id1", "type", "fpTyp", "Bilanzkreis");
-		public readonly FpParty Party2 = new FpParty("id2", "type", "fpTyp", "Bilanzkreis");
+		public readonly FpParty Party1 = new FpParty("id1", "type");
+		public readonly FpParty Party2 = new FpParty("id2", "type");
 
-		public readonly List<EICMappingEntry> MappingParty1 = new List<EICMappingEntry>()
-		{
-			new EICMappingEntry()
+		public readonly List<EICMappingEntry> MappingParty1 =
+		[
+			new()
 			{
-				Bilanzkreis = "Bilanzkreis",
 				EIC = "eic1",
-				FahrplanHaendlerTyp = "fpTyp",
 				MarktpartnerTyp = "type"
 			}
-		};
+		];
 
-		public readonly List<EICMappingEntry> MappingParty2 = new List<EICMappingEntry>()
-		{
-			new EICMappingEntry()
+		public readonly List<EICMappingEntry> MappingParty2 =
+		[
+			new()
 			{
-				Bilanzkreis = "Bilanzkreis",
 				EIC = "eic2",
-				FahrplanHaendlerTyp = "fpTyp",
 				MarktpartnerTyp = "type"
 			}
-		};
+		];
 	}
 }
