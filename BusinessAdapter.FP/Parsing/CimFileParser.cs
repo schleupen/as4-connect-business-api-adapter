@@ -71,7 +71,7 @@ public class CimFileParser : IFpFileSpecificParser
 			FpMessageType.Schedule => root.Element(ns + XmlElementNameScheduleRevisionNumber)?.Value ?? throw new ValidationException($"missing xml element '{XmlElementNameScheduleRevisionNumber}'"),
 			FpMessageType.ConfirmationReport => root.Element(ns + XmlElementNameConfirmationRevisionNumber)?.Value ?? throw new ValidationException($"missing xml element '{XmlElementNameConfirmationRevisionNumber}'"),
 			FpMessageType.AnomalyReport => versionFromFile ?? throw new ValidationException("missing version"),
-			FpMessageType.StatusRequest => "1", // Is this correct?
+			FpMessageType.StatusRequest => "1",
 			_ => throw new ArgumentOutOfRangeException(nameof(messageType), messageType, null)
 		};
 	}
