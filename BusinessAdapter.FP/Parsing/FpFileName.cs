@@ -2,12 +2,12 @@
 
 using System.Globalization;
 
-// Acknowledgement (Schedule):		<JJJJMMDD>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_<VVV>_ACK_<YYYYMM-DDTHH-MM-SSZ>.XML
-// Acknowledgement (StatusRequest):	<JJJJMMDD>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_ACK_<YYYY-MMDDTHH-MM-SSZ>.XML
-// Anomaly Report:					<JJJJMMTT>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-mm-ddThh-mmssZ>.XML
-// Confirmation Report:				<JJJJMMTT>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-mm-ddThh-mmssZ>.XML
-// Status Request:					<JJJJMMDD>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>.XML
-// Schedule format:					<JJJJMMTT>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
+// Acknowledgement (Schedule):		<yyyyMMdd>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_<VVV>_ACK_<yyyy-MM-ddTHH-mm-ssZ>.XML
+// Acknowledgement (StatusRequest):	<yyyyMMdd>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>_ACK_<yyyy-MM-ddTHH-mm-ssZ>.XML
+// Anomaly Report:					<yyyyMMdd>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_ANO_<yyyy-MM-ddTHH-mm-ssZ>.XML
+// Confirmation Report:				<yyyyMMdd>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>_CNF_<yyyy-MM-ddTHH-mm-ssZ>.XML
+// Status Request:					<yyyyMMdd>_SRQ_<EIC-NAME-BILANZKREIS>_<EIC-NAME-ÜNB>.XML
+// Schedule format:					<yyyyMMdd>_TPS_<EIC-NAME-BILANZKREIS>_<EIC-NAME-TSO>_<VVV>.XML
 
 public record FpFileName
 {
