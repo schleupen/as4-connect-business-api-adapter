@@ -110,15 +110,14 @@ pipeline
                           
                               script
                               {
-                                  if (env.GIT_BRANCH == 'main') 
-                                  {
-                                       echo "git tag version..."
-                                       bat("git tag -a $Version ${SHA} -m ${Version}")
-                                       bat("git push https://${usr}:${pwd}@github.com/schleupen/as4-connect-business-api-adapter $Version")
-                                       echo "git tag version done."
-                                  } else {
-                                       echo "git tag skipped"
-                                  }
+                                   if(env.Version.contains("-"))
+                                   {
+                                      echo 'tags will only be pushed on main branches'    
+                                   } else
+                                   {
+                                      bat("git tag -a $Version ${SHA} -m ${Version}")
+                                      bat("git push https://${usr}:${pwd}@github.com/schleupen/as4-connect-business-api-adapter $Version")
+                                   }
                               }
                         }
                     }
