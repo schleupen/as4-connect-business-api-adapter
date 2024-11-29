@@ -34,12 +34,14 @@ public class ReceiveStatus : IReceiveStatus
 
         foreach (var failedMessage in this.failedMessages)
         {
-            logger.LogWarning("Failed to receive message for '{MpId}:{MpType}'", failedMessage.Message.PartyInfo.Receiver.Id, failedMessage.Message.PartyInfo.Receiver.Type);
+	        logger.LogWarning("Failed to receive message '{Id}' - {Exception} [{Sender} -> {Receiver}]",
+		        failedMessage.Message?.MessageId,
+		        failedMessage.Exception.Message,
+		        failedMessage.Message?.PartyInfo.Sender?.AsKey(),
+		        failedMessage.Message?.PartyInfo.Receiver?.AsKey());
         }
 
-        logger.LogInformation(
-            "Messages {SuccessfulMessagesCount} received successful.",
-            successfulMessages.Count);
+        logger.LogInformation("{SuccessfulMessagesCount}/{TotalMessageCount} messages received successful.", successfulMessages.Count, TotalMessageCount);
     }
 
     public IReadOnlyCollection<FpInboxMessage> SuccessfulMessages => successfulMessages.AsReadOnly();
