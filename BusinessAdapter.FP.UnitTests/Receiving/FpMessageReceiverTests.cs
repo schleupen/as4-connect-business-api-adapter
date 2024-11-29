@@ -214,7 +214,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 
 		public FpInboxMessage CreateFpInboxMessage(
 			DateTimeOffset? createdAt = null,
-			string messageId = "TestMessageId",
 			PartyInfo? partyInfo = null,
 			string bdewDocumentNo = "12345",
 			string bdewFulfillmentDate = "2024-08-12",
@@ -222,9 +221,10 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			string bdewSubjectPartyRole = "Sender",
 			string bdewDocumentType = "Type1")
 		{
+
 			return new FpInboxMessage(
 				createdAt ?? DateTimeOffset.UtcNow,
-				messageId,
+				Guid.NewGuid(),
 				partyInfo ?? CreateDefaultPartyInfo(),
 				bdewDocumentNo,
 				bdewFulfillmentDate,

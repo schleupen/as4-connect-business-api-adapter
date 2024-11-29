@@ -87,7 +87,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 
 					messages.Add(new FpInboxMessage(
 						message.Created_at,
-						message.MessageId.ToString(),
+						message.MessageId,
 						new PartyInfo(
 							new SendingParty(
 								message.PartyInfo.Sender.Id,
@@ -115,7 +115,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			try
 			{
-				FileResponse clientResponse = await businessApiClient.V1FpMessagesInboxPayloadAsync(Guid.Parse(fpInboxMessage.MessageId));
+				FileResponse clientResponse = await businessApiClient.V1FpMessagesInboxPayloadAsync(fpInboxMessage.MessageId);
 
 				using (MemoryStream ms = new MemoryStream())
 				{
@@ -132,7 +132,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 							return new BusinessApiResponse<InboxFpMessage>(
 								true,
 								new InboxFpMessage(
-									fpInboxMessage.MessageId,
+									fpInboxMessage.MessageId.ToString(),
 									fpInboxMessage.PartyInfo.Sender!,
 									fpInboxMessage.PartyInfo.Receiver!,
 									xmlString,
@@ -145,7 +145,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			catch (ApiException ex)
 			{
 				return new BusinessApiResponse<InboxFpMessage>(false,
-					new InboxFpMessage(fpInboxMessage.MessageId,
+					new InboxFpMessage(fpInboxMessage.MessageId.ToString(),
 						fpInboxMessage.PartyInfo.Sender!,
 						fpInboxMessage.PartyInfo.Receiver!,
 						null,

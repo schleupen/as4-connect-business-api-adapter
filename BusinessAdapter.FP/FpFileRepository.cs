@@ -11,7 +11,6 @@ public class FpFileRepository(
 	IFpFileNameExtractor fileNameExtractor,
 	ILogger<FpFileRepository> logger) : IFpFileRepository
 {
-
 	public static string ComputeHashFor(Stream stream)
 	{
 		using var sha256 = System.Security.Cryptography.SHA256.Create();
@@ -64,7 +63,6 @@ public class FpFileRepository(
 
 		File.Delete(filePath);
 		logger.LogInformation("file '{FilePath}' removed", filePath);
-
 	}
 
 	// TODO: Testcase hash mismatch
@@ -88,15 +86,16 @@ public class FpFileRepository(
 			using (var resultStream = new MemoryStream())
 			{
 				var hashForFile = ComputeHashFor(compressedStream);
-
 				if (fpMessage.ContentHashSha256 != hashForFile)
 				{
 					throw new InvalidOperationException($"Hash mismatch: file '{fileName}' [{hashForFile}] vs message '{fpMessage.MessageId}' [{fpMessage.ContentHashSha256}].");
 				}
+
 				compressedStream.Seek(0, SeekOrigin.Begin);
+
 				zipStream.CopyTo(resultStream);
 				stringResult = Encoding.UTF8.GetString(resultStream.ToArray());
-				xmlStream.Write(stringResult );
+				xmlStream.Write(stringResult);
 			}
 		}
 
