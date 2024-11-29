@@ -11,16 +11,16 @@ public class FpFileRepository(
 	IFpFileNameExtractor fileNameExtractor,
 	ILogger<FpFileRepository> logger) : IFpFileRepository
 {
-	
+
 	public static string ComputeHashFor(Stream stream)
 	{
 		using var sha256 = System.Security.Cryptography.SHA256.Create();
 		var bytes = sha256.ComputeHash(stream);
- 
+
 		return Convert.ToBase64String(bytes);
 	}
-	
-	
+
+
 	public DirectoryResult GetFilesFrom(string path)
 	{
 		var di = new DirectoryInfo(path);
@@ -66,7 +66,9 @@ public class FpFileRepository(
 		logger.LogInformation("file '{FilePath}' removed", filePath);
 
 	}
-	
+
+	// TODO: Testcase hash mismatch
+	// TODO: Testcase content mismatch
 	public string WriteInboxMessage(InboxFpMessage fpMessage, string receiveDirectoryPath)
 	{
 		var fileName = fileNameExtractor.ExtractFileName(fpMessage);
@@ -78,7 +80,7 @@ public class FpFileRepository(
 		}
 
 		string stringResult;
-		
+
 		using (var xmlStream = new StreamWriter(File.Open(filePath, FileMode.CreateNew)))
 		{
 			using (var compressedStream = new MemoryStream(fpMessage.Payload))
@@ -89,7 +91,7 @@ public class FpFileRepository(
 
 				if (fpMessage.ContentHashSha256 != hashForFile)
 				{
-					throw new InvalidOperationException($"Hash for file {fileName} does not match hash for message with {fpMessage.MessageId}.");
+					throw new InvalidOperationException($"Hash mismatch: file '{fileName}' [{hashForFile}] vs message '{fpMessage.MessageId}' [{fpMessage.ContentHashSha256}].");
 				}
 				compressedStream.Seek(0, SeekOrigin.Begin);
 				zipStream.CopyTo(resultStream);
@@ -97,10 +99,10 @@ public class FpFileRepository(
 				xmlStream.Write(stringResult );
 			}
 		}
-		
+
 		if (!File.Exists(filePath))
 		{
-			var exception = new InvalidOperationException($"Unable to write message {fpMessage.MessageId} payload to file {fileName}.");
+			var exception = new InvalidOperationException($"Unable to write message '{fpMessage.MessageId}' payload to file '{fileName}'.");
 			throw exception;
 		}
 
@@ -108,7 +110,7 @@ public class FpFileRepository(
 		{
 			if (stringResult != fileReader.ReadToEnd())
 			{
-				throw new InvalidOperationException($"File {fileName} written to directory differs to received file with id {fpMessage.MessageId}.");
+				throw new InvalidOperationException($"File '{fileName}' written to directory differs to received file with id '{fpMessage.MessageId}'.");
 			}
 		}
 
