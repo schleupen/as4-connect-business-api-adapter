@@ -66,8 +66,7 @@ public class FpFileRepository(
 		logger.LogInformation("file '{FilePath}' removed", filePath);
 
 	}
-
-	// TODO missing unittests
+	
 	public string WriteInboxMessage(InboxFpMessage fpMessage, string receiveDirectoryPath)
 	{
 		var fileName = fileNameExtractor.ExtractFileName(fpMessage);

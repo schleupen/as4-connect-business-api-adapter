@@ -130,7 +130,7 @@ public record FpFileName
 		};
 	}
 
-	public string ToFileName()
+	public virtual string ToFileName()
 	{
 		var datePrefix = GetDatePrefix();
 
