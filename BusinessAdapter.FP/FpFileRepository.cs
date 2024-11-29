@@ -11,6 +11,15 @@ public class FpFileRepository(
 	IFpFileNameExtractor fileNameExtractor,
 	ILogger<FpFileRepository> logger) : IFpFileRepository
 {
+	public static string ComputeHashFor(Stream stream)
+	{
+		using var sha256 = System.Security.Cryptography.SHA256.Create();
+		var bytes = sha256.ComputeHash(stream);
+
+		return Convert.ToBase64String(bytes);
+	}
+
+
 	public DirectoryResult GetFilesFrom(string path)
 	{
 		var di = new DirectoryInfo(path);
@@ -54,10 +63,10 @@ public class FpFileRepository(
 
 		File.Delete(filePath);
 		logger.LogInformation("file '{FilePath}' removed", filePath);
-
 	}
 
-	// TODO missing unittests
+	// TODO: Testcase hash mismatch
+	// TODO: Testcase content mismatch
 	public string WriteInboxMessage(InboxFpMessage fpMessage, string receiveDirectoryPath)
 	{
 		var fileName = fileNameExtractor.ExtractFileName(fpMessage);
@@ -65,17 +74,42 @@ public class FpFileRepository(
 		var filePath = Path.Combine(receiveDirectoryPath, fileName.ToFileName());
 		if (File.Exists(filePath))
 		{
-			logger.LogWarning("file '{MessagePath}' already exists and will be overriden.", filePath);
+			throw new InvalidOperationException($"File '{filePath}' already exists for message with {fpMessage.MessageId}.");
 		}
 
-		using (StreamWriter xmlStream = new StreamWriter(File.Open(filePath, FileMode.Create)))
+		string stringResult;
+
+		using (var xmlStream = new StreamWriter(File.Open(filePath, FileMode.CreateNew)))
 		{
 			using (var compressedStream = new MemoryStream(fpMessage.Payload))
 			using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
 			using (var resultStream = new MemoryStream())
 			{
+				var hashForFile = ComputeHashFor(compressedStream);
+				if (fpMessage.ContentHashSha256 != hashForFile)
+				{
+					throw new InvalidOperationException($"Hash mismatch: file '{fileName}' [{hashForFile}] vs message '{fpMessage.MessageId}' [{fpMessage.ContentHashSha256}].");
+				}
+
+				compressedStream.Seek(0, SeekOrigin.Begin);
+
 				zipStream.CopyTo(resultStream);
-				xmlStream.Write(Encoding.UTF8.GetString(resultStream.ToArray()));
+				stringResult = Encoding.UTF8.GetString(resultStream.ToArray());
+				xmlStream.Write(stringResult);
+			}
+		}
+
+		if (!File.Exists(filePath))
+		{
+			var exception = new InvalidOperationException($"Unable to write message '{fpMessage.MessageId}' payload to file '{fileName}'.");
+			throw exception;
+		}
+
+		using (var fileReader = new StreamReader(File.Open(filePath, FileMode.Open)))
+		{
+			if (stringResult != fileReader.ReadToEnd())
+			{
+				throw new InvalidOperationException($"File '{fileName}' written to directory differs to received file with id '{fpMessage.MessageId}'.");
 			}
 		}
 

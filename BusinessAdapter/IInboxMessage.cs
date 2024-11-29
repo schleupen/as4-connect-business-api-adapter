@@ -1,7 +1,5 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter;
 
-using Schleupen.AS4.BusinessAdapter.API;
-
 public interface IInboxMessage
 {
 	/// <summary>

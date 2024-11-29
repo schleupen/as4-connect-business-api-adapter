@@ -54,6 +54,8 @@ public partial class FpFileRepositoryTest
 		public Mock<IFpFileParser> FileParserMock { get; } = new();
 		
 		public Mock<IFpFileNameExtractor> FpFileNameExctractor { get; } = new();
+		
+		public Mock<FpFileName> FileName { get; } = new();
 
 		public Mock<ILogger<FpFileRepository>> LoggerMock { get; } = new();
 	}

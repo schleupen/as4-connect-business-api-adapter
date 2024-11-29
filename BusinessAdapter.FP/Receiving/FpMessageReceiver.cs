@@ -134,8 +134,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 
 			if (exceptions.Count > 0)
 			{
-				throw new AggregateException(
-					"At least one error occurred. Details can be found in the inner exceptions.", exceptions);
+				receiveStatus.LogTo(logger);
+				throw new AggregateException("At least one error occurred. Details can be found in the inner exceptions.", exceptions);
 			}
 
 			return receiveStatus;
@@ -149,8 +149,15 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 			var messageLimit = Math.Min(availableMessages.Length, receiveOptions.Value.MessageLimitCount);
 
 			return await Policy.Handle<Exception>()
-				.WaitAndRetryAsync(receiveOptions.Value.Retry.Count, _ => TimeSpan.FromSeconds(10),
-					(ex, _) => { logger.LogError(ex, "Error while receiving messages"); })
+				.WaitAndRetryAsync(receiveOptions.Value.Retry.Count, _ => receiveOptions.Value.Retry.SleepDuration,
+					(ex, ts,retryCount,_) =>
+					{
+						logger.LogWarning("Error while receiving messages - retry {CurrentRetry}/{MaxRetryCount} is scheduled in '{RetrySleepDuration}' at '{ScheduleTime}'",
+							retryCount,
+							receiveOptions.Value.Retry.Count,
+							ts,
+							DateTime.Now + ts);
+					})
 				.ExecuteAndCaptureAsync(async () => { await ReceiveMessagesAsync(receiveContext, availableMessages, messageLimit, receiveStatus); });
 		}
 
@@ -174,8 +181,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 				{
 					receiveStatus.AddFailedReceivedMessage(availableMessages[i], ex);
 					messagesForRetry.Add(availableMessages[i]);
-					exceptions.Add(new RetryableException(
-						$"Error while receiving message with identification '{currentMessage.MessageId}'. [{currentMessage.BDEWProperties}]", ex));
+					exceptions.Add(new RetryableException($"Error while receiving message with identification '{currentMessage.MessageId}'. [{currentMessage.BDEWProperties}]", ex));
 				}
 			}
 
@@ -204,8 +210,10 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 				throw new InvalidOperationException("Error while receiving AS4 messages.");
 			}
 
+			// Write file
 			var fileName = fpFileRepo.WriteInboxMessage(result.Message, receiveOptions.Value.Directory);
 
+			// Ack
 			var ackResponse = await receiveContext.Value.AcknowledgeReceivedMessageAsync(result.Message);
 			if (!ackResponse.WasSuccessful)
 			{

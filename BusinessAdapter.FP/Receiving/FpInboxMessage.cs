@@ -6,11 +6,11 @@
 public sealed class FpInboxMessage
 {
     public FpInboxMessage(
-        DateTimeOffset createdAt, 
-        string messageId, 
-        PartyInfo partyInfo, 
+        DateTimeOffset createdAt,
+        Guid messageId,
+        PartyInfo partyInfo,
         string bdewDocumentNo,
-        string bdewFulfillmentDate, 
+        string bdewFulfillmentDate,
         string bdewSubjectPartyId,
         string bdewSubjectPartyRole,
         string bdewDocumentType)
@@ -24,19 +24,19 @@ public sealed class FpInboxMessage
             , bdewSubjectPartyId
             , bdewSubjectPartyRole);
     }
-    
+
     /// <summary>
     /// The identification of the message.
     /// </summary>
-    public string MessageId { get; }
+    public Guid MessageId { get; }
 
     /// <summary>
     /// The timestamp of creation in AS4 Connect.
     /// </summary>
     public DateTimeOffset CreatedAt { get; }
-    
+
     public FpBDEWProperties BDEWProperties { get; }
-    
+
     /// <summary>
     /// Contains information about the sending and receiving party of the message.
     /// </summary>

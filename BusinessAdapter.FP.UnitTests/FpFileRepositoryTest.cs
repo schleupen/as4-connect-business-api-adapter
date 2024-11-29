@@ -3,9 +3,67 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public partial class FpFileRepositoryTest
 {
+	private string _testDirectory;
+
+	[SetUp]
+	public void SetUp()
+	{
+		_testDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+		Directory.CreateDirectory(_testDirectory);
+	}
+
+	[TearDown]
+	public void TearDown()
+	{
+		if (Directory.Exists(_testDirectory))
+		{
+			Directory.Delete(_testDirectory, true);
+		}
+	}
+	
+	[Test]
+    public void WriteInboxMessage_FileAlreadyExists_ThrowsInvalidOperationException()
+    {
+        // Arrange
+        var repository = fixture.CreateTestObject();
+        var fpMessage = CreateTestFpMessage(false);
+        var fileName = "existingFile.xml";
+        var filePath = Path.Combine(_testDirectory, fileName);
+
+        File.WriteAllText(filePath, "Test content");
+        fixture.Mocks.FpFileNameExctractor.Setup(x => x.ExtractFileName(It.IsAny<InboxFpMessage>())).Returns(fixture.Mocks.FileName.Object);
+        fixture.Mocks.FileName.Setup(name => name.ToFileName()).Returns(fileName);
+
+        // Act & Assert
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+	        repository.WriteInboxMessage(fpMessage, _testDirectory));
+        Assert.That(exception.Message, Does.Contain($"File '{filePath}' already exists"));
+    }
+
+    [Test]
+    public void WriteInboxMessage_Success_ReturnsFilePath()
+    {
+        // Arrange
+        var repository = fixture.CreateTestObject();
+        var fpMessage = CreateTestFpMessage();
+        var fileName = "testFile.xml";
+
+        fixture.Mocks.FpFileNameExctractor.Setup(x => x.ExtractFileName(It.IsAny<InboxFpMessage>())).Returns(fixture.Mocks.FileName.Object);
+        fixture.Mocks.FileName.Setup(name => name.ToFileName()).Returns(fileName);
+        
+        // Act
+        var result = repository.WriteInboxMessage(fpMessage, _testDirectory);
+
+        // Assert
+        var expectedFilePath = Path.Combine(_testDirectory, fileName);
+        Assert.That(result, Is.EqualTo(expectedFilePath));
+        Assert.That(File.Exists(expectedFilePath), Is.True);
+    }
+	
 	[Test]
 	public void GetFilesFrom_NotExistingPath()
 	{
@@ -60,5 +118,33 @@ public partial class FpFileRepositoryTest
 		Assert.That(directoryResult.ValidFpFiles, Has.Exactly(filesPathsInDirectory.Length).Items);
 		Assert.That(directoryResult.DirectoryPath, Is.EqualTo(path));
 		fixture.VerifyLogMessageContainingText(LogLevel.Warning, "", Times.Never());
+	}
+	
+	private InboxFpMessage CreateTestFpMessage(bool includePayload = true)
+	{
+		var payload = CompressString("Test payload content");
+		return new InboxFpMessage(
+			Guid.NewGuid().ToString(),
+			new SendingParty("id", "type"),
+			new ReceivingParty("id", "tye"),
+			"Test payload content",
+			includePayload ? payload : null,
+			new FpBDEWProperties(
+				"docType", 
+				"docNo", 
+				"date", 
+				"subject", 
+				"role")
+		);
+	}
+
+	private byte[] CompressString(string content)
+	{
+		using var inputStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
+		using var outputStream = new MemoryStream();
+		using var gzipStream = new System.IO.Compression.GZipStream(outputStream, System.IO.Compression.CompressionMode.Compress);
+		inputStream.CopyTo(gzipStream);
+		gzipStream.Close();
+		return outputStream.ToArray();
 	}
 }
