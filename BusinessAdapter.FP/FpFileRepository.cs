@@ -91,6 +91,7 @@ public class FpFileRepository(
 				{
 					throw new InvalidOperationException($"Hash for file {fileName} does not match hash for message with {fpMessage.MessageId}.");
 				}
+				compressedStream.Seek(0, SeekOrigin.Begin);
 				zipStream.CopyTo(resultStream);
 				stringResult = Encoding.UTF8.GetString(resultStream.ToArray());
 				xmlStream.Write(stringResult );
