@@ -204,8 +204,10 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 				throw new InvalidOperationException("Error while receiving AS4 messages.");
 			}
 
+			// Write file
 			var fileName = fpFileRepo.WriteInboxMessage(result.Message, receiveOptions.Value.Directory);
-
+			
+			// Ack
 			var ackResponse = await receiveContext.Value.AcknowledgeReceivedMessageAsync(result.Message);
 			if (!ackResponse.WasSuccessful)
 			{
