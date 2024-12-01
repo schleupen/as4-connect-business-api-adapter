@@ -50,10 +50,8 @@ public partial class EICMappingTest
 
 	private sealed class TestData
 	{
-		public readonly EIC Eic1 = new EIC("eic1");
-		public readonly EIC Eic2 = new EIC("eic2");
-		public readonly FpParty Party1 = new FpParty("id1", "type");
-		public readonly FpParty Party2 = new FpParty("id2", "type");
+		public readonly Party Party1 = new Party("id1", "type");
+		public readonly Party Party2 = new Party("id2", "type");
 
 		public readonly List<EICMappingEntry> MappingParty1 =
 		[

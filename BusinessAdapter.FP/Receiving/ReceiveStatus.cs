@@ -37,8 +37,8 @@ public class ReceiveStatus : IReceiveStatus
 	        logger.LogWarning("Failed to receive message '{Id}' - {Exception} [{Sender} -> {Receiver}]",
 		        failedMessage.Value.Message?.MessageId,
 		        failedMessage.Value.Exception.Message,
-		        failedMessage.Value.Message?.PartyInfo.Sender?.AsKey(),
-		        failedMessage.Value.Message?.PartyInfo.Receiver?.AsKey());
+		        failedMessage.Value.Message?.Sender.AsKey(),
+		        failedMessage.Value.Message?.Receiver.AsKey());
         }
 
         logger.LogInformation("{SuccessfulMessagesCount}/{TotalMessageCount} messages received successful.", successfulMessages.Count, TotalMessageCount);

@@ -28,7 +28,7 @@ public partial class EICMappingTest
 		var eicMapping = this.fixture.LoadFromAppSettings();
 
 		Assert.That(eicMapping, Is.Not.Null.Or.Empty);
-		Assert.That(eicMapping.GetPartyOrDefault(new EIC("5790000432752")), Is.EqualTo(new FpParty("1000000001", "BDEW")));
+		Assert.That(eicMapping.GetPartyOrDefault(new EIC("5790000432752")), Is.EqualTo(new Party("1000000001", "BDEW")));
 	}
 
 	[Test]

@@ -35,22 +35,15 @@ public sealed record FpBDEWProperties(
 
 	public FpMessageType ToMessageType()
 	{
-		switch (BDEWDocumentType)
+		return BDEWDocumentType switch
 		{
-			case BDEWDocumentTypes.A01:
-				return FpMessageType.Schedule;
-			case BDEWDocumentTypes.A07:
-			case BDEWDocumentTypes.A08:
-			case BDEWDocumentTypes.A09:
-				return FpMessageType.ConfirmationReport;
-			case BDEWDocumentTypes.A17:
-				return FpMessageType.Acknowledge;
-			case BDEWDocumentTypes.A16:
-				return FpMessageType.AnomalyReport;
-			case BDEWDocumentTypes.A59: // prozessbeschreibung_fahrplananmeldung_v4.5 in A.4.1.1
-				return FpMessageType.StatusRequest;
-			default:
-				throw new NotSupportedException($"Document type '{BDEWDocumentType}' is not supported.");
-		}
+			BDEWDocumentTypes.A01 => FpMessageType.Schedule,
+			BDEWDocumentTypes.A07 or BDEWDocumentTypes.A08 or BDEWDocumentTypes.A09 => FpMessageType.ConfirmationReport,
+			BDEWDocumentTypes.A17 => FpMessageType.Acknowledge,
+			BDEWDocumentTypes.A16 => FpMessageType.AnomalyReport,
+			BDEWDocumentTypes.A59 => // prozessbeschreibung_fahrplananmeldung_v4.5 in A.4.1.1
+				FpMessageType.StatusRequest,
+			_ => throw new NotSupportedException($"Document type '{BDEWDocumentType}' is not supported.")
+		};
 	}
 }

@@ -2,10 +2,13 @@
 
 using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
+/// <summary>
+/// Outbound FP Message.
+/// </summary>
 public class FpOutboxMessage(
 	Guid messageId,
-	SendingFpParty sender,
-	ReceivingFpParty receiver,
+	SendingParty sender,
+	ReceivingParty receiver,
 	byte[] payload,
 	string filename,
 	string filePath,
@@ -17,12 +20,12 @@ public class FpOutboxMessage(
 	/// <summary>
 	/// Receiving party of the message.
 	/// </summary>
-	public SendingFpParty Sender { get; } = sender;
+	public SendingParty Sender { get; } = sender;
 
 	/// <summary>
 	/// Receiving party of the message.
 	/// </summary>
-	public ReceivingFpParty Receiver { get; } = receiver;
+	public ReceivingParty Receiver { get; } = receiver;
 
     /// <summary>
     /// XML payload.

@@ -14,11 +14,11 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 	using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 	public sealed class BusinessApiGateway(
-		FpParty party,
+		Party party,
 		IHttpClientFactory httpClientFactory,
 		IBusinessApiClientFactory businessApiClientFactory,
 		IPartyIdTypeAssembler partyIdTypeAssembler,
-	    string as4BusinessApiEndpoint,
+		string as4BusinessApiEndpoint,
 		ILogger<BusinessApiGateway> logger,
 		IJwtBuilder jwtBuilder)
 		: IBusinessApiGateway
@@ -86,20 +86,21 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 					}
 
 					messages.Add(new FpInboxMessage(
-						message.Created_at,
 						message.MessageId,
-						new PartyInfo(
-							new SendingParty(
-								message.PartyInfo.Sender.Id,
-								message.PartyInfo.Sender.Type.ToString()),
-							new ReceivingParty(
-								message.PartyInfo.Receiver.Id,
-								message.PartyInfo.Receiver.Type.ToString())),
-						message.BdewDocumentNo!,
-						message.BdewFulfillmentDate!,
-						message.BdewSubjectPartyId,
-						message.BdewSubjectPartyRole!,
-						message.BdewDocumentType!));
+						new SendingParty(
+							message.PartyInfo.Sender.Id,
+							message.PartyInfo.Sender.Type.ToString()),
+						new ReceivingParty(
+							message.PartyInfo.Receiver.Id,
+							message.PartyInfo.Receiver.Type.ToString()),
+						message.Created_at,
+						new FpBDEWProperties(
+							message.BdewDocumentType!,
+							message.BdewDocumentNo!,
+							message.BdewFulfillmentDate!,
+							message.BdewSubjectPartyId,
+							message.BdewSubjectPartyRole!))
+					);
 				}
 				catch (Exception e)
 				{
@@ -133,11 +134,11 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 								true,
 								new InboxFpMessage(
 									fpInboxMessage.MessageId.ToString(),
-									fpInboxMessage.PartyInfo.Sender!,
-									fpInboxMessage.PartyInfo.Receiver!,
+									fpInboxMessage.Sender,
+									fpInboxMessage.Receiver,
 									xmlString,
 									zippedContent,
-								    fpInboxMessage.BDEWProperties));
+									fpInboxMessage.BDEWProperties));
 						}
 					}
 				}
@@ -146,8 +147,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			{
 				return new BusinessApiResponse<InboxFpMessage>(false,
 					new InboxFpMessage(fpInboxMessage.MessageId.ToString(),
-						fpInboxMessage.PartyInfo.Sender!,
-						fpInboxMessage.PartyInfo.Receiver!,
+						fpInboxMessage.Sender,
+						fpInboxMessage.Receiver,
 						null,
 						null,
 						null)
@@ -168,7 +169,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 					throw new InvalidOperationException("The message does not have a MessageId.");
 				}
 
-				await businessApiClient.V1FpMessagesInboxAcknowledgementAsync(Guid.Parse(fpMessage.MessageId), new MessageAcknowledgedRequestDto { Jwt = tokenString });
+				await businessApiClient.V1FpMessagesInboxAcknowledgementAsync(Guid.Parse(fpMessage.MessageId),
+					new MessageAcknowledgedRequestDto { Jwt = tokenString });
 
 				return new BusinessApiResponse<bool>(true, true);
 			}

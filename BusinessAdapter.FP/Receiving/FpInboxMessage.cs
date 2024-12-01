@@ -1,44 +1,38 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 /// <summary>
-/// Incoming AS4 message with metadata and XML payload
+/// Inbound FP Message.
 /// </summary>
-public sealed class FpInboxMessage
+public sealed class FpInboxMessage(
+	Guid messageId,
+	SendingParty sender,
+	ReceivingParty receiver,
+	DateTimeOffset createdAt,
+	FpBDEWProperties fpBDEWProperties)
 {
-    public FpInboxMessage(
-        DateTimeOffset createdAt,
-        Guid messageId,
-        PartyInfo partyInfo,
-        string bdewDocumentNo,
-        string bdewFulfillmentDate,
-        string bdewSubjectPartyId,
-        string bdewSubjectPartyRole,
-        string bdewDocumentType)
-    {
-        CreatedAt = createdAt;
-        MessageId = messageId;
-        PartyInfo = partyInfo;
-        BDEWProperties = new FpBDEWProperties(bdewDocumentType
-            , bdewDocumentNo
-            , bdewFulfillmentDate
-            , bdewSubjectPartyId
-            , bdewSubjectPartyRole);
-    }
-
-    /// <summary>
+	/// <summary>
     /// The identification of the message.
     /// </summary>
-    public Guid MessageId { get; }
+    public Guid MessageId { get; } = messageId;
 
     /// <summary>
     /// The timestamp of creation in AS4 Connect.
     /// </summary>
-    public DateTimeOffset CreatedAt { get; }
-
-    public FpBDEWProperties BDEWProperties { get; }
+    public DateTimeOffset CreatedAt { get; } = createdAt;
 
     /// <summary>
-    /// Contains information about the sending and receiving party of the message.
+    /// AS4 specific required Propereties
     /// </summary>
-    public PartyInfo PartyInfo { get; }
+    public FpBDEWProperties BDEWProperties { get; } = fpBDEWProperties;
+
+    /// <summary>
+    /// Receiving party of the message.
+    /// </summary>
+    public SendingParty Sender { get; } = sender;
+
+    /// <summary>
+    /// Receiving party of the message.
+    /// </summary>
+    public ReceivingParty Receiver { get; } = receiver;
+
 }

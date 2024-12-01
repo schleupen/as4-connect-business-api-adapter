@@ -17,7 +17,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 		IJwtBuilder jwtBuilder)
 		: IBusinessApiGatewayFactory
 	{
-		public IBusinessApiGateway CreateGateway(FpParty party)
+		public IBusinessApiGateway CreateGateway(Party party)
 		{
 			return new BusinessApiGateway(party, httpClientFactory, businessApiClientFactory, partyIdTypeAssembler, options.Value.As4ConnectEndpoint, logger, jwtBuilder);
 		}

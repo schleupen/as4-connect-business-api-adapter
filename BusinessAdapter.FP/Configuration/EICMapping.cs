@@ -4,7 +4,7 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
 {
     public const string SectionName = nameof(EICMapping);
 
-    public FpParty? GetPartyOrDefault(string identificationNumber)
+    public Party? GetPartyOrDefault(string identificationNumber)
     {
         var kvp = this.SelectMany(kvp => kvp.Value,
                 (kvp, entry) => new { Key = kvp.Key, Entry = entry })
@@ -16,7 +16,7 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
         return entry.Key == null ? null : ToFpParty(entry.Value, entry.Key);
     }
 
-    public FpParty? GetPartyOrDefault(EIC eic)
+    public Party? GetPartyOrDefault(EIC eic)
     {
         foreach (var entry in this)
         {
@@ -32,32 +32,32 @@ public class EICMapping : Dictionary<string, List<EICMappingEntry>>
         return null;
     }
 
-    public SendingFpParty GetSendingParty(EIC eic)
+    public SendingParty GetSendingParty(EIC eic)
     {
         var party = GetPartyOrDefault(eic) ??
                     throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
         return ToSendingParty(party);
     }
 
-    public ReceivingFpParty GetReceivingParty(EIC eic)
+    public ReceivingParty GetReceivingParty(EIC eic)
     {
         var party = GetPartyOrDefault(eic) ??
                     throw new InvalidOperationException($"EIC '{eic.Code}' is not configured.");
         return ToReceivingParty(party);
     }
 
-    private SendingFpParty ToSendingParty(FpParty sendingParty)
+    private SendingParty ToSendingParty(Party sendingParty)
     {
-        return new SendingFpParty(sendingParty.Id, sendingParty.Type);
+        return new SendingParty(sendingParty.Id, sendingParty.Type);
     }
 
-    private ReceivingFpParty ToReceivingParty(FpParty receivingParty)
+    private ReceivingParty ToReceivingParty(Party receivingParty)
     {
-        return new ReceivingFpParty(receivingParty.Id, receivingParty.Type);
+        return new ReceivingParty(receivingParty.Id, receivingParty.Type);
     }
 
-    private FpParty ToFpParty(EICMappingEntry entry, string mpId)
+    private Party ToFpParty(EICMappingEntry entry, string mpId)
     {
-        return new FpParty(mpId, entry.MarktpartnerTyp);
+        return new Party(mpId, entry.MarktpartnerTyp);
     }
 }

@@ -90,7 +90,7 @@ public partial class FpMessageSenderTest
 				.Returns<FpOutboxMessage, CancellationToken>((x, y) => Task.FromResult(new BusinessApiResponse<FpOutboxMessage>(true, x)));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
+				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -112,7 +112,7 @@ public partial class FpMessageSenderTest
 				.Returns<FpOutboxMessage, CancellationToken>((x, y) => Task.FromResult(new BusinessApiResponse<FpOutboxMessage>(true, x)));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
+				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -134,7 +134,7 @@ public partial class FpMessageSenderTest
 				.Returns<FpOutboxMessage, CancellationToken>((x, y) => Task.FromResult(new BusinessApiResponse<FpOutboxMessage>(true, x)));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
+				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -158,7 +158,7 @@ public partial class FpMessageSenderTest
 						new InvalidOperationException("..."))));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
+				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -181,7 +181,7 @@ public partial class FpMessageSenderTest
 				.Returns<FpOutboxMessage, CancellationToken>((x, y) => Task.FromResult(new BusinessApiResponse<FpOutboxMessage>(false, x)));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
+				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
 				.Returns(gatewayMock.Object);
 
 			return gatewayMock;
@@ -213,7 +213,7 @@ public partial class FpMessageSenderTest
 				.Returns(Data.CreateDirectoryResult(1, 0));
 
 			Mocks.BusinessApiGatewayFactory
-				.Setup(r => r.CreateGateway(It.IsAny<FpParty>()))
+				.Setup(r => r.CreateGateway(It.IsAny<Party>()))
 				.Throws(() => exception);
 		}
 	}
@@ -237,8 +237,8 @@ public partial class FpMessageSenderTest
 				.Returns<IEnumerable<FpFile>>(x => new List<FpOutboxMessage>(
 					x.Select(x => new FpOutboxMessage(
 						Guid.NewGuid(),
-						new SendingFpParty(x.Sender.Code, "type"),
-						new ReceivingFpParty(x.Receiver.Code, "type"),
+						new SendingParty(x.Sender.Code, "type"),
+						new ReceivingParty(x.Receiver.Code, "type"),
 						x.Content,
 						x.FileName,
 						x.FilePath,

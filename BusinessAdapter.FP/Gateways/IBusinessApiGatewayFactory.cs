@@ -15,6 +15,6 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 		/// <param name="party">Identification the own market partner which calls AS4 Connect.</param>
 		/// <returns>IAs4BusinessApiClient</returns>
 		/// <exception cref="MissingCertificateException">if no certificate für die angegebene Codenummer gefunden wurde.</exception>
-		IBusinessApiGateway CreateGateway(FpParty party);
+		IBusinessApiGateway CreateGateway(Party party);
 	}
 }

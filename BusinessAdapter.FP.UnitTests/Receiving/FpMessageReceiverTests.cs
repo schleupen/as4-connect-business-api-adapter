@@ -75,7 +75,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			var businessApiResponse = new BusinessApiResponse<InboxFpMessage>(true, CreateDummyFpMessage());
 
 			businessApiGatewayFactoryMock
-				.Setup(factory => factory.CreateGateway(It.IsAny<FpParty>()))
+				.Setup(factory => factory.CreateGateway(It.IsAny<Party>()))
 				.Returns(gatewayMock.Object);
 			gatewayMock
 				.Setup(g => g.QueryAvailableMessagesAsync(It.IsAny<int>()))
@@ -117,7 +117,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			var businessApiResponse = new BusinessApiResponse<InboxFpMessage>(true, CreateDummyFpMessage());
 
 			businessApiGatewayFactoryMock
-				.Setup(factory => factory.CreateGateway(It.IsAny<FpParty>()))
+				.Setup(factory => factory.CreateGateway(It.IsAny<Party>()))
 				.Returns(gatewayMock.Object);
 			gatewayMock
 				.Setup(g => g.QueryAvailableMessagesAsync(It.IsAny<int>()))
@@ -194,7 +194,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			var receiveInfo = new MessageReceiveInfo(messages);
 
 			businessApiGatewayFactoryMock
-				.Setup(factory => factory.CreateGateway(It.IsAny<FpParty>()))
+				.Setup(factory => factory.CreateGateway(It.IsAny<Party>()))
 				.Returns(gatewayMock.Object);
 
 			gatewayMock
@@ -215,22 +215,25 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 		public FpInboxMessage CreateFpInboxMessage(
 			DateTimeOffset? createdAt = null,
 			PartyInfo? partyInfo = null,
-			string bdewDocumentNo = "12345",
+			string bdewDocumentNo = "1",
 			string bdewFulfillmentDate = "2024-08-12",
-			string bdewSubjectPartyId = "PartyId123",
-			string bdewSubjectPartyRole = "Sender",
-			string bdewDocumentType = "Type1")
+			string bdewSubjectPartyId = "0X1001A1001A264",
+			string bdewSubjectPartyRole = "A01",
+			string bdewDocumentType = "A07")
 		{
 
 			return new FpInboxMessage(
-				createdAt ?? DateTimeOffset.UtcNow,
 				Guid.NewGuid(),
-				partyInfo ?? CreateDefaultPartyInfo(),
-				bdewDocumentNo,
-				bdewFulfillmentDate,
-				bdewSubjectPartyId,
-				bdewSubjectPartyRole,
-				bdewDocumentType);
+				partyInfo?.Sender ?? CreateDefaultPartyInfo().Sender!,
+				partyInfo?.Receiver ?? CreateDefaultPartyInfo().Receiver!,
+				createdAt ?? DateTimeOffset.UtcNow,
+				new FpBDEWProperties(
+					bdewDocumentType,
+					bdewDocumentNo,
+					bdewFulfillmentDate,
+					bdewSubjectPartyId,
+					bdewSubjectPartyRole)
+				);
 		}
 
 		public InboxFpMessage CreateDummyFpMessage()
