@@ -32,9 +32,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
 
             var as4BusinessApiClients = await QueryAllMessagesAsync(marketPartnersWithoutCertificate, exceptions);
 
-            var receiveStatus = new ReceiveStatus();
-            
-            await ProcessAllMessagesAsync(as4BusinessApiClients, exceptions, receiveStatus);
+            var receiveStatus = await ProcessAllMessagesAsync(as4BusinessApiClients, exceptions);
 
             LogFinalStatus(receiveStatus, as4BusinessApiClients, marketPartnersWithoutCertificate);
 
@@ -114,16 +112,15 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
             return exceptions;
         }
 
-        private async Task ProcessAllMessagesAsync(
+        private async Task<ReceiveStatus> ProcessAllMessagesAsync(
             Dictionary<MessageReceiveInfo, IBusinessApiGateway> as4BusinessApiClients,
-            List<Exception> exceptions,
-            ReceiveStatus receiveStatus)
+            List<Exception> exceptions)
         {
+            ReceiveStatus receiveStatus = new ReceiveStatus();
             foreach (var as4BusinessApiClient in as4BusinessApiClients)
             {
-                var policyContext = new Context($"ProcessingMessages-{as4BusinessApiClient.Key}");
                 var policyResult =
-                    await ReceiveMessagesWithRetryAsync(as4BusinessApiClient, receiveStatus, policyContext);
+                    await ReceiveMessagesWithRetryAsync(as4BusinessApiClient, receiveStatus);
 
                 if (policyResult.FinalException != null) {
                     exceptions.Add(policyResult.FinalException);
@@ -131,36 +128,22 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
                 if (as4BusinessApiClient.Key.HasTooManyRequestsError) {
                     break;
                 }
-                logger.LogInformation("Run one done");
             }
 
             if (exceptions.Count != 0) {
                 throw new AggregateException(
                     "At least one error occurred. Details can be found in the inner exceptions.", exceptions);
             }
+
+            return receiveStatus;
         }
 
         private async Task<PolicyResult> ReceiveMessagesWithRetryAsync(
             KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> receiveContext,
-            ReceiveStatus receiveStatus,
-            Context policyContext)
+            ReceiveStatus receiveStatus)
         {
             var availableMessages = receiveContext.Key.GetAvailableMessages();
             var messageLimit = Math.Min(availableMessages.Length, receiveOptions.Value.MessageLimitCount);
-
-            if (receiveOptions.Value.Retry.Count == 0)
-            {
-                // Process without retry
-                try
-                {
-                    await ReceiveMessagesAsync(receiveContext, availableMessages, messageLimit, receiveStatus);
-                    return PolicyResult.Successful(policyContext);
-                }
-                catch (AggregateException ex)
-                {
-                    return PolicyResult.Failure(ex, ExceptionType.Unhandled, policyContext);
-                }
-            }
 
             return await Policy.Handle<Exception>()
                 .WaitAndRetryAsync(
@@ -208,8 +191,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Receiving
                 throw new AggregateException("Errors occurred while processing messages.", exceptions);
             }
         }
-
-
+        
         private async Task ProcessSingleMessageAsync(
             KeyValuePair<MessageReceiveInfo, IBusinessApiGateway> receiveContext,
             FpInboxMessage message,
