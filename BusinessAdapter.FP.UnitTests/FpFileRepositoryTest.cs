@@ -26,7 +26,7 @@ public partial class FpFileRepositoryTest
 	}
 	
 	[Test]
-    public void WriteInboxMessage_FileAlreadyExists_ThrowsInvalidOperationException()
+    public void WriteInboxMessage_FileAlreadyExists_ThrowsFileAlreadyExistException()
     {
         // Arrange
         var repository = fixture.CreateTestObject();
@@ -39,9 +39,9 @@ public partial class FpFileRepositoryTest
         fixture.Mocks.FileName.Setup(name => name.ToFileName()).Returns(fileName);
 
         // Act & Assert
-        var exception = Assert.Throws<InvalidOperationException>(() =>
+        var exception = Assert.Throws<FileAlreadyExistException>(() =>
 	        repository.WriteInboxMessage(fpMessage, _testDirectory));
-        Assert.That(exception.Message, Does.Contain($"File '{filePath}' already exists"));
+        Assert.That(exception.Message, Does.Contain($"File with the name {filePath} already exist for message {fpMessage.MessageId}"));
     }
 
     [Test]

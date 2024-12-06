@@ -93,6 +93,53 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			Assert.That(test.FailedMessages.Count, Is.EqualTo(0));
 			Assert.That(test.TotalMessageCount, Is.EqualTo(1));
 		}
+		
+		[Test]
+		public async Task ReceiveAvailableMessagesAsync_ReceiveStatusIsCorrect_ForFileAlreadyExist()
+		{
+			// Arrange
+			receiveOptionsMock = Options.Create<ReceiveOptions>(new ReceiveOptions
+			{
+				Directory = "C:\\Adapter\\Receive",
+				MessageLimitCount = 10,
+				Retry = new Schleupen.AS4.BusinessAdapter.Configuration.RetryOption { Count = 3 }
+			});
+			fpFileRepositoryMock
+				.Setup(x => x.WriteInboxMessage(It.IsAny<InboxFpMessage>(), It.IsAny<string>()))
+				.Throws(new FileAlreadyExistException("Filename", "messageId"));
+			
+			fpMessageReceiver = new FpMessageReceiver(
+				loggerMock.Object,
+				receiveOptionsMock,
+				adapterOptionsMock,
+				businessApiGatewayFactoryMock.Object,
+				fpFileRepositoryMock.Object,
+				eicMappingMock);
+			var gatewayMock = new Mock<IBusinessApiGateway>();
+			var messages = new[] { CreateFpInboxMessage() };
+			var receiveInfo = new MessageReceiveInfo(messages);
+			var businessApiResponse = new BusinessApiResponse<InboxFpMessage>(true, CreateDummyFpMessage());
+
+			businessApiGatewayFactoryMock
+				.Setup(factory => factory.CreateGateway(It.IsAny<Party>()))
+				.Returns(gatewayMock.Object);
+			gatewayMock
+				.Setup(g => g.QueryAvailableMessagesAsync(It.IsAny<int>()))
+				.ReturnsAsync(receiveInfo);
+			gatewayMock
+				.Setup(x => x.ReceiveMessageAsync(It.IsAny<FpInboxMessage>()))
+				.ReturnsAsync(businessApiResponse);
+			gatewayMock
+				.Setup(x => x.AcknowledgeReceivedMessageAsync(It.IsAny<InboxFpMessage>()))
+				.ReturnsAsync(new BusinessApiResponse<bool>(true, true));
+			// Act
+			var test = await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None);
+			Assert.That(test, Is.Not.Null);
+			Assert.That(test.SuccessfulMessages.Count, Is.EqualTo(0));
+			Assert.That(test.FailedMessages.Count, Is.EqualTo(1));
+			Assert.That(test.TotalMessageCount, Is.EqualTo(1));
+			Assert.That(test.FailedMessages.FirstOrDefault().Exception.Message, Is.EqualTo("File with the name Filename already exist for message messageId"));
+		}
 
 		[Test]
 		public void ReceiveAvailableMessagesAsync_ReceiveStatusIsCorrect_ForFailedAcknowledge()
