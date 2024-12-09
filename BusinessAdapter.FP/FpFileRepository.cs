@@ -74,7 +74,7 @@ public class FpFileRepository(
 		var filePath = Path.Combine(receiveDirectoryPath, fileName.ToFileName());
 		if (File.Exists(filePath))
 		{
-			throw new InvalidOperationException($"File '{filePath}' already exists for message with {fpMessage.MessageId}.");
+			throw new FileAlreadyExistException(filePath, fpMessage.MessageId);
 		}
 
 		string stringResult;
