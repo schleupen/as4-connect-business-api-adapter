@@ -56,13 +56,8 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		/// <returns>Whether the AS4 certificate belongs to the given market partner.</returns>
 		public bool IsCertificateFor(string marketpartnerIdentificationNumber)
 		{
-			string? identificationNumberFromCertificate = ResolveFromOrganizationalUnitField();
+			string? identificationNumberFromCertificate = x509Certificate2.ResolveMarketpartnerIdentificationNumber();
 				return string.Equals(identificationNumberFromCertificate, marketpartnerIdentificationNumber, StringComparison.OrdinalIgnoreCase);
-		}
-
-		private string? ResolveFromOrganizationalUnitField()
-		{
-			return x509Certificate2.ResolveFromOrganizationalUnitField();
 		}
 	}
 }

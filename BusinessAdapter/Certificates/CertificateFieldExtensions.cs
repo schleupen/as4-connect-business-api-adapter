@@ -22,7 +22,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		/// </summary>
 		/// <param name="certificate">The certificate.</param>
 		/// <returns>The market partner.</returns>
-		public static string? ResolveFromOrganizationalUnitField(this X509Certificate2 certificate)
+		public static string? ResolveMarketpartnerIdentificationNumber(this X509Certificate2 certificate)
 		{
 			if (string.IsNullOrEmpty(certificate.Subject))
 			{
