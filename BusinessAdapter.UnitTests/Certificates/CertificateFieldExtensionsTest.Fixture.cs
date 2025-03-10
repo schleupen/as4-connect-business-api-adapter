@@ -11,9 +11,9 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		{
 			private X509Certificate2? certificate;
 
-			public X509Certificate2 CreateTestObject()
+			public X509Certificate2 CreateTestObject(string certFileName = "client.pfx")
 			{
-				return ReadCertificateFromResource("client.pfx");
+				return ReadCertificateFromResource(certFileName);
 			}
 
 			private X509Certificate2 ReadCertificateFromResource(string filename)

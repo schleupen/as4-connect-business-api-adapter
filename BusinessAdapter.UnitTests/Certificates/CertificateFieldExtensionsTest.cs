@@ -34,11 +34,31 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		}
 
 		[Test]
-		public void ResolveFromOrganizationalUnitField_WithCertificateWithOrganizationUnitField_ShouldReturnIdentificationNumber()
+		public void IsSubjectDistinguishedNameEqualToAs4_WithAS4Certificate_ShouldReturnTrue()
+		{
+			X509Certificate2 testObject = fixture!.CreateTestObject("MP_AS4.pfx");
+
+			bool result = testObject.IsSubjectDistinguishedNameEqualToAs4();
+
+			Assert.That(result, Is.True);
+		}
+
+		[Test]
+		public void IsSubjectDistinguishedNameEqualToAs4_WithApiCertificate_ShouldReturnTrue()
+		{
+			X509Certificate2 testObject = fixture!.CreateTestObject("MP_API.pfx");
+
+			bool result = testObject.IsSubjectDistinguishedNameEqualToAs4();
+
+			Assert.That(result, Is.False);
+		}
+
+		[Test]
+		public void ResolveMarketpartnerIdentificationNumber_WithCertificateWithOrganizationUnitField_ShouldReturnIdentificationNumber()
 		{
 			X509Certificate2 testObject = fixture!.CreateTestObject();
 
-			string? result = testObject.ResolveFromOrganizationalUnitField();
+			string? result = testObject.ResolveMarketpartnerIdentificationNumber();
 
 			Assert.That(result, Is.EqualTo("9912345000001"));
 		}

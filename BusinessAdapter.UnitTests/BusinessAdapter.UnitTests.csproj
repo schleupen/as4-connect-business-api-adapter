@@ -12,6 +12,10 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="Certificates\Resources\client.pfx" />
+	  <None Remove="Certificates\Resources\MP_AS4.pfx" />
+	  <EmbeddedResource Include="Certificates\Resources\MP_AS4.pfx" />
+	  <None Remove="Certificates\Resources\MP_API.pfx" />
+	  <EmbeddedResource Include="Certificates\Resources\MP_API.pfx" />
 	</ItemGroup>
 	<ItemGroup>
         <PackageReference Include="JunitXml.TestLogger" Version="3.1.12" />
