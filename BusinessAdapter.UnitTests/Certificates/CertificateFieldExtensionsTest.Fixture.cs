@@ -2,6 +2,9 @@
 
 namespace Schleupen.AS4.BusinessAdapter.Certificates
 {
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
 	using System.Reflection;
 	using System.Security.Cryptography.X509Certificates;
 
@@ -9,40 +12,34 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	{
 		private sealed class Fixture : IDisposable
 		{
-			private X509Certificate2? certificate;
+			private readonly List<X509Certificate2> certificates = [];
 
-			public X509Certificate2 CreateTestObject(string certFileName = "client.pfx")
+			public X509Certificate2 ReadCertificateFromResource(string filename)
 			{
-				return ReadCertificateFromResource(certFileName);
-			}
+				var fileName = $"Schleupen.AS4.BusinessAdapter.Certificates.Resources.{filename}";
 
-			private X509Certificate2 ReadCertificateFromResource(string filename)
-			{
-				if (certificate != null)
+				using Stream? fileStream = Assembly
+					.GetExecutingAssembly()
+					.GetManifestResourceStream(fileName);
+
+				if (fileStream == null)
 				{
-					return certificate;
+					throw new InvalidOperationException($"embedded resouce not found: '{fileName}'");
 				}
 
-				Assembly assembly = Assembly.GetExecutingAssembly();
-				string resourceName = $"Schleupen.AS4.BusinessAdapter.Certificates.Resources.{filename}";
-
-				using (Stream? fileStream = assembly.GetManifestResourceStream(resourceName))
-				{
-					if (fileStream == null)
-					{
-						throw new InvalidOperationException("Stream was null");
-					}
-
-					byte[] buffer = new byte[fileStream.Length];
-					int _ = fileStream.Read(buffer, 0, buffer.Length);
-					certificate = new X509Certificate2(buffer);
-					return certificate;
-				}
+				byte[] buffer = new byte[fileStream.Length];
+				int _ = fileStream.Read(buffer, 0, buffer.Length);
+				var cert = new X509Certificate2(buffer);
+				certificates.Add(cert);
+				return cert;
 			}
 
 			public void Dispose()
 			{
-				certificate?.Dispose();
+				foreach (var certificate in certificates)
+				{
+					certificate?.Dispose();
+				}
 			}
 		}
 	}
