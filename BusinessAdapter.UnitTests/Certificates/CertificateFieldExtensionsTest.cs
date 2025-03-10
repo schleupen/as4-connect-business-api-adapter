@@ -42,6 +42,5 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 
 			Assert.That(result, Is.EqualTo("9912345000001"));
 		}
-
 	}
 }
