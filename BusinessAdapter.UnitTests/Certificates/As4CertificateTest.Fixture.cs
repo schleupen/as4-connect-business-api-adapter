@@ -13,7 +13,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 
 			public ClientCertificate CreateTestObject()
 			{
-				return new ClientCertificate(ReadCertificateFromResource("client.pfx"));
+				return new ClientCertificate(ReadCertificateFromResource("client_unspecific_certificate.pfx"));
 			}
 
 			private X509Certificate2 ReadCertificateFromResource(string filename)
