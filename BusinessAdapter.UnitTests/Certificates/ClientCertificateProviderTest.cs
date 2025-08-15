@@ -23,29 +23,29 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		}
 
 		[Test]
-		public void GetMarketpartnerCertificate_CertificateFound_ShouldReturnCertificate()
+		public void GetCertificate_ValidCertificateFound_ShouldReturnCertificate()
 		{
 			fixture!.PrepareCertificateFound();
 			ClientCertificateProvider testObject = fixture!.CreateTestObject();
 
-			IClientCertificate certificate = testObject.GetCertificate("12345");
+			IClientCertificate certificate = testObject.GetCertificate(fixture.MarktPartnerId);
 
 			Assert.That(certificate, Is.Not.Null);
 		}
 
 		[Test]
-		public void GetMarketpartnerCertificate_NoAs4CertificateFound_ShouldThrowMissingCertificateException()
+		public void GetCertificate_NoAs4CertificateFound_ShouldThrowMissingCertificateException()
 		{
 			fixture!.PrepareNoAs4CertificateFound();
 			ClientCertificateProvider testObject = fixture!.CreateTestObject();
 
-			MissingCertificateException? exception = Assert.Throws<MissingCertificateException>(() => testObject.GetCertificate("12345"));
+			MissingCertificateException? exception = Assert.Throws<MissingCertificateException>(() => testObject.GetCertificate(fixture.MarktPartnerId));
 
 			Assert.That(exception!.Message, Contains.Substring("No certificate found for the market partner with identification number 12345."));
 		}
 
 		[Test]
-		public void GetMarketpartnerCertificate_CertificateNotFound_ShouldThrowMissingCertificateException()
+		public void GetCertificate_CertificateNotFound_ShouldThrowMissingCertificateException()
 		{
 			fixture!.PrepareCertificateHasNoMatchingNameFound();
 			ClientCertificateProvider testObject = fixture!.CreateTestObject();
@@ -56,14 +56,38 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		}
 
 		[Test]
-		public void GetMarketpartnerCertificate_MultipleCertificatesFound_ShouldThrowInvalidException()
+		public void GetCertificate_MultipleValidCertificatesFound_ShouldReturnNewest()
 		{
-			fixture!.PrepareMultipleCertificatesFound();
+			fixture!.PrepareMultipleValidCertificatesFound();
 			ClientCertificateProvider testObject = fixture!.CreateTestObject();
 
-			NoUniqueCertificateException? exception = Assert.Throws<NoUniqueCertificateException>(() => testObject.GetCertificate("12345"));
+			IClientCertificate certificate = testObject.GetCertificate(fixture.MarktPartnerId);
 
-			Assert.That(exception!.Message, Contains.Substring("More than one certificate found for the market partner with identification number 12345."));
+			Assert.That(certificate, Is.Not.Null);
+			fixture.IsCertificateTwo(certificate);
+		}
+
+		[Test]
+		public void GetCertificate_MultipleCertificatesWithOneValidCertificateFound_ShouldReturnValidCertificate()
+		{
+			fixture!.PrepareMultipleCertificatesFound_OneValidAndOneInvalid();
+			ClientCertificateProvider testObject = fixture!.CreateTestObject();
+
+			IClientCertificate certificate = testObject.GetCertificate(fixture.MarktPartnerId);
+
+			Assert.That(certificate, Is.Not.Null);
+			fixture.IsCertificateOne(certificate);
+		}
+
+		[Test]
+		public void GetCertificate_MultipleCertificatesWithNoValidCertificatesFound_ShouldThrowMissingCertificateException()
+		{
+			fixture!.PrepareMultipleInvalidCertificatesFound();
+			ClientCertificateProvider testObject = fixture!.CreateTestObject();
+
+			MissingCertificateException? exception = Assert.Throws<MissingCertificateException>(() => testObject.GetCertificate(fixture.MarktPartnerId));
+
+			Assert.That(exception!.Message, Contains.Substring("No certificate found for the market partner with identification number 12345."));
 		}
 	}
 }

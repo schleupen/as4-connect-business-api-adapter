@@ -59,5 +59,17 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 			string? identificationNumberFromCertificate = x509Certificate2.ResolveMarketpartnerIdentificationNumber();
 				return string.Equals(identificationNumberFromCertificate, marketpartnerIdentificationNumber, StringComparison.OrdinalIgnoreCase);
 		}
+
+		/// <summary>
+		/// Returns the time stamp from which the certificate is valid
+		/// </summary>
+		/// <returns>The Datetime</returns>
+		public DateTime ValidFrom => x509Certificate2.NotBefore;
+
+		/// <summary>
+		/// Returns the time stamp until the certificate is valid
+		/// </summary>
+		/// <returns>The Datetime </returns>
+		public DateTime ValidUntil => x509Certificate2.NotAfter;
 	}
 }
