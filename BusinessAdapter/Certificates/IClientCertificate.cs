@@ -37,13 +37,13 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		bool IsCertificateFor(string marketpartnerIdentificationNumber);
 
 		/// <summary>
-		/// Returns the time stamp from which the certificate is valid
+		/// Returns the time stamp from which the certificate is valid.
 		/// </summary>
 		/// <returns>The Datetime</returns>
 		DateTime ValidFrom { get; }
 
 		/// <summary>
-		/// Returns the time stamp until the certificate is valid
+		/// Returns the time stamp until the certificate is valid.
 		/// </summary>
 		/// <returns>The Datetime </returns>
 		DateTime ValidUntil { get; }

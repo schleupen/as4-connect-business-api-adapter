@@ -165,7 +165,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!));
 			}
 
-			public void PrepareMultipleCertificatesFound_OneValidAndOneInvalid()
+			public void PrepareMultipleCertificatesWithOneValidCertificateFound()
 			{
 				certificateStoreFactoryMock
 					.Setup(x => x.CreateAndOpen())
@@ -209,7 +209,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!));
 			}
 
-			public void PrepareMultipleInvalidCertificatesFound()
+			public void PrepareMultipleCertificatesWithNoValidCertificatesFound()
 			{
 				certificateStoreFactoryMock
 					.Setup(x => x.CreateAndOpen())

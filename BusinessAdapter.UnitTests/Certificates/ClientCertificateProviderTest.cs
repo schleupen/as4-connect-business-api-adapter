@@ -70,7 +70,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void GetCertificate_MultipleCertificatesWithOneValidCertificateFound_ShouldReturnValidCertificate()
 		{
-			fixture!.PrepareMultipleCertificatesFound_OneValidAndOneInvalid();
+			fixture!.PrepareMultipleCertificatesWithOneValidCertificateFound();
 			ClientCertificateProvider testObject = fixture!.CreateTestObject();
 
 			IClientCertificate certificate = testObject.GetCertificate(fixture.MarktPartnerId);
@@ -82,7 +82,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void GetCertificate_MultipleCertificatesWithNoValidCertificatesFound_ShouldThrowMissingCertificateException()
 		{
-			fixture!.PrepareMultipleInvalidCertificatesFound();
+			fixture!.PrepareMultipleCertificatesWithNoValidCertificatesFound();
 			ClientCertificateProvider testObject = fixture!.CreateTestObject();
 
 			MissingCertificateException? exception = Assert.Throws<MissingCertificateException>(() => testObject.GetCertificate(fixture.MarktPartnerId));
