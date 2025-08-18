@@ -215,6 +215,10 @@ The FP adapter will also save the received files in the same convention.
 
 ## Changelog
 
+### 3.1
+
+* Support the use of multiple certificates for one marketpartner. The newest certificate will be selected for the communication.
+
 ### 3.0
 
 * Support MP and FP Service in separate executables (Schleupen.AS4.BusinessAdapter.MP.Console.exe, Schleupen.AS4.BusinessAdapter.FP.Console.exe)

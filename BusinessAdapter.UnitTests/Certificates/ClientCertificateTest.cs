@@ -74,5 +74,27 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 
 			Assert.That(result, Is.Not.Null);
 		}
+
+		[Test]
+		public void ValidFrom_ShouldReturnCorrectTimestamp()
+		{
+			ClientCertificate testObject = fixture!.CreateTestObject();
+
+			DateTime result = testObject.ValidFrom;
+			DateTime expected = new DateTime(2023, 7, 27, 16, 58, 04);
+
+			Assert.That(result, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void ValidUntil_ShouldReturnCorrectTimestamp()
+		{
+			ClientCertificate testObject = fixture!.CreateTestObject();
+
+			var result = testObject.ValidUntil;
+			DateTime expected = new DateTime(2031, 12, 17, 15, 58, 04);
+
+			Assert.That(result, Is.EqualTo(expected));
+		}
 	}
 }

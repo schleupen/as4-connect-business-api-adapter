@@ -14,7 +14,22 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		{
 			private readonly List<X509Certificate2> certificates = [];
 
-			public X509Certificate2 ReadCertificateFromResource(string filename)
+			public X509Certificate2 CreateAs4Certificate()
+			{
+				return ReadCertificateFromResource("client_as4_certificate.pfx");
+			}
+
+			public X509Certificate2 CreateApiCertificate()
+			{
+				return ReadCertificateFromResource("client_api_certificate.pfx");
+			}
+
+			public X509Certificate2 CreateUnspecificCertificate()
+			{
+				return ReadCertificateFromResource("client_unspecific_certificate.pfx");
+			}
+
+			private X509Certificate2 ReadCertificateFromResource(string filename)
 			{
 				var fileName = $"Schleupen.AS4.BusinessAdapter.Certificates.Resources.{filename}";
 

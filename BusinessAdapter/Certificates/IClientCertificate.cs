@@ -35,5 +35,17 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		/// <param name="marketpartnerIdentificationNumber">The identification number of the market partner.</param>
 		/// <returns>Whether the AS4 certificate belongs to the given market partner.</returns>
 		bool IsCertificateFor(string marketpartnerIdentificationNumber);
+
+		/// <summary>
+		/// Returns the time stamp from which the certificate is valid.
+		/// </summary>
+		/// <returns>The Datetime</returns>
+		DateTime ValidFrom { get; }
+
+		/// <summary>
+		/// Returns the time stamp until the certificate is valid.
+		/// </summary>
+		/// <returns>The Datetime </returns>
+		DateTime ValidUntil { get; }
 	}
 }

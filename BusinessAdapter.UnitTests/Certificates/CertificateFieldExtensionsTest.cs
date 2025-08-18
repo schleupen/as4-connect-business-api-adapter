@@ -9,12 +9,12 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	[TestFixture]
 	internal sealed partial class CertificateFieldExtensionsTest : IDisposable
 	{
-		private CertificateFieldExtensionsTest.Fixture fixture;
+		private Fixture fixture;
 
 		[SetUp]
 		public void Setup()
 		{
-			fixture = new CertificateFieldExtensionsTest.Fixture();
+			fixture = new Fixture();
 		}
 
 		[TearDown]
@@ -25,9 +25,9 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		}
 
 		[Test]
-		public void IsSubjectDistinguishedNameEqualToAs4_WithCertificateWithoutAs4DistinguishedName_ShouldReturnFalse()
+		public void IsSubjectDistinguishedNameEqualToAs4_ApiCertificate_ShouldReturnFalse()
 		{
-			X509Certificate2 testObject = fixture.ReadCertificateFromResource("client_unspecific_certificate.pfx");
+			X509Certificate2 testObject = fixture.CreateApiCertificate();
 
 			bool result = testObject.IsSubjectDistinguishedNameEqualToAs4();
 
@@ -35,9 +35,19 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		}
 
 		[Test]
-		public void IsSubjectDistinguishedNameEqualToAs4_WithAS4Certificate_ShouldReturnTrue()
+		public void IsSubjectDistinguishedNameEqualToAs4_UnspecificCertificate_ShouldReturnFalse()
 		{
-			X509Certificate2 testObject = fixture.ReadCertificateFromResource("client_as4_certificate.pfx");
+			X509Certificate2 testObject = fixture.CreateUnspecificCertificate();
+
+			bool result = testObject.IsSubjectDistinguishedNameEqualToAs4();
+
+			Assert.That(result, Is.False);
+		}
+
+		[Test]
+		public void IsSubjectDistinguishedNameEqualToAs4_AS4Certificate_ShouldReturnTrue()
+		{
+			X509Certificate2 testObject = fixture.CreateAs4Certificate();
 
 			bool result = testObject.IsSubjectDistinguishedNameEqualToAs4();
 
@@ -45,23 +55,33 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		}
 
 		[Test]
-		public void IsSubjectDistinguishedNameEqualToAs4_WithApiCertificate_ShouldReturnTrue()
+		public void ResolveMarketpartnerIdentificationNumber_UnspecificCertificate_ShouldReturnIdentificationNumber()
 		{
-			X509Certificate2 testObject = fixture.ReadCertificateFromResource("client_api_certificate.pfx");
+			X509Certificate2 testObject = fixture.CreateUnspecificCertificate();
 
-			bool result = testObject.IsSubjectDistinguishedNameEqualToAs4();
+			var result = testObject.ResolveMarketpartnerIdentificationNumber();
 
-			Assert.That(result, Is.False);
+			Assert.That(result, Is.EqualTo("9912345000001"));
 		}
 
 		[Test]
-		public void ResolveMarketpartnerIdentificationNumber_WithCertificateWithOrganizationUnitField_ShouldReturnIdentificationNumber()
+		public void ResolveMarketpartnerIdentificationNumber_AS4Certificate_ShouldReturnIdentificationNumber()
 		{
-			X509Certificate2 testObject = fixture.ReadCertificateFromResource("client_as4_certificate.pfx");
+			X509Certificate2 testObject = fixture.CreateAs4Certificate();
 
 			var result = testObject.ResolveMarketpartnerIdentificationNumber();
 
 			Assert.That(result, Is.EqualTo("9999999999999"));
+		}
+
+		[Test]
+		public void ResolveMarketpartnerIdentificationNumber_ApiCertificate_ShouldReturnIdentificationNumber()
+		{
+			X509Certificate2 testObject = fixture.CreateApiCertificate();
+
+			var result = testObject.ResolveMarketpartnerIdentificationNumber();
+
+			Assert.That(result, Is.EqualTo(null));
 		}
 	}
 }
