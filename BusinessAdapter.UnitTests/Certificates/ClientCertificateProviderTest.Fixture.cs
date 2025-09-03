@@ -39,24 +39,9 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 
 			public void PrepareCertificateFound()
 			{
-				certificateStoreFactoryMock
-					.Setup(x => x.CreateAndOpen())
-					.Returns(certificateStoreMock.Object);
-
-				certificateStoreMock
-					.SetupGet(x => x.Certificates)
-					.Returns(new List<IClientCertificate>
-							{
-								certificate1Mock.Object
-							});
-
-				certificateStoreMock
-					.Setup(x => x.Dispose());
-
 				certificate1Mock
 					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
 					.Returns(true);
-
 				certificate1Mock
 					.Setup(x => x.ValidFrom)
 					.Returns(DateTime.Now - TimeSpan.FromDays(2));
@@ -71,41 +56,48 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					It.IsAny<Exception>(),
 					((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!));
 
+				PrepareStore(true, false);
 			}
 
-			public void PrepareNoAs4CertificateFound()
+			public void PrepareNoCertificateFound()
 			{
-				certificateStoreFactoryMock
-					.Setup(x => x.CreateAndOpen())
-					.Returns(certificateStoreMock.Object);
-
-				certificateStoreMock
-					.SetupGet(x => x.Certificates)
-					.Returns(new List<IClientCertificate>());
-
-				certificateStoreMock
-					.Setup(x => x.Dispose());
+				PrepareStore(false, false);
 			}
 
 			public void PrepareCertificateHasNoMatchingNameFound()
 			{
-				certificateStoreFactoryMock
-					.Setup(x => x.CreateAndOpen())
-					.Returns(certificateStoreMock.Object);
-
-				certificateStoreMock
-					.SetupGet(x => x.Certificates)
-					.Returns(new List<IClientCertificate>
-							{
-								certificate1Mock.Object
-							});
-
-				certificateStoreMock
-					.Setup(x => x.Dispose());
-
 				certificate1Mock
 					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
 					.Returns(false);
+
+				PrepareStore(true, false);
+			}
+
+			public void PrepareCertificateWithOldTimestampNotFound()
+			{
+				certificate1Mock
+					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
+					.Returns(true);
+				certificate1Mock
+					.Setup(x => x.ValidFrom)
+					.Returns(DateTime.Now - TimeSpan.FromDays(2));
+				certificate1Mock
+					.Setup(x => x.ValidUntil)
+					.Returns(DateTime.Now - TimeSpan.FromDays(1));
+
+				PrepareStore(true, false);
+			}
+
+			public void PrepareCertificateWithNewTimestampNotFound()
+			{
+				certificate1Mock
+					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
+					.Returns(true);
+				certificate1Mock
+					.Setup(x => x.ValidFrom)
+					.Returns(DateTime.Now + TimeSpan.FromDays(1));
+
+				PrepareStore(true, false);
 			}
 
 			public void IsCertificateOne(IClientCertificate certificate)
@@ -120,21 +112,6 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 
 			public void PrepareMultipleValidCertificatesFound()
 			{
-				certificateStoreFactoryMock
-					.Setup(x => x.CreateAndOpen())
-					.Returns(certificateStoreMock.Object);
-
-				certificateStoreMock
-					.SetupGet(x => x.Certificates)
-					.Returns(new List<IClientCertificate>
-							{
-								certificate1Mock.Object,
-								certificate2Mock.Object
-							});
-
-				certificateStoreMock
-					.Setup(x => x.Dispose());
-
 				//valid cert
 				certificate1Mock
 					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
@@ -146,7 +123,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					.Setup(x => x.ValidUntil)
 					.Returns(DateTime.Now + TimeSpan.FromDays(1));
 
-				//invalid cert
+				//valid cert
 				certificate2Mock
 					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
 					.Returns(true);
@@ -163,25 +140,74 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					It.IsAny<It.IsAnyType>(),
 					It.IsAny<Exception>(),
 					((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!));
+
+				PrepareStore();
 			}
 
-			public void PrepareMultipleCertificatesWithOneValidCertificateFound()
+			public void PrepareMultipleCertificatesWithOneValidAndOneInvalidWithWrongMPFound()
 			{
-				certificateStoreFactoryMock
-					.Setup(x => x.CreateAndOpen())
-					.Returns(certificateStoreMock.Object);
+				//valid Cert
+				certificate1Mock
+					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
+					.Returns(true);
+				certificate1Mock
+					.Setup(x => x.ValidFrom)
+					.Returns(DateTime.Now - TimeSpan.FromDays(2));
+				certificate1Mock
+					.Setup(x => x.ValidUntil)
+					.Returns(DateTime.Now + TimeSpan.FromDays(1));
 
-				certificateStoreMock
-					.SetupGet(x => x.Certificates)
-					.Returns(new List<IClientCertificate>
-					{
-						certificate1Mock.Object,
-						certificate2Mock.Object
-					});
+				//invalid Cert
+				certificate2Mock
+					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
+					.Returns(false);
 
-				certificateStoreMock
-					.Setup(x => x.Dispose());
+				loggerMock.Setup(logger => logger.Log(
+					It.IsAny<LogLevel>(),
+					It.IsAny<EventId>(),
+					It.IsAny<It.IsAnyType>(),
+					It.IsAny<Exception>(),
+					((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!));
 
+				PrepareStore();
+			}
+
+			public void PrepareMultipleCertificatesWithOneValidAndOneInvalidWithOldTimestampFound()
+			{
+				//valid Cert
+				certificate1Mock
+					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
+					.Returns(true);
+				certificate1Mock
+					.Setup(x => x.ValidFrom)
+					.Returns(DateTime.Now - TimeSpan.FromDays(2));
+				certificate1Mock
+					.Setup(x => x.ValidUntil)
+					.Returns(DateTime.Now + TimeSpan.FromDays(1));
+
+				//invalid Cert
+				certificate2Mock
+					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
+					.Returns(true);
+				certificate2Mock
+					.Setup(x => x.ValidFrom)
+					.Returns(DateTime.Now - TimeSpan.FromDays(3));
+				certificate2Mock
+					.Setup(x => x.ValidUntil)
+					.Returns(DateTime.Now - TimeSpan.FromDays(1));
+
+				loggerMock.Setup(logger => logger.Log(
+					It.IsAny<LogLevel>(),
+					It.IsAny<EventId>(),
+					It.IsAny<It.IsAnyType>(),
+					It.IsAny<Exception>(),
+					((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!));
+
+				PrepareStore();
+			}
+
+			public void PrepareMultipleCertificatesWithOneValidAndOneInvalidWithNewTimestampFound()
+			{
 				//valid Cert
 				certificate1Mock
 					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
@@ -207,25 +233,12 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 					It.IsAny<It.IsAnyType>(),
 					It.IsAny<Exception>(),
 					((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!));
+
+				PrepareStore();
 			}
 
 			public void PrepareMultipleCertificatesWithNoValidCertificatesFound()
 			{
-				certificateStoreFactoryMock
-					.Setup(x => x.CreateAndOpen())
-					.Returns(certificateStoreMock.Object);
-
-				certificateStoreMock
-					.SetupGet(x => x.Certificates)
-					.Returns(new List<IClientCertificate>
-					{
-						certificate1Mock.Object,
-						certificate2Mock.Object
-					});
-
-				certificateStoreMock
-					.Setup(x => x.Dispose());
-
 				//invalid cert
 				certificate1Mock
 					.Setup(x => x.IsCertificateFor(It.Is<string>(id => id == MarktPartnerId)))
@@ -244,6 +257,26 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 				certificate2Mock
 					.Setup(x => x.ValidFrom)
 					.Returns(DateTime.Now + TimeSpan.FromDays(2));
+
+				PrepareStore();
+			}
+
+			private void PrepareStore(bool certOne = true, bool certTwo = true)
+			{
+				certificateStoreFactoryMock
+					.Setup(x => x.CreateAndOpen())
+					.Returns(certificateStoreMock.Object);
+
+				var certList = new List<IClientCertificate>();
+				if (certOne) { certList.Add(certificate1Mock.Object); }
+				if (certTwo) { certList.Add(certificate2Mock.Object); }
+
+				certificateStoreMock
+					.SetupGet(x => x.Certificates)
+					.Returns(certList);
+
+				certificateStoreMock
+					.Setup(x => x.Dispose());
 			}
 		}
 	}

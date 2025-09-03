@@ -34,9 +34,9 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		}
 
 		[Test]
-		public void GetCertificate_NoAs4CertificateFound_ShouldThrowMissingCertificateException()
+		public void GetCertificate_CertificateForMPNotFound_ShouldThrowMissingCertificateException()
 		{
-			fixture!.PrepareNoAs4CertificateFound();
+			fixture!.PrepareCertificateHasNoMatchingNameFound();
 			ClientCertificateProvider testObject = fixture!.CreateTestObject();
 
 			MissingCertificateException? exception = Assert.Throws<MissingCertificateException>(() => testObject.GetCertificate(fixture.MarktPartnerId));
@@ -45,12 +45,34 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		}
 
 		[Test]
-		public void GetCertificate_CertificateNotFound_ShouldThrowMissingCertificateException()
+		public void GetCertificate_CertificateWithOldTimestampNotFound_ShouldThrowMissingCertificateException()
 		{
-			fixture!.PrepareCertificateHasNoMatchingNameFound();
+			fixture!.PrepareCertificateWithOldTimestampNotFound();
 			ClientCertificateProvider testObject = fixture!.CreateTestObject();
 
-			MissingCertificateException? exception = Assert.Throws<MissingCertificateException>(() => testObject.GetCertificate("12345"));
+			MissingCertificateException? exception = Assert.Throws<MissingCertificateException>(() => testObject.GetCertificate(fixture.MarktPartnerId));
+
+			Assert.That(exception!.Message, Contains.Substring("No certificate found for the market partner with identification number 12345."));
+		}
+
+		[Test]
+		public void GetCertificate_CertificateWithNewTimestampNotFound_ShouldThrowMissingCertificateException()
+		{
+			fixture!.PrepareCertificateWithNewTimestampNotFound();
+			ClientCertificateProvider testObject = fixture!.CreateTestObject();
+
+			MissingCertificateException? exception = Assert.Throws<MissingCertificateException>(() => testObject.GetCertificate(fixture.MarktPartnerId));
+
+			Assert.That(exception!.Message, Contains.Substring("No certificate found for the market partner with identification number 12345."));
+		}
+
+		[Test]
+		public void GetCertificate_NoCertificateFound_ShouldThrowMissingCertificateException()
+		{
+			fixture!.PrepareNoCertificateFound();
+			ClientCertificateProvider testObject = fixture!.CreateTestObject();
+
+			MissingCertificateException? exception = Assert.Throws<MissingCertificateException>(() => testObject.GetCertificate(fixture.MarktPartnerId));
 
 			Assert.That(exception!.Message, Contains.Substring("No certificate found for the market partner with identification number 12345."));
 		}
@@ -68,9 +90,33 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		}
 
 		[Test]
-		public void GetCertificate_MultipleCertificatesWithOneValidCertificateFound_ShouldReturnValidCertificate()
+		public void GetCertificate_MultipleCertificatesWithOneValidAndOneInvalidWithWrongMPFound_ShouldReturnValidCertificate()
 		{
-			fixture!.PrepareMultipleCertificatesWithOneValidCertificateFound();
+			fixture!.PrepareMultipleCertificatesWithOneValidAndOneInvalidWithWrongMPFound();
+			ClientCertificateProvider testObject = fixture!.CreateTestObject();
+
+			IClientCertificate certificate = testObject.GetCertificate(fixture.MarktPartnerId);
+
+			Assert.That(certificate, Is.Not.Null);
+			fixture.IsCertificateOne(certificate);
+		}
+
+		[Test]
+		public void GetCertificate_MultipleCertificatesWithOneValidAndOneInvalidWithOldTimestampFound_ShouldReturnValidCertificate()
+		{
+			fixture!.PrepareMultipleCertificatesWithOneValidAndOneInvalidWithOldTimestampFound();
+			ClientCertificateProvider testObject = fixture!.CreateTestObject();
+
+			IClientCertificate certificate = testObject.GetCertificate(fixture.MarktPartnerId);
+
+			Assert.That(certificate, Is.Not.Null);
+			fixture.IsCertificateOne(certificate);
+		}
+
+		[Test]
+		public void GetCertificate_MultipleCertificatesWithOneValidAndOneInvalidWithNewTimestampFound_ShouldReturnValidCertificate()
+		{
+			fixture!.PrepareMultipleCertificatesWithOneValidAndOneInvalidWithNewTimestampFound();
 			ClientCertificateProvider testObject = fixture!.CreateTestObject();
 
 			IClientCertificate certificate = testObject.GetCertificate(fixture.MarktPartnerId);

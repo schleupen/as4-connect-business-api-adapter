@@ -23,8 +23,8 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 
 			var dtNow = DateTime.UtcNow;
 			IClientCertificate? certificate = candidates
-				.Where(z => z.ValidFrom <= dtNow && z.ValidUntil >= dtNow)
-				.OrderByDescending(z => z.ValidFrom)
+				.Where(z => z.ValidFrom.ToUniversalTime() <= dtNow && z.ValidUntil.ToUniversalTime() >= dtNow)
+				.OrderByDescending(z => z.ValidFrom.ToUniversalTime())
 				.FirstOrDefault();
 
 			if (certificate == null)
