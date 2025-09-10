@@ -31,14 +31,14 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <summary>
         /// Bietet Abfragemöglichkeiten für eingehende und ausgehende Nachrichten.
         /// </summary>
-        /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen.
-        /// </remarks>
-        /// <param name="bDEWFulfillmentDate">Das geplante Zeitintervall.</param>
+        /// <param name="bDEWDocType">Der Typ der Nachricht. ( A01 für Schedule. A17 für Acknowledge. A16 für AnomalyReport. A07, A08 oder A09 für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1</param>
+        /// <param name="bDEWFulfillmentDate">Das Datum des Fahrplantages im Format 'yyyy-MM-dd'.
+        /// <br/>Siehe: FAQ zur Einführung von AS4 im Fahrplanaustausch</param>
         /// <param name="bDEWSubjectPartyId">Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.</param>
-        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (Schedule Message) oder A04 (ACK, CNF oder ANO).</param>
-        /// <param name="bDEWDocumentNo">Die Datenaustauschreferenz (DAR).</param>
-        /// <param name="bDEWDocType">Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTL, UTILMD ...)</param>
+        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (für Schedule) oder A04 (für Acknowledge, ConfirmationReport oder AnomalyReport).</param>
+        /// <param name="bDEWDocumentNo">Die Version der Nachricht. ( z.B. Confirmed Message Version für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1</param>
         /// <param name="foreignMarketpartner_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
         /// <param name="foreignMarketpartner_Type">Die codevergebene Stelle der MP-ID.</param>
         /// <param name="created_at_from">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
@@ -51,14 +51,11 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <returns>Die Daten der Nachricht.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<FPMessageQueryResponseDto> V1FpMessagesAsync(string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, string? bDEWDocumentNo = null, string? bDEWDocType = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-
+        
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Abfrage von empfangenen Nachrichten
         /// </summary>
-        /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// </remarks>
         /// <param name="limit">Legt die Anzahl der Nachrichten fest, die zurückgegeben werden sollen. (default: 50, min: 1, max: 1000)</param>
         /// <returns>Gibt die empfangenen Nachrichten zurück.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -69,9 +66,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Fragt eine Nachrichten von eingehenden Nachrichten ab inklusive Fehler und Traces.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>    Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
         /// </remarks>
         /// <param name="messageId">Die Id der Nachricht.</param>
         /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
@@ -83,12 +78,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Abfrage des Payloads (Fahrplan-Datei) für eine eingegangene Nachricht.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>    Empfangene Fahrplan-Dateien können über diesen Endpunkt heruntergeladen werden. Die Fahrplan-Datei ist dabei immer
-        /// <br/>    per gzip komprimiert und muss vom Nutzer der Api noch dekomprimiert werden.
-        /// <br/>    Nach dem Download befinden sich die zugehörige Nachrichten in dem Zustand `PAYLOAD_DELIVERED` und müssen im
-        /// <br/>    weiteren Verlauf über `/acknowledgement` bestätigt werden (Zustandswechsel auf `ACKNOWLEDGED`).
+        /// Empfangene Fahrplan-Dateien können über diesen Endpunkt heruntergeladen werden. Die Fahrplan-Datei ist dabei immer
+        /// <br/>per gzip komprimiert und muss vom Nutzer der Api noch dekomprimiert werden.
+        /// <br/>Nach dem Download befinden sich die zugehörige Nachrichten in dem Zustand `PAYLOAD_DELIVERED` und müssen im
+        /// <br/>weiteren Verlauf über `/acknowledgement` bestätigt werden (Zustandswechsel auf `ACKNOWLEDGED`).
         /// </remarks>
         /// <param name="messageId">Die GUID der Nachricht.</param>
         /// <returns>Gibt den Payload der Nachricht zurück.</returns>
@@ -100,15 +93,13 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Fragt ausgehende Nachrichten (insb. den Zustand) ab.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>    Hier kann der aktuelle Zustand abgefragt werden.
-        /// <br/>    Nachrichten werden von AS4 Connect asynchron verarbeitet. Eine ausgehende Nachricht kann dabei die folgenden
-        /// <br/>    Zustände annehmen:
-        /// <br/>    * `ACCEPTED`: Die Nachricht der Geschäftsapplikation wurde von AS4 Connect angenommen und wird zeitnah verarbeitet.
-        /// <br/>    * `IN_PROGRESS`: Die Nachricht befindet aktuell in Verarbeitung und wird zeitnah an den fremdnen Marktpartner gesendet.
-        /// <br/>    * `SUCCESSFUL`: Die Nachricht wurde von AS4 Connect erfolreich an den fremden Marktpartner gesendet. Der fremden Marktpartner hat für die Nachricht eine valide Quittung (Receipt) erzeugt.
-        /// <br/>    * `FAILED`: Die Nachricht wird aufgrund von Fehlern nicht weiter verarbeitet. Weitere Informationen sind als 'Error' hinterlegt. Soll die Nachricht weiterhin an den fremden Martpartner gesendet werden, muss die Geschäftsapplikation die Nachricht erneut an AS4 Connect senden.
+        /// Hier kann der aktuelle Zustand abgefragt werden.
+        /// <br/>Nachrichten werden von AS4 Connect asynchron verarbeitet. Eine ausgehende Nachricht kann dabei die folgenden
+        /// <br/>Zustände annehmen:
+        /// <br/>* `ACCEPTED`: Die Nachricht der Geschäftsapplikation wurde von AS4 Connect angenommen und wird zeitnah verarbeitet.
+        /// <br/>* `IN_PROGRESS`: Die Nachricht befindet aktuell in Verarbeitung und wird zeitnah an den fremdnen Marktpartner gesendet.
+        /// <br/>* `SUCCESSFUL`: Die Nachricht wurde von AS4 Connect erfolreich an den fremden Marktpartner gesendet. Der fremden Marktpartner hat für die Nachricht eine valide Quittung (Receipt) erzeugt.
+        /// <br/>* `FAILED`: Die Nachricht wird aufgrund von Fehlern nicht weiter verarbeitet. Weitere Informationen sind als 'Error' hinterlegt. Soll die Nachricht weiterhin an den fremden Martpartner gesendet werden, muss die Geschäftsapplikation die Nachricht erneut an AS4 Connect senden.
         /// </remarks>
         /// <param name="messageIds">Filterung nach MessageIds die von AS4 Connect vergeben wurden.</param>
         /// <param name="senderMessageIds">Filterung nach MessageIds die von der Geschäftsapplikation beim Senden mit angegeben wurden (s. `SenderMessageId`).</param>
@@ -126,34 +117,32 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <summary>
         /// Hinterlegt eine ausgehende Nachricht inkl. Payload für den Versand zu einem Marktteilnehmer.
         /// </summary>
-        /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// </remarks>
         /// <param name="receiver_Id">Die Id gemäß Codenummerndatenbank.
         /// <br/>[OASIS ebXML Messaging Services Version: 'eb:UserMessage/eb:PartyInfo/From|To/PartyId/'/]</param>
         /// <param name="payload">Der Payload der Nachricht (Edifact-Datei). Muss immer per gzip komprimiert übertragen werden.</param>
-        /// <param name="bDEWDocumentType">A01 für Fahrplananmeldungen. A17 für ACK. A16 für ANO. A07, A08 oder A09 für CNF.</param>
-        /// <param name="bDEWDocumentNo">Datenaustauschreferenz (DAR) aus UNB DE0020</param>
-        /// <param name="bDEWFulfillmentDate">Das geplante Zeitintervall.</param>
-        /// <param name="bDEWSubjectPartyId">Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.</param>
-        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (bei Schedule Messages) oder A04 (ACK, CNF oder ANO).</param>
         /// <param name="messageId">Die Id der ausgehenden Nachricht. Über diese Id wird die Nachricht eindeutig in AS4.Connect identifizierbar.
         /// <br/>Über diese Id wird die &lt;a href="https://developer-campus.de/tracks/architecture/makroarchitektur/resilienz/#idempotenz"&gt;Idempotenz&lt;/a&gt; der Operation gewährleistet.
         /// <br/>Dieser Wert ist nur aufgrund der Kompatibilität optional und wird zukünftig verpflichtend.</param>
         /// <param name="senderMessageId">Optionale Id welcher der Sender für die Nachricht individuell vergeben kann.
         /// <br/>Diese Id sollte aus der zugehörigen Geschäftsapplikation stammen, um kann im weiteren Verlauf dazu benutzt werden die Nachricht in AS4 Connect zu identifizieren.</param>
+        /// <param name="bDEWDocumentType">Der Typ der Nachricht. ( A01 für Schedule. A17 für Acknowledge. A16 für AnomalyReport. A07, A08 oder A09 für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1</param>
+        /// <param name="bDEWDocumentNo">Die Version der Nachricht. ( z.B. Confirmed Message Version für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1</param>
+        /// <param name="bDEWFulfillmentDate">Das Datum des Fahrplantages im Format 'yyyy-MM-dd'.
+        /// <br/>Siehe: FAQ zur Einführung von AS4 im Fahrplanaustausch</param>
+        /// <param name="bDEWSubjectPartyId">Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.</param>
+        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (für Schedule) oder A04 (für Acknowledge, ConfirmationReport oder AnomalyReport).</param>
         /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Guid? messageId = null, string? senderMessageId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-
+     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Fragt eine Nachrichten von ausgehenden Nachrichten ab inklusive Fehler und Traces.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>    Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
         /// </remarks>
         /// <param name="messageId">Die Id der Nachricht.</param>
         /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
@@ -165,7 +154,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Bietet Abfragemöglichkeiten für eingehende und ausgehende Nachrichten.
         /// </summary>
         /// <param name="bDEWDocumentNo">Die Datenaustauschreferenz (DAR).</param>
-        /// <param name="bDEWDocType">Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTL, UTILMD ...)</param>
+        /// <param name="bDEWDocType">Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTRL, UTILMD ...)</param>
         /// <param name="foreignMarketpartner_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
         /// <param name="foreignMarketpartner_Type">Die codevergebene Stelle der MP-ID.</param>
         /// <param name="created_at_from">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
@@ -175,9 +164,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <param name="inboundState">Die Zustände für eingehende Nachrichten.</param>
         /// <param name="includeTrace">Bestimmt ob die Historie der Nachricht mit übertragen werden soll.</param>
         /// <param name="limit">Legt die Anzahl der Nachrichten fest die zurück gegeben werden sollen pro Richtung (Inbox/Outbox). (default: 50, min: 1)</param>
+        /// <param name="edifactSyntaxCheckStatus">Der Zustand der Edifact-Syntax-Prüfung.</param>
         /// <returns>Die Daten der Nachricht.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<MessageQueryResponseDto> V1MpMessagesAsync(string? bDEWDocumentNo = null, string? bDEWDocType = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<MessageQueryResponseDto> V1MpMessagesAsync(string? bDEWDocumentNo = null, string? bDEWDocType = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, EdifactSyntaxCheckStatusDto? edifactSyntaxCheckStatus = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -186,7 +176,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <remarks>
         /// Informationen über empfangenen Nachrichten von fremden Marktpartnern werden hier bereitgestellt.
         /// <br/>Das kontinuierliche Abrufverhalten von neuen Nachrichten sollte von der Geschäftsapplikation wie folgt realisiert werden:
-        /// <br/>
+        /// <br/>            
         /// <br/>Die Identifikation von Nachrichten, die noch nicht durch die Geschäfsapplikation verarbeitet wurden, erfolgt über den Endpunkt (`/inbox`). Die Anzahl der Nachrichten die in einem Zyklus abgearbeitet werden sollen kann durch den
         /// <br/>Parameter `limit` spezifiziert werden. Nachrichten die für die Verabeitung in der Geschäftsapplikation bereit sind haben einen der folgenden Zustände:
         /// <br/>* `PROVIDED`: Die Nachricht wurde von AS4 Connect empfangen und bearbeitet. Der Payload wurde noch nicht durch die
@@ -261,7 +251,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <param name="receiver_Id">Die Id gemäß Codenummerndatenbank.
         /// <br/>[OASIS ebXML Messaging Services Version: 'eb:UserMessage/eb:PartyInfo/From|To/PartyId/'/]</param>
         /// <param name="payload">Der Payload der Nachricht (Edifact-Datei). Muss immer per gzip komprimiert übertragen werden.</param>
-        /// <param name="bDEWDocumentType">Der EDIFACT-Name des Nachrichtentyps gem. UNH DE0065 (z.B. CONTL, UTILMD ...)</param>
+        /// <param name="bDEWDocumentType">Der EDIFACT-Name des Nachrichtentyps gem. UNH DE0065 (z.B. CONTRL, UTILMD ...)</param>
         /// <param name="bDEWDocumentNo">Datenaustauschreferenz (DAR) aus UNB DE0020</param>
         /// <param name="bDEWDocumentDate">Datumstempel bei Erzeugung im Format YYYY-MM-DD.</param>
         /// <param name="messageId">Die Id der ausgehenden Nachricht. Über diese Id wird die Nachricht eindeutig in AS4.Connect identifizierbar.
@@ -287,27 +277,40 @@ namespace Schleupen.AS4.BusinessAdapter.API
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
+        /// Abfrage des Payloads der ausgehenden Nachricht.
+        /// </summary>
+        /// <remarks>
+        /// Ausgehende Edifact-Dateien können über diesen Endpunkt heruntergeladen werden. Die Datei ist dabei immer
+        /// <br/>per gzip komprimiert und muss vom Nutzer der Api noch dekomprimiert werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Der Payload der Nachricht.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<FileResponse> V1MpMessagesOutboxPayloadAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
         /// Fragt die zuletzt empfangenen Nachrichten für den Wechselprozess ab.
         /// </summary>
         /// <remarks>
         /// AS4 Connect stellt hier nur die __letzten__ PATH_SWITCH-Nachrichten von fremden Marktteilenhmern bereit.
-        /// <br/>
+        /// <br/>            
         /// <br/>Eingehende Nachrichten müssen geeignet über die Geschäftsapplikation verarbeitet werden.
-        /// <br/>
+        /// <br/>            
         /// <br/>Grundsätzlich werden die Typen `PATH_SWITCH_REQUEST` und `PATH_SWITCH_CONFIRM` wie folgt unterschieden:
-        /// <br/>
+        /// <br/>            
         /// <br/>### PATH_SWITCH_REQUEST ###
         /// <br/>Ein fremder Marktteilnehmer möchte den Übertragungsweg auf AS4 wechseln.
-        /// <br/>
+        /// <br/>            
         /// <br/>Der fremde Marktpartner kommuniziert (bis zu Bestätigung des Wechsels) weiterhin über den bisherige Übertragungsweg.
         /// <br/>Um dem Wechsel auf AS4 zuzustimmen, muss eine Bestätigung vom Typ `PATH_SWITCH_CONFIRM` über `/path-switch/messages/outbox`
         /// <br/>an den fremden Marktteilenhmer gesendet werden.
-        /// <br/>
+        /// <br/>            
         /// <br/>Bitte berücksichtigen Sie die Vorgaben für den Wechselprozess aus [AWH Einführungsszenario AS4](https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK6-GZ/2021/BK6-21-282/Mitteilung02/AWH%20Einf%C3%BChrungsszenario%20AS4.pdf).
-        /// <br/>
+        /// <br/>            
         /// <br/>### PATH_SWITCH_CONFIRM ###
         /// <br/>Ein fremder Marktteilnehmer bestätigt den Wechsel auf den AS4-Übertragungsweg.
-        /// <br/>
+        /// <br/>            
         /// <br/>Bitte berücksichtigen Sie die Vorgaben für den Wechselprozess aus [AWH Einführungsszenario AS4](https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK6-GZ/2021/BK6-21-282/Mitteilung02/AWH%20Einf%C3%BChrungsszenario%20AS4.pdf).
         /// </remarks>
         /// <param name="sender_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
@@ -470,19 +473,17 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Bestätigt den erfolgreichen Erhalt einer Nachricht.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>Erst wenn die bereitgestellten Nachrichten bestätigt wurden, werden neuere Nachrichten für die Verarbeitung bereitgestellt.
-        /// <br/>
+        /// Erst wenn die bereitgestellten Nachrichten bestätigt wurden, werden neuere Nachrichten für die Verarbeitung bereitgestellt.
+        /// <br/>            
         /// <br/>Um die Authentizität und Integrität der empfangenen Fahrplan-Datei gegenüber AS4 Connect zu bestätigen wird ein **JWT** gemäß [RFC7519](https://www.rfc-editor.org/rfc/rfc7519) genutzt.
         /// <br/>Der Payload des **JWT** muss den Hashwert der Fahrplan-Datei mittels **SHA256** gemäß [RFC6234](https://www.rfc-editor.org/rfc/rfc6234) beinhalten.
         /// <br/>Die Signierung erfolgt über den privaten Schlüsel des Client-Zertifikats, welches bereits für die Authentifizierung gegenüber AS4 Connect benutzt wird.
         /// <br/>Verschlüsselt wird das Token nicht.
-        /// <br/>
+        /// <br/>            
         /// <br/>**Hinweise**:
         /// <br/>Der Hash Wert muss immer auf dem gzip komprimierten Payload berechnet werden.
         /// <br/>Der Algorithmus für die Token-Signierung und -Validierung muss ES384 sein.
-        /// <br/>
+        /// <br/>            
         /// <br/>Das Token muss mindestens folgende Claims enthalten:
         /// <br/>```json
         /// <br/>// HEADER:
@@ -490,7 +491,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <br/>   "alg": "ES384", // die verwendete Signatur-Algorithmus (immer ES384), (SECP384R1)
         /// <br/>   "typ": "JWT" // der Typ des Tokens (immer JWT)
         /// <br/>}
-        /// <br/>
+        /// <br/>            
         /// <br/>// PAYLOAD:
         /// <br/>{
         /// <br/>   "hash": "07d8d11084e8d500852664c0f64ade1299d418cbe489edefcd422ad698666b33",  // der SHA256 Hashwert des Payloads, als hex-string
@@ -500,7 +501,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <br/>   "mid": "f613cfa2-a7a2-446f-8599-ce2c9525bbb1", // die Message-ID
         /// <br/>   "iat": 1516239022 // Zeitpunkt der Erstellung des Tokens
         /// <br/>}
-        /// <br/>
+        /// <br/>            
         /// <br/>// SIGNATURE:
         /// <br/>{
         /// <br/>    ...
@@ -515,20 +516,29 @@ namespace Schleupen.AS4.BusinessAdapter.API
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
+        /// Stößt die erneute Verarbeitung von fehlgeschlagenen Nachrichten an.
+        /// </summary>
+        /// <param name="body">Die Ids der erneut zuzustellenden Nachrichten.</param>
+        /// <returns>Die erneute Zustellung wurde empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<RetryMessagesResponseDto> V1FpMessagesOutboxRetriesAsync(RetryMessagesRequestDto? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
         /// Bestätigt den erfolgreichen Erhalt einer Nachricht.
         /// </summary>
         /// <remarks>
         /// Erst wenn die bereitgestellten Nachrichten bestätigt wurden, werden über `inbox/messages` neuere Nachrichten für die Verarbeitung bereitgestellt.
-        /// <br/>
+        /// <br/>            
         /// <br/>Um die Authentizität und Integrität der empfangenen Edifact-Datei gegenüber AS4 Connect zu bestätigen wird ein **JWT** gemäß [RFC7519](https://www.rfc-editor.org/rfc/rfc7519) genutzt.
         /// <br/>Der Payload des **JWT** muss den Hashwert der Edifact-Datei mittels **SHA256** gemäß [RFC6234](https://www.rfc-editor.org/rfc/rfc6234) beinhalten.
         /// <br/>Die Signierung erfolgt über den privaten Schlüsel des Client-Zertifikats, welches bereits für die Authentifizierung gegenüber AS4 Connect benutzt wird.
         /// <br/>Verschlüsselt wird das Token nicht.
-        /// <br/>
+        /// <br/>            
         /// <br/>**Hinweise**:
         /// <br/>Der Hash Wert muss immer auf dem gzip komprimierten Payload berechnet werden.
         /// <br/>Der Algorithmus für die Token-Signierung und -Validierung muss ES384 sein.
-        /// <br/>
+        /// <br/>            
         /// <br/>Das Token muss mindestens folgende Claims enthalten:
         /// <br/>```json
         /// <br/>// HEADER:
@@ -536,7 +546,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <br/>   "alg": "ES384", // die verwendete Signatur-Algorithmus (immer ES384), (SECP384R1)
         /// <br/>   "typ": "JWT" // der Typ des Tokens (immer JWT)
         /// <br/>}
-        /// <br/>
+        /// <br/>            
         /// <br/>// PAYLOAD:
         /// <br/>{
         /// <br/>   "hash": "07d8d11084e8d500852664c0f64ade1299d418cbe489edefcd422ad698666b33",  // der SHA256 Hashwert des Payloads, als hex-string
@@ -546,7 +556,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <br/>   "mid": "f613cfa2-a7a2-446f-8599-ce2c9525bbb1", // die Message-ID
         /// <br/>   "iat": 1516239022 // Zeitpunkt der Erstellung des Tokens
         /// <br/>}
-        /// <br/>
+        /// <br/>            
         /// <br/>// SIGNATURE:
         /// <br/>{
         /// <br/>    ...
@@ -618,14 +628,14 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <summary>
         /// Bietet Abfragemöglichkeiten für eingehende und ausgehende Nachrichten.
         /// </summary>
-        /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen.
-        /// </remarks>
-        /// <param name="bDEWFulfillmentDate">Das geplante Zeitintervall.</param>
+        /// <param name="bDEWDocType">Der Typ der Nachricht. ( A01 für Schedule. A17 für Acknowledge. A16 für AnomalyReport. A07, A08 oder A09 für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1</param>
+        /// <param name="bDEWFulfillmentDate">Das Datum des Fahrplantages im Format 'yyyy-MM-dd'.
+        /// <br/>Siehe: FAQ zur Einführung von AS4 im Fahrplanaustausch</param>
         /// <param name="bDEWSubjectPartyId">Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.</param>
-        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (Schedule Message) oder A04 (ACK, CNF oder ANO).</param>
-        /// <param name="bDEWDocumentNo">Die Datenaustauschreferenz (DAR).</param>
-        /// <param name="bDEWDocType">Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTL, UTILMD ...)</param>
+        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (für Schedule) oder A04 (für Acknowledge, ConfirmationReport oder AnomalyReport).</param>
+        /// <param name="bDEWDocumentNo">Die Version der Nachricht. ( z.B. Confirmed Message Version für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1</param>
         /// <param name="foreignMarketpartner_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
         /// <param name="foreignMarketpartner_Type">Die codevergebene Stelle der MP-ID.</param>
         /// <param name="created_at_from">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
@@ -637,7 +647,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <param name="limit">Legt die Anzahl der Nachrichten fest die zurück gegeben werden sollen pro Richtung (Inbox/Outbox). (default: 50, min: 1)</param>
         /// <returns>Die Daten der Nachricht.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FPMessageQueryResponseDto> V1FpMessagesAsync(string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, string? bDEWDocumentNo = null, string? bDEWDocType = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FPMessageQueryResponseDto> V1FpMessagesAsync(string? bDEWDocType = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, string? bDEWDocumentNo = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -653,6 +663,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
                     // Operation Path: "v1/fp/messages"
                     urlBuilder_.Append("v1/fp/messages");
                     urlBuilder_.Append('?');
+                    if (bDEWDocType != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("BDEWDocType")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(bDEWDocType, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
                     if (bDEWFulfillmentDate != null)
                     {
                         urlBuilder_.Append(System.Uri.EscapeDataString("BDEWFulfillmentDate")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(bDEWFulfillmentDate, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
@@ -668,10 +682,6 @@ namespace Schleupen.AS4.BusinessAdapter.API
                     if (bDEWDocumentNo != null)
                     {
                         urlBuilder_.Append(System.Uri.EscapeDataString("BDEWDocumentNo")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(bDEWDocumentNo, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
-                    }
-                    if (bDEWDocType != null)
-                    {
-                        urlBuilder_.Append(System.Uri.EscapeDataString("BDEWDocType")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(bDEWDocType, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
                     if (foreignMarketpartner_Id != null)
                     {
@@ -797,9 +807,6 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <summary>
         /// Abfrage von empfangenen Nachrichten
         /// </summary>
-        /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// </remarks>
         /// <param name="limit">Legt die Anzahl der Nachrichten fest, die zurückgegeben werden sollen. (default: 50, min: 1, max: 1000)</param>
         /// <returns>Gibt die empfangenen Nachrichten zurück.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -902,9 +909,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Fragt eine Nachrichten von eingehenden Nachrichten ab inklusive Fehler und Traces.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>    Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
         /// </remarks>
         /// <param name="messageId">Die Id der Nachricht.</param>
         /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
@@ -1016,12 +1021,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Abfrage des Payloads (Fahrplan-Datei) für eine eingegangene Nachricht.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>    Empfangene Fahrplan-Dateien können über diesen Endpunkt heruntergeladen werden. Die Fahrplan-Datei ist dabei immer
-        /// <br/>    per gzip komprimiert und muss vom Nutzer der Api noch dekomprimiert werden.
-        /// <br/>    Nach dem Download befinden sich die zugehörige Nachrichten in dem Zustand `PAYLOAD_DELIVERED` und müssen im
-        /// <br/>    weiteren Verlauf über `/acknowledgement` bestätigt werden (Zustandswechsel auf `ACKNOWLEDGED`).
+        /// Empfangene Fahrplan-Dateien können über diesen Endpunkt heruntergeladen werden. Die Fahrplan-Datei ist dabei immer
+        /// <br/>per gzip komprimiert und muss vom Nutzer der Api noch dekomprimiert werden.
+        /// <br/>Nach dem Download befinden sich die zugehörige Nachrichten in dem Zustand `PAYLOAD_DELIVERED` und müssen im
+        /// <br/>weiteren Verlauf über `/acknowledgement` bestätigt werden (Zustandswechsel auf `ACKNOWLEDGED`).
         /// </remarks>
         /// <param name="messageId">Die GUID der Nachricht.</param>
         /// <returns>Gibt den Payload der Nachricht zurück.</returns>
@@ -1132,15 +1135,13 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Fragt ausgehende Nachrichten (insb. den Zustand) ab.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>    Hier kann der aktuelle Zustand abgefragt werden.
-        /// <br/>    Nachrichten werden von AS4 Connect asynchron verarbeitet. Eine ausgehende Nachricht kann dabei die folgenden
-        /// <br/>    Zustände annehmen:
-        /// <br/>    * `ACCEPTED`: Die Nachricht der Geschäftsapplikation wurde von AS4 Connect angenommen und wird zeitnah verarbeitet.
-        /// <br/>    * `IN_PROGRESS`: Die Nachricht befindet aktuell in Verarbeitung und wird zeitnah an den fremdnen Marktpartner gesendet.
-        /// <br/>    * `SUCCESSFUL`: Die Nachricht wurde von AS4 Connect erfolreich an den fremden Marktpartner gesendet. Der fremden Marktpartner hat für die Nachricht eine valide Quittung (Receipt) erzeugt.
-        /// <br/>    * `FAILED`: Die Nachricht wird aufgrund von Fehlern nicht weiter verarbeitet. Weitere Informationen sind als 'Error' hinterlegt. Soll die Nachricht weiterhin an den fremden Martpartner gesendet werden, muss die Geschäftsapplikation die Nachricht erneut an AS4 Connect senden.
+        /// Hier kann der aktuelle Zustand abgefragt werden.
+        /// <br/>Nachrichten werden von AS4 Connect asynchron verarbeitet. Eine ausgehende Nachricht kann dabei die folgenden
+        /// <br/>Zustände annehmen:
+        /// <br/>* `ACCEPTED`: Die Nachricht der Geschäftsapplikation wurde von AS4 Connect angenommen und wird zeitnah verarbeitet.
+        /// <br/>* `IN_PROGRESS`: Die Nachricht befindet aktuell in Verarbeitung und wird zeitnah an den fremdnen Marktpartner gesendet.
+        /// <br/>* `SUCCESSFUL`: Die Nachricht wurde von AS4 Connect erfolreich an den fremden Marktpartner gesendet. Der fremden Marktpartner hat für die Nachricht eine valide Quittung (Receipt) erzeugt.
+        /// <br/>* `FAILED`: Die Nachricht wird aufgrund von Fehlern nicht weiter verarbeitet. Weitere Informationen sind als 'Error' hinterlegt. Soll die Nachricht weiterhin an den fremden Martpartner gesendet werden, muss die Geschäftsapplikation die Nachricht erneut an AS4 Connect senden.
         /// </remarks>
         /// <param name="messageIds">Filterung nach MessageIds die von AS4 Connect vergeben wurden.</param>
         /// <param name="senderMessageIds">Filterung nach MessageIds die von der Geschäftsapplikation beim Senden mit angegeben wurden (s. `SenderMessageId`).</param>
@@ -1278,25 +1279,25 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <summary>
         /// Hinterlegt eine ausgehende Nachricht inkl. Payload für den Versand zu einem Marktteilnehmer.
         /// </summary>
-        /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// </remarks>
         /// <param name="receiver_Id">Die Id gemäß Codenummerndatenbank.
         /// <br/>[OASIS ebXML Messaging Services Version: 'eb:UserMessage/eb:PartyInfo/From|To/PartyId/'/]</param>
         /// <param name="payload">Der Payload der Nachricht (Edifact-Datei). Muss immer per gzip komprimiert übertragen werden.</param>
-        /// <param name="bDEWDocumentType">A01 für Fahrplananmeldungen. A17 für ACK. A16 für ANO. A07, A08 oder A09 für CNF.</param>
-        /// <param name="bDEWDocumentNo">Datenaustauschreferenz (DAR) aus UNB DE0020</param>
-        /// <param name="bDEWFulfillmentDate">Das geplante Zeitintervall.</param>
-        /// <param name="bDEWSubjectPartyId">Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.</param>
-        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (bei Schedule Messages) oder A04 (ACK, CNF oder ANO).</param>
         /// <param name="messageId">Die Id der ausgehenden Nachricht. Über diese Id wird die Nachricht eindeutig in AS4.Connect identifizierbar.
         /// <br/>Über diese Id wird die &lt;a href="https://developer-campus.de/tracks/architecture/makroarchitektur/resilienz/#idempotenz"&gt;Idempotenz&lt;/a&gt; der Operation gewährleistet.
         /// <br/>Dieser Wert ist nur aufgrund der Kompatibilität optional und wird zukünftig verpflichtend.</param>
         /// <param name="senderMessageId">Optionale Id welcher der Sender für die Nachricht individuell vergeben kann.
         /// <br/>Diese Id sollte aus der zugehörigen Geschäftsapplikation stammen, um kann im weiteren Verlauf dazu benutzt werden die Nachricht in AS4 Connect zu identifizieren.</param>
+        /// <param name="bDEWDocumentType">Der Typ der Nachricht. ( A01 für Schedule. A17 für Acknowledge. A16 für AnomalyReport. A07, A08 oder A09 für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1</param>
+        /// <param name="bDEWDocumentNo">Die Version der Nachricht. ( z.B. Confirmed Message Version für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1</param>
+        /// <param name="bDEWFulfillmentDate">Das Datum des Fahrplantages im Format 'yyyy-MM-dd'.
+        /// <br/>Siehe: FAQ zur Einführung von AS4 im Fahrplanaustausch</param>
+        /// <param name="bDEWSubjectPartyId">Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.</param>
+        /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (für Schedule) oder A04 (für Acknowledge, ConfirmationReport oder AnomalyReport).</param>
         /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Guid? messageId = null, string? senderMessageId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, System.Guid? messageId = null, string? senderMessageId = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1333,6 +1334,20 @@ namespace Schleupen.AS4.BusinessAdapter.API
                         content_.Add(content_payload_, "Payload", payload.FileName ?? "Payload");
                     }
 
+                    if (messageId == null)
+                        throw new System.ArgumentNullException("messageId");
+                    else
+                    {
+                        content_.Add(new System.Net.Http.StringContent(ConvertToString(messageId, System.Globalization.CultureInfo.InvariantCulture)), "MessageId");
+                    }
+
+                    if (senderMessageId == null)
+                        throw new System.ArgumentNullException("senderMessageId");
+                    else
+                    {
+                        content_.Add(new System.Net.Http.StringContent(ConvertToString(senderMessageId, System.Globalization.CultureInfo.InvariantCulture)), "SenderMessageId");
+                    }
+
                     if (bDEWDocumentType == null)
                         throw new System.ArgumentNullException("bDEWDocumentType");
                     else
@@ -1366,20 +1381,6 @@ namespace Schleupen.AS4.BusinessAdapter.API
                     else
                     {
                         content_.Add(new System.Net.Http.StringContent(ConvertToString(bDEWSubjectPartyRole, System.Globalization.CultureInfo.InvariantCulture)), "BDEWSubjectPartyRole");
-                    }
-
-                    if (messageId == null)
-                        throw new System.ArgumentNullException("messageId");
-                    else
-                    {
-                        content_.Add(new System.Net.Http.StringContent(ConvertToString(messageId, System.Globalization.CultureInfo.InvariantCulture)), "MessageId");
-                    }
-
-                    if (senderMessageId == null)
-                        throw new System.ArgumentNullException("senderMessageId");
-                    else
-                    {
-                        content_.Add(new System.Net.Http.StringContent(ConvertToString(senderMessageId, System.Globalization.CultureInfo.InvariantCulture)), "SenderMessageId");
                     }
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -1467,9 +1468,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Fragt eine Nachrichten von ausgehenden Nachrichten ab inklusive Fehler und Traces.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>    Hier können alle Infos zu einer Nachricht abgefragt werden.
+        /// Hier können alle Infos zu einer Nachricht abgefragt werden.
         /// </remarks>
         /// <param name="messageId">Die Id der Nachricht.</param>
         /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
@@ -1581,7 +1580,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Bietet Abfragemöglichkeiten für eingehende und ausgehende Nachrichten.
         /// </summary>
         /// <param name="bDEWDocumentNo">Die Datenaustauschreferenz (DAR).</param>
-        /// <param name="bDEWDocType">Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTL, UTILMD ...)</param>
+        /// <param name="bDEWDocType">Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTRL, UTILMD ...)</param>
         /// <param name="foreignMarketpartner_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
         /// <param name="foreignMarketpartner_Type">Die codevergebene Stelle der MP-ID.</param>
         /// <param name="created_at_from">Schränkt die Ergebnismenge bzgl. des Erstellzeitpunkts ein.</param>
@@ -1591,9 +1590,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <param name="inboundState">Die Zustände für eingehende Nachrichten.</param>
         /// <param name="includeTrace">Bestimmt ob die Historie der Nachricht mit übertragen werden soll.</param>
         /// <param name="limit">Legt die Anzahl der Nachrichten fest die zurück gegeben werden sollen pro Richtung (Inbox/Outbox). (default: 50, min: 1)</param>
+        /// <param name="edifactSyntaxCheckStatus">Der Zustand der Edifact-Syntax-Prüfung.</param>
         /// <returns>Die Daten der Nachricht.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<MessageQueryResponseDto> V1MpMessagesAsync(string? bDEWDocumentNo = null, string? bDEWDocType = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<MessageQueryResponseDto> V1MpMessagesAsync(string? bDEWDocumentNo = null, string? bDEWDocType = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, EdifactSyntaxCheckStatusDto? edifactSyntaxCheckStatus = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1652,6 +1652,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
                     if (limit != null)
                     {
                         urlBuilder_.Append(System.Uri.EscapeDataString("Limit")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(limit, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (edifactSyntaxCheckStatus != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("EdifactSyntaxCheckStatus")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(edifactSyntaxCheckStatus, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
                     urlBuilder_.Length--;
 
@@ -1744,7 +1748,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <remarks>
         /// Informationen über empfangenen Nachrichten von fremden Marktpartnern werden hier bereitgestellt.
         /// <br/>Das kontinuierliche Abrufverhalten von neuen Nachrichten sollte von der Geschäftsapplikation wie folgt realisiert werden:
-        /// <br/>
+        /// <br/>            
         /// <br/>Die Identifikation von Nachrichten, die noch nicht durch die Geschäfsapplikation verarbeitet wurden, erfolgt über den Endpunkt (`/inbox`). Die Anzahl der Nachrichten die in einem Zyklus abgearbeitet werden sollen kann durch den
         /// <br/>Parameter `limit` spezifiziert werden. Nachrichten die für die Verabeitung in der Geschäftsapplikation bereit sind haben einen der folgenden Zustände:
         /// <br/>* `PROVIDED`: Die Nachricht wurde von AS4 Connect empfangen und bearbeitet. Der Payload wurde noch nicht durch die
@@ -2230,7 +2234,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <param name="receiver_Id">Die Id gemäß Codenummerndatenbank.
         /// <br/>[OASIS ebXML Messaging Services Version: 'eb:UserMessage/eb:PartyInfo/From|To/PartyId/'/]</param>
         /// <param name="payload">Der Payload der Nachricht (Edifact-Datei). Muss immer per gzip komprimiert übertragen werden.</param>
-        /// <param name="bDEWDocumentType">Der EDIFACT-Name des Nachrichtentyps gem. UNH DE0065 (z.B. CONTL, UTILMD ...)</param>
+        /// <param name="bDEWDocumentType">Der EDIFACT-Name des Nachrichtentyps gem. UNH DE0065 (z.B. CONTRL, UTILMD ...)</param>
         /// <param name="bDEWDocumentNo">Datenaustauschreferenz (DAR) aus UNB DE0020</param>
         /// <param name="bDEWDocumentDate">Datumstempel bei Erzeugung im Format YYYY-MM-DD.</param>
         /// <param name="messageId">Die Id der ausgehenden Nachricht. Über diese Id wird die Nachricht eindeutig in AS4.Connect identifizierbar.
@@ -2506,27 +2510,139 @@ namespace Schleupen.AS4.BusinessAdapter.API
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
+        /// Abfrage des Payloads der ausgehenden Nachricht.
+        /// </summary>
+        /// <remarks>
+        /// Ausgehende Edifact-Dateien können über diesen Endpunkt heruntergeladen werden. Die Datei ist dabei immer
+        /// <br/>per gzip komprimiert und muss vom Nutzer der Api noch dekomprimiert werden.
+        /// </remarks>
+        /// <param name="messageId">Die Id der Nachricht.</param>
+        /// <returns>Der Payload der Nachricht.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<FileResponse> V1MpMessagesOutboxPayloadAsync(System.Guid messageId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (messageId == null)
+                throw new System.ArgumentNullException("messageId");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/gzip"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "v1/mp/messages/outbox/{messageId}/payload"
+                    urlBuilder_.Append("v1/mp/messages/outbox/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(messageId, System.Globalization.CultureInfo.InvariantCulture)));
+                    urlBuilder_.Append("/payload");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200 || status_ == 206)
+                        {
+                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
+                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
+                            return fileResponse_;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ProblemDetails>("Der Request war fehlerhaft.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ProblemDetails>("Nachrichten-Id ist unbekannt.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 429)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ProblemDetails>("Es wurden zu viele Requests empfangen.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
         /// Fragt die zuletzt empfangenen Nachrichten für den Wechselprozess ab.
         /// </summary>
         /// <remarks>
         /// AS4 Connect stellt hier nur die __letzten__ PATH_SWITCH-Nachrichten von fremden Marktteilenhmern bereit.
-        /// <br/>
+        /// <br/>            
         /// <br/>Eingehende Nachrichten müssen geeignet über die Geschäftsapplikation verarbeitet werden.
-        /// <br/>
+        /// <br/>            
         /// <br/>Grundsätzlich werden die Typen `PATH_SWITCH_REQUEST` und `PATH_SWITCH_CONFIRM` wie folgt unterschieden:
-        /// <br/>
+        /// <br/>            
         /// <br/>### PATH_SWITCH_REQUEST ###
         /// <br/>Ein fremder Marktteilnehmer möchte den Übertragungsweg auf AS4 wechseln.
-        /// <br/>
+        /// <br/>            
         /// <br/>Der fremde Marktpartner kommuniziert (bis zu Bestätigung des Wechsels) weiterhin über den bisherige Übertragungsweg.
         /// <br/>Um dem Wechsel auf AS4 zuzustimmen, muss eine Bestätigung vom Typ `PATH_SWITCH_CONFIRM` über `/path-switch/messages/outbox`
         /// <br/>an den fremden Marktteilenhmer gesendet werden.
-        /// <br/>
+        /// <br/>            
         /// <br/>Bitte berücksichtigen Sie die Vorgaben für den Wechselprozess aus [AWH Einführungsszenario AS4](https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK6-GZ/2021/BK6-21-282/Mitteilung02/AWH%20Einf%C3%BChrungsszenario%20AS4.pdf).
-        /// <br/>
+        /// <br/>            
         /// <br/>### PATH_SWITCH_CONFIRM ###
         /// <br/>Ein fremder Marktteilnehmer bestätigt den Wechsel auf den AS4-Übertragungsweg.
-        /// <br/>
+        /// <br/>            
         /// <br/>Bitte berücksichtigen Sie die Vorgaben für den Wechselprozess aus [AWH Einführungsszenario AS4](https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK6-GZ/2021/BK6-21-282/Mitteilung02/AWH%20Einf%C3%BChrungsszenario%20AS4.pdf).
         /// </remarks>
         /// <param name="sender_Id">Die Marktpartner-Id (MP-ID) gemäß Codenummern-Datenbank (z.B. 9904843000006)</param>
@@ -3769,19 +3885,17 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// Bestätigt den erfolgreichen Erhalt einer Nachricht.
         /// </summary>
         /// <remarks>
-        /// **Achtung!** Die aktuelle Dokumentation der FP-Routen ist vorläufig.
-        /// <br/>
-        /// <br/>Erst wenn die bereitgestellten Nachrichten bestätigt wurden, werden neuere Nachrichten für die Verarbeitung bereitgestellt.
-        /// <br/>
+        /// Erst wenn die bereitgestellten Nachrichten bestätigt wurden, werden neuere Nachrichten für die Verarbeitung bereitgestellt.
+        /// <br/>            
         /// <br/>Um die Authentizität und Integrität der empfangenen Fahrplan-Datei gegenüber AS4 Connect zu bestätigen wird ein **JWT** gemäß [RFC7519](https://www.rfc-editor.org/rfc/rfc7519) genutzt.
         /// <br/>Der Payload des **JWT** muss den Hashwert der Fahrplan-Datei mittels **SHA256** gemäß [RFC6234](https://www.rfc-editor.org/rfc/rfc6234) beinhalten.
         /// <br/>Die Signierung erfolgt über den privaten Schlüsel des Client-Zertifikats, welches bereits für die Authentifizierung gegenüber AS4 Connect benutzt wird.
         /// <br/>Verschlüsselt wird das Token nicht.
-        /// <br/>
+        /// <br/>            
         /// <br/>**Hinweise**:
         /// <br/>Der Hash Wert muss immer auf dem gzip komprimierten Payload berechnet werden.
         /// <br/>Der Algorithmus für die Token-Signierung und -Validierung muss ES384 sein.
-        /// <br/>
+        /// <br/>            
         /// <br/>Das Token muss mindestens folgende Claims enthalten:
         /// <br/>```json
         /// <br/>// HEADER:
@@ -3789,7 +3903,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <br/>   "alg": "ES384", // die verwendete Signatur-Algorithmus (immer ES384), (SECP384R1)
         /// <br/>   "typ": "JWT" // der Typ des Tokens (immer JWT)
         /// <br/>}
-        /// <br/>
+        /// <br/>            
         /// <br/>// PAYLOAD:
         /// <br/>{
         /// <br/>   "hash": "07d8d11084e8d500852664c0f64ade1299d418cbe489edefcd422ad698666b33",  // der SHA256 Hashwert des Payloads, als hex-string
@@ -3799,7 +3913,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <br/>   "mid": "f613cfa2-a7a2-446f-8599-ce2c9525bbb1", // die Message-ID
         /// <br/>   "iat": 1516239022 // Zeitpunkt der Erstellung des Tokens
         /// <br/>}
-        /// <br/>
+        /// <br/>            
         /// <br/>// SIGNATURE:
         /// <br/>{
         /// <br/>    ...
@@ -3903,20 +4017,129 @@ namespace Schleupen.AS4.BusinessAdapter.API
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
+        /// Stößt die erneute Verarbeitung von fehlgeschlagenen Nachrichten an.
+        /// </summary>
+        /// <param name="body">Die Ids der erneut zuzustellenden Nachrichten.</param>
+        /// <returns>Die erneute Zustellung wurde empfangen.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<RetryMessagesResponseDto> V1FpMessagesOutboxRetriesAsync(RetryMessagesRequestDto? body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value);
+                    var content_ = new System.Net.Http.StringContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "v1/fp/messages/outbox/retries"
+                    urlBuilder_.Append("v1/fp/messages/outbox/retries");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 202)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<RetryMessagesResponseDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ProblemDetails>("Die erneute Zustellung wurde abgelehnt.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ProblemDetails>("Alle angegebenen Nachrichten wurden nicht gefunden.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 429)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<ProblemDetails>("Es wurden zuviele Requests empfangen.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
         /// Bestätigt den erfolgreichen Erhalt einer Nachricht.
         /// </summary>
         /// <remarks>
         /// Erst wenn die bereitgestellten Nachrichten bestätigt wurden, werden über `inbox/messages` neuere Nachrichten für die Verarbeitung bereitgestellt.
-        /// <br/>
+        /// <br/>            
         /// <br/>Um die Authentizität und Integrität der empfangenen Edifact-Datei gegenüber AS4 Connect zu bestätigen wird ein **JWT** gemäß [RFC7519](https://www.rfc-editor.org/rfc/rfc7519) genutzt.
         /// <br/>Der Payload des **JWT** muss den Hashwert der Edifact-Datei mittels **SHA256** gemäß [RFC6234](https://www.rfc-editor.org/rfc/rfc6234) beinhalten.
         /// <br/>Die Signierung erfolgt über den privaten Schlüsel des Client-Zertifikats, welches bereits für die Authentifizierung gegenüber AS4 Connect benutzt wird.
         /// <br/>Verschlüsselt wird das Token nicht.
-        /// <br/>
+        /// <br/>            
         /// <br/>**Hinweise**:
         /// <br/>Der Hash Wert muss immer auf dem gzip komprimierten Payload berechnet werden.
         /// <br/>Der Algorithmus für die Token-Signierung und -Validierung muss ES384 sein.
-        /// <br/>
+        /// <br/>            
         /// <br/>Das Token muss mindestens folgende Claims enthalten:
         /// <br/>```json
         /// <br/>// HEADER:
@@ -3924,7 +4147,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <br/>   "alg": "ES384", // die verwendete Signatur-Algorithmus (immer ES384), (SECP384R1)
         /// <br/>   "typ": "JWT" // der Typ des Tokens (immer JWT)
         /// <br/>}
-        /// <br/>
+        /// <br/>            
         /// <br/>// PAYLOAD:
         /// <br/>{
         /// <br/>   "hash": "07d8d11084e8d500852664c0f64ade1299d418cbe489edefcd422ad698666b33",  // der SHA256 Hashwert des Payloads, als hex-string
@@ -3934,7 +4157,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <br/>   "mid": "f613cfa2-a7a2-446f-8599-ce2c9525bbb1", // die Message-ID
         /// <br/>   "iat": 1516239022 // Zeitpunkt der Erstellung des Tokens
         /// <br/>}
-        /// <br/>
+        /// <br/>            
         /// <br/>// SIGNATURE:
         /// <br/>{
         /// <br/>    ...
@@ -4217,7 +4440,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
                     var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
                     if (field != null)
                     {
-                        var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
+                        var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute)) 
                             as System.Runtime.Serialization.EnumMemberAttribute;
                         if (attribute != null)
                         {
@@ -4229,7 +4452,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
                     return converted == null ? string.Empty : converted;
                 }
             }
-            else if (value is bool)
+            else if (value is bool) 
             {
                 return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
             }
@@ -4255,6 +4478,82 @@ namespace Schleupen.AS4.BusinessAdapter.API
             var result = System.Convert.ToString(value, cultureInfo);
             return result == null ? "" : result;
         }
+    }
+
+    /// <summary>
+    /// Weiterführende Informationen über die Edifact-Syntax-Prüfung.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.8.0 (NJsonSchema v11.0.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial record EdifactSyntaxCheckDto : System.ComponentModel.INotifyPropertyChanged
+    {
+        private EdifactSyntaxCheckStatusDto _status = default!;
+        private System.Guid? _outboundMessageReferenceId = default!;
+
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public EdifactSyntaxCheckStatusDto Status
+        {
+            get { return _status; }
+
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Die Message ID der ausgehende CONTRL, falls eine CONTRL aufgrund Syntaxfehler in der eingehenden Nachricht versendet wurde.
+        /// <br/>Ist null, falls die eingehende Nachrichten keine Syntaxfehler hatte.
+        /// <br/>Ist null, falls keine CONTRL Nachricht versendet werden konnte (z. B. grundlegend falsche Daten im Payload).
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("outboundMessageReferenceId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? OutboundMessageReferenceId
+        {
+            get { return _outboundMessageReferenceId; }
+
+            set
+            {
+                if (_outboundMessageReferenceId != value)
+                {
+                    _outboundMessageReferenceId = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void RaisePropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+                handler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    /// <summary>
+    /// Informationen über den Zustand der Syntax.
+    /// <br/>UNKNOWN: Syntax wurde nicht geprüft.
+    /// <br/>VALID_SYNTAX: Syntax ist valide.
+    /// <br/>INVALID_SYNTAX: Syntax ist invalide.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.8.0 (NJsonSchema v11.0.1.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum EdifactSyntaxCheckStatusDto
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"UNKNOWN")]
+        UNKNOWN = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"VALID_SYNTAX")]
+        VALID_SYNTAX = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"INVALID_SYNTAX")]
+        INVALID_SYNTAX = 2,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.8.0 (NJsonSchema v11.0.1.0 (Newtonsoft.Json v13.0.0.0))")]
@@ -4499,7 +4798,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         private string? _bdewDocumentNo = default!;
         private string? _bdewDocumentType = default!;
         private string? _bdewFulfillmentDate = default!;
-        private string _bdewSubjectPartyId = default!;
+        private string? _bdewSubjectPartyId = default!;
         private string? _bdewSubjectPartyRole = default!;
         private ErrorDto _error = default!;
 
@@ -4622,7 +4921,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// Die Datenaustauschreferenz (DAR).
+        /// Die Version der Nachricht. ( z.B. Confirmed Message Version für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1
         /// </summary>
         [Newtonsoft.Json.JsonProperty("bdewDocumentNo", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? BdewDocumentNo
@@ -4640,7 +4940,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// A01 für Fahrplananmeldungen. A17 für ACK. A16 für ANO. A07, A08 oder A09 für CNF.
+        /// Der Typ der Nachricht. ( A01 für Schedule. A17 für Acknowledge. A16 für AnomalyReport. A07, A08 oder A09 für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1
         /// </summary>
         [Newtonsoft.Json.JsonProperty("bdewDocumentType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? BdewDocumentType
@@ -4658,7 +4959,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// Das geplante Zeitintervall.
+        /// Das Datum des Fahrplantages im Format 'yyyy-MM-dd'.
+        /// <br/>Siehe: FAQ zur Einführung von AS4 im Fahrplanaustausch
         /// </summary>
         [Newtonsoft.Json.JsonProperty("bdewFulfillmentDate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? BdewFulfillmentDate
@@ -4678,9 +4980,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <summary>
         /// Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("bdewSubjectPartyId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public string BdewSubjectPartyId
+        [Newtonsoft.Json.JsonProperty("bdewSubjectPartyId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? BdewSubjectPartyId
         {
             get { return _bdewSubjectPartyId; }
 
@@ -4695,7 +4996,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// Ein Code für die Senderrole, z. B. A08 (Schedule Message) oder A04 (ACK, CNF oder ANO).
+        /// Ein Code für die Senderrole, z. B. A08 (für Schedule) oder A04 (für Acknowledge, ConfirmationReport oder AnomalyReport).
         /// </summary>
         [Newtonsoft.Json.JsonProperty("bdewSubjectPartyRole", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? BdewSubjectPartyRole
@@ -4751,6 +5052,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         private string? _bdewDocType = default!;
         private string? _bdewDocumentDate = default!;
         private ErrorDto _error = default!;
+        private EdifactSyntaxCheckDto _edifactSyntaxCheck = default!;
 
         /// <summary>
         /// Die Id der Nachricht
@@ -4889,7 +5191,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTL, UTILMD ...)
+        /// Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTRL, UTILMD ...)
         /// </summary>
         [Newtonsoft.Json.JsonProperty("bdewDocType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? BdewDocType
@@ -4934,6 +5236,21 @@ namespace Schleupen.AS4.BusinessAdapter.API
                 if (_error != value)
                 {
                     _error = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        [Newtonsoft.Json.JsonProperty("edifactSyntaxCheck", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public EdifactSyntaxCheckDto EdifactSyntaxCheck
+        {
+            get { return _edifactSyntaxCheck; }
+
+            set
+            {
+                if (_edifactSyntaxCheck != value)
+                {
+                    _edifactSyntaxCheck = value;
                     RaisePropertyChanged();
                 }
             }
@@ -5444,9 +5761,9 @@ namespace Schleupen.AS4.BusinessAdapter.API
         private System.Collections.Generic.ICollection<OutboundMessageStateDtoMessageTraceEntryDto>? _trace = default!;
         private string? _bdewDocumentNo = default!;
         private string? _bdewDocumentType = default!;
-        private string _bdewFulfillmentDate = default!;
-        private string _bdewSubjectPartyId = default!;
-        private string _bdewSubjectPartyRole = default!;
+        private string? _bdewFulfillmentDate = default!;
+        private string? _bdewSubjectPartyId = default!;
+        private string? _bdewSubjectPartyRole = default!;
         private ErrorDto _error = default!;
 
         /// <summary>
@@ -5586,7 +5903,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// Die Datenaustauschreferenz (DAR).
+        /// Die Version der Nachricht. ( z.B. Confirmed Message Version für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1
         /// </summary>
         [Newtonsoft.Json.JsonProperty("bdewDocumentNo", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? BdewDocumentNo
@@ -5604,7 +5922,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// A01 für Fahrplananmeldungen. A17 für ACK. A16 für ANO. A07, A08 oder A09 für CNF.
+        /// Der Typ der Nachricht. ( A01 für Schedule. A17 für Acknowledge. A16 für AnomalyReport. A07, A08 oder A09 für ConfirmationReport )
+        /// <br/>Siehe: Regelungen zum sicheren Austausch im Fahrplanprozess 2.1
         /// </summary>
         [Newtonsoft.Json.JsonProperty("bdewDocumentType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? BdewDocumentType
@@ -5622,11 +5941,11 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// Das geplante Zeitintervall.
+        /// Das Datum des Fahrplantages im Format 'yyyy-MM-dd'.
+        /// <br/>Siehe: FAQ zur Einführung von AS4 im Fahrplanaustausch
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("bdewFulfillmentDate", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public string BdewFulfillmentDate
+        [Newtonsoft.Json.JsonProperty("bdewFulfillmentDate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? BdewFulfillmentDate
         {
             get { return _bdewFulfillmentDate; }
 
@@ -5643,9 +5962,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <summary>
         /// Eine Senderidentifikation gemäß Coding Scheme, z. B. A01.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("bdewSubjectPartyId", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public string BdewSubjectPartyId
+        [Newtonsoft.Json.JsonProperty("bdewSubjectPartyId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? BdewSubjectPartyId
         {
             get { return _bdewSubjectPartyId; }
 
@@ -5660,11 +5978,10 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// Ein Code für die Senderrole, z. B. A08 (Schedule Message) oder A04 (ACK, CNF oder ANO).
+        /// Ein Code für die Senderrole, z. B. A08 (für Schedule) oder A04 (für Acknowledge, ConfirmationReport oder AnomalyReport).
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("bdewSubjectPartyRole", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public string BdewSubjectPartyRole
+        [Newtonsoft.Json.JsonProperty("bdewSubjectPartyRole", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string? BdewSubjectPartyRole
         {
             get { return _bdewSubjectPartyRole; }
 
@@ -5874,7 +6191,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         }
 
         /// <summary>
-        /// Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTL, UTILMD ...)
+        /// Der Nachrichtentyp gem. UNH DE0065 (z.B. CONTRL, UTILMD ...)
         /// </summary>
         [Newtonsoft.Json.JsonProperty("bdewDocType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string? BdewDocType
