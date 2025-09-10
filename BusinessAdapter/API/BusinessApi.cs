@@ -1297,7 +1297,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (für Schedule) oder A04 (für Acknowledge, ConfirmationReport oder AnomalyReport).</param>
         /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, System.Guid? messageId = null, string? senderMessageId = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Guid? messageId = null, string? senderMessageId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
