@@ -50,8 +50,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <param name="limit">Legt die Anzahl der Nachrichten fest die zurück gegeben werden sollen pro Richtung (Inbox/Outbox). (default: 50, min: 1)</param>
         /// <returns>Die Daten der Nachricht.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FPMessageQueryResponseDto> V1FpMessagesAsync(string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, string? bDEWDocumentNo = null, string? bDEWDocType = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-        
+        System.Threading.Tasks.Task<FPMessageQueryResponseDto> V1FpMessagesAsync(string? bDEWDocType = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, string? bDEWDocumentNo = null, string? foreignMarketpartner_Id = null, PartyIdTypeDto? foreignMarketpartner_Type = null, System.DateTimeOffset? created_at_from = null, System.DateTimeOffset? created_at_to = null, MessageDirectionDto? direction = null, System.Collections.Generic.IEnumerable<OutboundMessageStateDto>? outboundState = null, System.Collections.Generic.IEnumerable<InboundMessageStateDto>? inboundState = null, bool? includeTrace = null, int? limit = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Abfrage von empfangenen Nachrichten
@@ -135,8 +135,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (für Schedule) oder A04 (für Acknowledge, ConfirmationReport oder AnomalyReport).</param>
         /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Guid? messageId = null, string? senderMessageId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
-     
+        System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, System.Guid? messageId = null, string? senderMessageId = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Fragt eine Nachrichten von ausgehenden Nachrichten ab inklusive Fehler und Traces.
@@ -1297,7 +1297,7 @@ namespace Schleupen.AS4.BusinessAdapter.API
         /// <param name="bDEWSubjectPartyRole">Ein Code für die Senderrole, z. B. A08 (für Schedule) oder A04 (für Acknowledge, ConfirmationReport oder AnomalyReport).</param>
         /// <returns>Nachricht wurde erfolgreich empfangen.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Guid? messageId = null, string? senderMessageId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<SubmitFPMessageResponseDto> V1FpMessagesOutboxPostAsync(string? receiver_Id = null, PartyIdTypeDto? receiver_Type = null, FileParameter payload = null, System.Guid? messageId = null, string? senderMessageId = null, string? bDEWDocumentType = null, string? bDEWDocumentNo = null, string? bDEWFulfillmentDate = null, string? bDEWSubjectPartyId = null, string? bDEWSubjectPartyRole = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -7322,6 +7322,8 @@ namespace Schleupen.AS4.BusinessAdapter.API
     {
         private int _lastMonthCount = default!;
         private int _currentMonthCount = default!;
+        private int _lastMonthEdifactSyntaxCheckedCount = default!;
+        private int _currentMonthEdifactSyntaxCheckedCount = default!;
 
         /// <summary>
         /// Anzahl Nachrichten des letzten Kalender Monats
@@ -7354,6 +7356,42 @@ namespace Schleupen.AS4.BusinessAdapter.API
                 if (_currentMonthCount != value)
                 {
                     _currentMonthCount = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Anzahl Nachrichten die Edifact Syntax geprüft wurden im letzten Kalender Monat
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("lastMonthEdifactSyntaxCheckedCount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int LastMonthEdifactSyntaxCheckedCount
+        {
+            get { return _lastMonthEdifactSyntaxCheckedCount; }
+
+            set
+            {
+                if (_lastMonthEdifactSyntaxCheckedCount != value)
+                {
+                    _lastMonthEdifactSyntaxCheckedCount = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Anzahl Nachrichten die Edifact Syntax geprüft wurden im aktuellen Kalender Monat
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("currentMonthEdifactSyntaxCheckedCount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int CurrentMonthEdifactSyntaxCheckedCount
+        {
+            get { return _currentMonthEdifactSyntaxCheckedCount; }
+
+            set
+            {
+                if (_currentMonthEdifactSyntaxCheckedCount != value)
+                {
+                    _currentMonthEdifactSyntaxCheckedCount = value;
                     RaisePropertyChanged();
                 }
             }
