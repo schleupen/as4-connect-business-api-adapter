@@ -51,13 +51,13 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 					await businessApiClient.V1FpMessagesOutboxPostAsync(message.Receiver.Id,
 						partyIdTypeAssembler.ToPartyTypeDto(message.Receiver.Type),
 						new FileParameter(compressedStream, message.FileName),
+						message.MessageId,
+						message.SenderMessageId,
 						message.BDEWProperties.BDEWDocumentType,
 						message.BDEWProperties.BDEWDocumentNo,
 						message.BDEWProperties.BDEWFulfillmentDate,
 						message.BDEWProperties.BDEWSubjectPartyId,
 						message.BDEWProperties.BDEWSubjectPartyRole,
-						message.MessageId,
-						message.SenderMessageId,
 						cancellationToken);
 
 					return new BusinessApiResponse<FpOutboxMessage>(true, message);
