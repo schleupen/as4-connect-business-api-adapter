@@ -38,7 +38,7 @@ $headers = @{Authorization = "Basic $base64AuthInfo" }
 $url = "https://api.github.com/repos/schleupen/$($repo)/releases/latest"
 Write-Output "Suche nach aktuellster Version ($url)..."
 $json = Invoke-RestMethod -Method Get -Uri $url -Headers $headers
-Write-Output "found: '$($json.name)' [tag: $($json.tag_name)] created at '$($json.created_at)'"
+Write-Output "found: '$($json.name)' [tag: $($json.tag_name)] published_at '$($json.published_at)'"
 $assetId = $json.assets[0].id
 
 $assetHeaders = @{Authorization = "Basic $base64AuthInfo"; Accept = "application/octet-stream" }
