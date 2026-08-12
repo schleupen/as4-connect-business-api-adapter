@@ -1,6 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-
-namespace Schleupen.AS4.BusinessAdapter.FP.Configuration.Validation;
+﻿namespace Schleupen.AS4.BusinessAdapter.FP.Configuration.Validation;
 
 using Microsoft.Extensions.Options;
 

@@ -15,7 +15,7 @@ public partial class SendAndReceiveTests
 
 	public void Dispose()
 	{
-		this.fixture?.Dispose();
+		fixture?.Dispose();
 	}
 
 	[SetUp]
@@ -40,8 +40,8 @@ public partial class SendAndReceiveTests
 
 		public async Task SetupFakeServerAsync()
 		{
-			await this.fakeServerFixture.ShouldBeHealthyAsync();
-			await this.fakeServerFixture.ResetFpMessagesAsync();
+			await fakeServerFixture.ShouldBeHealthyAsync();
+			await fakeServerFixture.ResetFpMessagesAsync();
 		}
 
 		public void AddFileToSendDirectory()
@@ -179,7 +179,7 @@ public partial class SendAndReceiveTests
 
 		public async Task<IReceiveStatus> Receive()
 		{
-			var serviceProvider = CreateServiceProvider(new FileInfo(this.Data.AppSettingsPath));
+			var serviceProvider = CreateServiceProvider(new FileInfo(Data.AppSettingsPath));
 			var sender = serviceProvider.GetRequiredService<IFpMessageReceiver>();
 
 			return await sender.ReceiveMessagesAsync(CancellationToken.None);
@@ -188,7 +188,7 @@ public partial class SendAndReceiveTests
 
 		public async Task<ISendStatus> Send()
 		{
-			var serviceProvider = CreateServiceProvider(new FileInfo(this.Data.AppSettingsPath));
+			var serviceProvider = CreateServiceProvider(new FileInfo(Data.AppSettingsPath));
 
 			var sender = serviceProvider.GetRequiredService<IFpMessageSender>();
 			return await sender.SendMessagesAsync(CancellationToken.None);
@@ -217,7 +217,7 @@ public partial class SendAndReceiveTests
 
 		public void Dispose()
 		{
-			this.DeleteDirectories();
+			DeleteDirectories();
 		}
 	}
 

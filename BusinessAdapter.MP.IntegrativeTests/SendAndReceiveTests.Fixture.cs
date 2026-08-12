@@ -33,7 +33,7 @@ public partial class SendAndReceiveTests
 
 		public void SetupWithMarketpartner(string marketPartner)
 		{
-			CreateAppSettingsJson(Data.SendDirectory, Data.ReceiveDirectory, new List<string> { marketPartner }, Data.AppSettingsPath);
+			CreateAppSettingsJson(Data.SendDirectory, Data.ReceiveDirectory, [marketPartner], Data.AppSettingsPath);
 		}
 
 		public void CreateDirectories()
@@ -44,8 +44,8 @@ public partial class SendAndReceiveTests
 
 		public async Task SetupFakeServerAsync()
 		{
-			await this.fakeServerFixture.ShouldBeHealthyAsync();
-			await this.fakeServerFixture.ResetMpMessagesAsync();
+			await fakeServerFixture.ShouldBeHealthyAsync();
+			await fakeServerFixture.ResetMpMessagesAsync();
 		}
 
 		private void CreateAppSettingsJson(
@@ -117,7 +117,7 @@ public partial class SendAndReceiveTests
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddLogging((b) => b.AddConsole());
 
-			ServiceConfigurator configurator = new ServiceConfigurator();
+			ServiceConfigurator configurator = new();
 			configurator.ConfigureSending(serviceCollection, config);
 			configurator.ConfigureReceiving(serviceCollection, config);
 			return serviceCollection.BuildServiceProvider();
@@ -147,13 +147,20 @@ public partial class SendAndReceiveTests
 
 		private void DeleteDirectories()
 		{
-			if (Directory.Exists(Data.SendDirectory)) Directory.Delete(Data.SendDirectory, true);
-			if (Directory.Exists(Data.ReceiveDirectory)) Directory.Delete(Data.ReceiveDirectory, true);
+			if (Directory.Exists(Data.SendDirectory))
+			{
+				Directory.Delete(Data.SendDirectory, true);
+			}
+
+			if (Directory.Exists(Data.ReceiveDirectory))
+			{
+				Directory.Delete(Data.ReceiveDirectory, true);
+			}
 		}
 
 		public void Dispose()
 		{
-			this.DeleteDirectories();
+			DeleteDirectories();
 		}
 
 		public void VerifySendDirectoryContainsMsconsFile()

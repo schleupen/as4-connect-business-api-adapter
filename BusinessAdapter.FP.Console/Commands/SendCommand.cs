@@ -1,23 +1,32 @@
 ﻿namespace Schleupen.AS4.BusinessAdapter.FP.Commands;
 
 using System.CommandLine;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Schleupen.AS4.BusinessAdapter.FP.Configuration;
 using Schleupen.AS4.BusinessAdapter.FP.Sending;
 
 public class SendCommand : Command
 {
+	private readonly ConfigurationFromFileProvider configurationFromFileProvider = new();
+	private readonly ServiceConfigurator configurator = new();
+
 	public SendCommand() : base("send", "sends fp messages to as4 connect")
 	{
 		var configFileOption = new ConfigFileOption();
-		this.AddOption(configFileOption);
 
-		this.SetHandler(Send, configFileOption);
+		Options.Add(configFileOption);
+
+		SetAction((parseResult, cancellationToken) =>
+		{
+			var configFile = parseResult.GetValue(configFileOption);
+
+			return Send(configFile!, cancellationToken);
+		});
 	}
 
-	private async Task Send(FileInfo configFile)
+	private Task Send(FileInfo configFile, CancellationToken cancellationToken)
 	{
 		var serviceProvider = CreateServiceProvider(configFile);
 
@@ -25,20 +34,15 @@ public class SendCommand : Command
 		startUpValidator.Validate();
 
 		var sender = serviceProvider.GetRequiredService<IFpMessageSender>();
-		await sender.SendMessagesAsync(CancellationToken.None);
+		return sender.SendMessagesAsync(cancellationToken);
 	}
 
-	private ServiceProvider CreateServiceProvider(FileInfo fileInfo)
+	private ServiceProvider CreateServiceProvider(FileInfo configFile)
 	{
-		var config = new ConfigurationBuilder()
-			.AddJsonFile(fileInfo.FullName, optional: true, reloadOnChange: true)
-			.Build();
+		var serviceCollection = new ServiceCollection()
+			.AddLogging((b) => b.AddConsole());
+		configurator.ConfigureSending(serviceCollection, configurationFromFileProvider.FromFile(configFile));
 
-		var serviceCollection = new ServiceCollection();
-		serviceCollection.AddLogging((b) => b.AddConsole());
-
-		ServiceConfigurator configurator = new ServiceConfigurator();
-		configurator.ConfigureSending(serviceCollection, config);
 		return serviceCollection.BuildServiceProvider();
 	}
 }

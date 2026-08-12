@@ -12,7 +12,7 @@ internal sealed partial class CimFileParserTest
 	[SetUp]
 	public void Setup()
 	{
-		this.fixture = new Fixture();
+		fixture = new Fixture();
 	}
 
 	private FpFile? Parse(string path)

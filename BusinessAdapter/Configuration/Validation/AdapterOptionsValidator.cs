@@ -8,9 +8,9 @@ public class AdapterOptionsValidator : IValidateOptions<Configuration.AdapterOpt
 	{
 		ValidateOptionsResultBuilder builder = new ValidateOptionsResultBuilder();
 
-		builder.AddResult(this.ValidateMarketpartner(options));
-		builder.AddResult(this.ValidateEndpoint(options));
-		builder.AddResult(this.ValidateCertificateOptions(options));
+		builder.AddResult(ValidateMarketpartner(options));
+		builder.AddResult(ValidateEndpoint(options));
+		builder.AddResult(ValidateCertificateOptions(options));
 
 		return builder.Build();
 	}

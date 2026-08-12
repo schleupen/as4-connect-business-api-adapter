@@ -54,14 +54,14 @@ namespace Schleupen.AS4.BusinessAdapter.Sending
 
 			public void SendAvailableMessagesAsyncWithoutSendDirectory()
 			{
-				this.sendOptionsMock
+				sendOptionsMock
 					.Setup(x => x.Value)
 					.Returns(new SendOptions() { Directory = null! });
 			}
 
 			private void SetupAdapterConfiguration(int sendLimit = 100)
 			{
-				this.sendOptionsMock.Setup(x => x.Value).Returns(new SendOptions()
+				sendOptionsMock.Setup(x => x.Value).Returns(new SendOptions()
 				{
 					Retry = new RetryOption() { Count = 3 },
 					Directory = @"C:\Temp",

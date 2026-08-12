@@ -12,7 +12,7 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileVal
          string fileName = fileSystemWrapper.GetFileName(path);
          XDocument doc = XDocument.Load(path);
 
-         var parser = this.CreateParserFor(doc);
+         var parser = CreateParserFor(doc);
          var parsedFile = parser.Parse(doc, fileName, path);
          fpParsedFileValidator.ValidateParsedFpFile(parsedFile);
 		 return parsedFile;
@@ -27,7 +27,7 @@ public class FpFileParser(IFileSystemWrapper fileSystemWrapper, IFpParsedFileVal
 		    zipStream.CopyTo(resultStream);
 		    var xml = Encoding.UTF8.GetString(resultStream.ToArray());
 		    XDocument doc = XDocument.Parse(xml);
-		    var parser = this.CreateParserFor(doc);
+		    var parser = CreateParserFor(doc);
 		    return parser.ParsePayload(doc);
 	    }
     }

@@ -9,21 +9,28 @@ public class ServiceCommand : Command
 	public ServiceCommand() : base("service", "send and receives messages continuously")
 	{
 		var configFileOption = new ConfigFileOption();
-		this.AddOption(configFileOption);
-		this.SetHandler(RunService, configFileOption);
+
+		Options.Add(configFileOption);
+
+		SetAction((parseResult, cancellationToken) =>
+		{
+			var configFile = parseResult.GetValue(configFileOption);
+
+			return RunService(configFile!, cancellationToken);
+		});
 	}
 
-	private async Task RunService(FileInfo configFile)
+	private Task RunService(FileInfo configFile, CancellationToken cancellationToken)
 	{
-		var serviceHost = this.BuildServiceHost(configFile);
+		var serviceHost = BuildServiceHost(configFile);
 
-		await serviceHost.RunAsync();
+		return serviceHost.RunAsync(cancellationToken);
 	}
 
 	private IHost BuildServiceHost(FileInfo configFile)
 	{
-		HostApplicationBuilder builder = Host.CreateApplicationBuilder(Array.Empty<string>());
-		ServiceConfigurator configurator = new ServiceConfigurator();
+		HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+		ServiceConfigurator configurator = new();
 		builder.Configuration.AddJsonFile(configFile.FullName);
 		configurator.ConfigureService(builder.Services, builder.Configuration);
 

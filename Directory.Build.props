@@ -1,18 +1,22 @@
 <Project>
-	<PropertyGroup>
+
+    <PropertyGroup>
 		<Company>Schleupen SE</Company>
 		<Product>Schleupen.AS4.BusinessAdapter</Product>
 		<CurrentYear>$([System.DateTime]::Now.Year)</CurrentYear>
 		<Copyright>Copyright © $(CurrentYear) Schleupen SE</Copyright>
 		<Version>3.0.0.0</Version>
 	</PropertyGroup>
+    
 	<PropertyGroup>
-		<ImplicitUsings>enable</ImplicitUsings>
+        <ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>Schleupen.AS4.BusinessAdapter</RootNamespace>
-		<AnalysisLevel>latest</AnalysisLevel>
+        <LangVersion>latestmajor</LangVersion>
+        <AnalysisLevel>latest</AnalysisLevel>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<SignAssembly>false</SignAssembly>
 		<DebugType>Embedded</DebugType>
 	</PropertyGroup>
+    
 </Project>

@@ -2,4 +2,10 @@
 
 using System.CommandLine;
 
-public class ConfigFileOption() : Option<FileInfo>(new[] { "-c", "-configFile" }, () => new FileInfo("./appsettings.json"));
+public class ConfigFileOption : Option<FileInfo>
+{
+	public ConfigFileOption() : base("-configFile", "-c")
+	{
+		DefaultValueFactory = _ => new FileInfo("./appsettings.json");
+	}
+}

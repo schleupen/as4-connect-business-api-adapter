@@ -129,7 +129,7 @@ namespace Schleupen.AS4.BusinessAdapter.Receiving
 
 			private void SetupAdapterConfiguration(int messageLimit = 100)
 			{
-				this.receiveOptionsMock.Setup(x => x.Value).Returns(new ReceiveOptions()
+				receiveOptionsMock.Setup(x => x.Value).Returns(new ReceiveOptions()
 				{
 					MessageLimitCount = messageLimit,
 					Retry = new RetryOption() { Count = 0 },

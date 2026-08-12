@@ -12,13 +12,13 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 
 	internal sealed partial class BusinessApiGatewayTest
 	{
-		internal class TestData
+		internal sealed class TestData
 		{
 			public readonly InboxMpMessage InboxMpMessage;
 
 			public TestData()
 			{
-				this.InboxMpMessage = CreateInboxMessage();
+				InboxMpMessage = CreateInboxMessage();
 			}
 
 			private InboxMpMessage CreateInboxMessage()
@@ -37,7 +37,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 		private sealed class Fixture : IDisposable
 		{
 			public TestData Data { get; } = new();
-			private readonly MockRepository mockRepository = new (MockBehavior.Strict);
+			private readonly MockRepository mockRepository = new(MockBehavior.Strict);
 			private readonly Mock<IJwtBuilder> jwtHelperMock;
 			private readonly Mock<ILogger<BusinessApiGateway>> loggerMock;
 			private readonly Mock<IBusinessApiClientFactory> businessApiClientFactoryMock;
@@ -53,7 +53,7 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 				loggerMock = mockRepository.Create<ILogger<BusinessApiGateway>>();
 				businessApiClientFactoryMock = mockRepository.Create<IBusinessApiClientFactory>();
 				businessApiClientMock = mockRepository.Create<IBusinessApiClient>();
-				certificate = new X509Certificate2(Array.Empty<byte>());
+				certificate = new X509Certificate2([]);
 				partyIdTypeAssembler = mockRepository.Create<IPartyIdTypeAssembler>(MockBehavior.Loose);
 				httpClientFactoryMock = mockRepository.Create<IHttpClientFactory>(MockBehavior.Loose);
 			}
@@ -85,8 +85,8 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 					.Setup(x => x.V1MpMessagesInboxGetAsync(It.Is<int>(limit => limit == 51), It.IsAny<CancellationToken>()))
 					.Returns(Task.FromResult(new QueryInboxMessagesResponseDto
 					{
-						Messages = new List<InboundMPMessageDto>
-						{
+						Messages =
+						[
 							new()
 							{
 								BdewDocType = "DocumentType",
@@ -113,23 +113,23 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 									HashSHA256 = "Hash",
 									SizeInBytes = 412
 								},
-								Trace = new List<InboundMessageStateDtoMessageTraceEntryDto>
-								{
+								Trace =
+								[
 									new()
 									{
 										Message = "Message",
 										State = InboundMessageStateDto.ACCEPTED,
 										Timestamp = new DateTimeOffset(new DateTime(2024, 01, 16, 12, 00, 00), TimeSpan.FromHours(1)),
 									}
-								}
+								]
 							}
-						}
+						]
 					}));
 			}
 
 			private void SetupHttpClientFactoryMock()
 			{
-				this.httpClientFactoryMock.Setup(x => x.CreateFor(It.Is<Party>(x => x.Id == "12345"))).Returns(
+				httpClientFactoryMock.Setup(x => x.CreateFor(It.Is<Party>(x => x.Id == "12345"))).Returns(
 #pragma warning disable CA2000
 					new HttpClient());
 #pragma warning restore CA2000

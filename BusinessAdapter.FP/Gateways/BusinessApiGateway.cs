@@ -36,10 +36,10 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 				message.Receiver,
 				message.MessageId);
 
-			using (MemoryStream compressedStream = new MemoryStream())
+			using (MemoryStream compressedStream = new())
 			{
-				using (MemoryStream payloadStream = new MemoryStream(message.Payload))
-				using (GZipStream gZipStream = new GZipStream(compressedStream, CompressionMode.Compress, true))
+				using (MemoryStream payloadStream = new(message.Payload))
+				using (GZipStream gZipStream = new(compressedStream, CompressionMode.Compress, true))
 				{
 					await payloadStream.CopyToAsync(gZipStream);
 				}
@@ -47,7 +47,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 				compressedStream.Position = 0;
 				try
 				{
-					var businessApiClient = businessApiClientFactory.Create(httpClient.BaseAddress!, httpClient);
+					var businessApiClient = businessApiClientFactory.Create(httpClient.BaseAddress, httpClient);
 					await businessApiClient.V1FpMessagesOutboxPostAsync(message.Receiver.Id,
 						partyIdTypeAssembler.ToPartyTypeDto(message.Receiver.Type),
 						new FileParameter(compressedStream, message.FileName),
@@ -74,9 +74,9 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			QueryInboxFPMessagesResponseDto clientResponse = await businessApiClient.V1FpMessagesInboxGetAsync(limit);
 
-			List<FpInboxMessage> messages = new List<FpInboxMessage>();
+			List<FpInboxMessage> messages = [];
 
-			foreach (InboundFPMessageDto? message in clientResponse.Messages)
+			foreach (InboundFPMessageDto? message in clientResponse.Messages ?? [])
 			{
 				try
 				{
@@ -118,28 +118,26 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 			{
 				FileResponse clientResponse = await businessApiClient.V1FpMessagesInboxPayloadAsync(fpInboxMessage.MessageId);
 
-				using (MemoryStream ms = new MemoryStream())
+				using (MemoryStream ms = new())
 				{
 					await clientResponse.Stream.CopyToAsync(ms);
 					byte[] zippedContent = ms.ToArray();
 					ms.Position = 0;
 
-					using (GZipStream gZipStream = new GZipStream(ms, CompressionMode.Decompress, true))
+					using (GZipStream gZipStream = new(ms, CompressionMode.Decompress, true))
+					using (StreamReader decompressedReader = new(gZipStream, DefaultEncoding))
 					{
-						using (StreamReader decompressedReader = new StreamReader(gZipStream, DefaultEncoding))
-						{
-							string xmlString = await decompressedReader.ReadToEndAsync();
+						string xmlString = await decompressedReader.ReadToEndAsync();
 
-							return new BusinessApiResponse<InboxFpMessage>(
-								true,
-								new InboxFpMessage(
-									fpInboxMessage.MessageId.ToString(),
-									fpInboxMessage.Sender,
-									fpInboxMessage.Receiver,
-									xmlString,
-									zippedContent,
-									fpInboxMessage.BDEWProperties));
-						}
+						return new BusinessApiResponse<InboxFpMessage>(
+							true,
+							new InboxFpMessage(
+								fpInboxMessage.MessageId.ToString(),
+								fpInboxMessage.Sender,
+								fpInboxMessage.Receiver,
+								xmlString,
+								zippedContent,
+								fpInboxMessage.BDEWProperties));
 					}
 				}
 			}
@@ -150,8 +148,8 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Gateways
 						fpInboxMessage.Sender,
 						fpInboxMessage.Receiver,
 						null,
-						null,
-						null)
+						null!,
+						null!)
 					,
 					(HttpStatusCode)ex.StatusCode,
 					ex);

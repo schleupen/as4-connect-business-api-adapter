@@ -7,21 +7,21 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 
 public partial class FpFileRepositoryTest
 {
-	private string _testDirectory;
+	private string? testDirectory;
 
 	[SetUp]
 	public void SetUp()
 	{
-		_testDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-		Directory.CreateDirectory(_testDirectory);
+		testDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+		Directory.CreateDirectory(testDirectory);
 	}
 
 	[TearDown]
 	public void TearDown()
 	{
-		if (Directory.Exists(_testDirectory))
+		if (Directory.Exists(testDirectory))
 		{
-			Directory.Delete(_testDirectory, true);
+			Directory.Delete(testDirectory, true);
 		}
 	}
 	
@@ -32,7 +32,7 @@ public partial class FpFileRepositoryTest
         var repository = fixture.CreateTestObject();
         var fpMessage = CreateTestFpMessage(false);
         var fileName = "existingFile.xml";
-        var filePath = Path.Combine(_testDirectory, fileName);
+        var filePath = Path.Combine(testDirectory!, fileName);
 
         File.WriteAllText(filePath, "Test content");
         fixture.Mocks.FpFileNameExctractor.Setup(x => x.ExtractFileName(It.IsAny<InboxFpMessage>())).Returns(fixture.Mocks.FileName.Object);
@@ -40,8 +40,8 @@ public partial class FpFileRepositoryTest
 
         // Act & Assert
         var exception = Assert.Throws<FileAlreadyExistException>(() =>
-	        repository.WriteInboxMessage(fpMessage, _testDirectory));
-        Assert.That(exception.Message, Does.Contain($"File with the name {filePath} already exist for message {fpMessage.MessageId}"));
+	        repository.WriteInboxMessage(fpMessage, testDirectory!));
+        Assert.That(exception!.Message, Does.Contain($"File with the name {filePath} already exist for message {fpMessage.MessageId}"));
     }
 
     [Test]
@@ -56,10 +56,10 @@ public partial class FpFileRepositoryTest
         fixture.Mocks.FileName.Setup(name => name.ToFileName()).Returns(fileName);
         
         // Act
-        var result = repository.WriteInboxMessage(fpMessage, _testDirectory);
+        var result = repository.WriteInboxMessage(fpMessage, testDirectory!);
 
         // Assert
-        var expectedFilePath = Path.Combine(_testDirectory, fileName);
+        var expectedFilePath = Path.Combine(testDirectory!, fileName);
         Assert.That(result, Is.EqualTo(expectedFilePath));
         Assert.That(File.Exists(expectedFilePath), Is.True);
     }
@@ -128,7 +128,7 @@ public partial class FpFileRepositoryTest
 			new SendingParty("id", "type"),
 			new ReceivingParty("id", "tye"),
 			"Test payload content",
-			includePayload ? payload : null,
+			includePayload ? payload : null!,
 			new FpBDEWProperties(
 				"docType", 
 				"docNo", 

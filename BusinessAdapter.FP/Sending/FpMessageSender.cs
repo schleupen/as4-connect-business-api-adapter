@@ -45,7 +45,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.Sending
 					.ExecuteAndCaptureAsync(
 						async () =>
 						{
-							await this.SendFilesAsync(messagesToSend, sendStatus, cancellationToken);
+							await SendFilesAsync(messagesToSend, sendStatus, cancellationToken);
 							sendStatus.ThrowIfRetryIsNeeded();
 						}
 					);

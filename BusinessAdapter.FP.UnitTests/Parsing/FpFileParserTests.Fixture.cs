@@ -11,7 +11,7 @@ internal sealed partial class FpFileParserTests
 	[SetUp]
 	public void Setup()
 	{
-		this.fixture = new Fixture();
+		fixture = new Fixture();
 	}
 
 	private sealed class Fixture

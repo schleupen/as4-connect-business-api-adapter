@@ -3,5 +3,6 @@
 public class EICMappingEntry
 {
     public string EIC { get; set; }
+
     public string MarktpartnerTyp { get; set; }
 }

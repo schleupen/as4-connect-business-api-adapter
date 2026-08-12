@@ -3,12 +3,11 @@
 namespace Schleupen.AS4.BusinessAdapter.FP
 {
 	using System.CommandLine;
-	using System.Threading.Tasks;
 	using Schleupen.AS4.BusinessAdapter.FP.Commands;
 
-	public partial class Program
+	public static partial class Program
 	{
-		public static async Task Main(string[] args)
+		public static async Task<int> Main(string[] args)
 		{
 			RootCommand command =
 			[
@@ -17,7 +16,10 @@ namespace Schleupen.AS4.BusinessAdapter.FP
 				new ServiceCommand()
 			];
 
-			await command.InvokeAsync(args);
+			using (var cancellationTokenSource = new CancellationTokenSource())
+			{
+				return await command.Parse(args).InvokeAsync(cancellationToken: cancellationTokenSource.Token).ConfigureAwait(ConfigureAwaitOptions.None);
+			}
 		}
 	}
 }

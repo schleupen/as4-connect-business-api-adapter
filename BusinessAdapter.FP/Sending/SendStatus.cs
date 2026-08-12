@@ -5,18 +5,17 @@ using Schleupen.AS4.BusinessAdapter.API;
 
 public class SendStatus(DirectoryResult directoryResult) : ISendStatus
 {
-	private readonly List<FpOutboxMessage> successfulSendMessages = new();
-	private readonly Dictionary<Guid, FailedFpOutboxMessage> failedSendMessages = new();
-	private int retryIteration = 0;
+	private readonly List<FpOutboxMessage> successfulSendMessages = [];
+	private readonly Dictionary<Guid, FailedFpOutboxMessage> failedSendMessages = [];
 
 	public bool AbortedDueToTooManyConnections { get; private set; }
 
 	public void NewRetry()
 	{
-		this.retryIteration++;
+		RetryIteration++;
 	}
 
-	public int RetryIteration => this.retryIteration;
+	public int RetryIteration { get; private set; } = 0;
 
 	public int TotalMessageCount => directoryResult.TotalFileCount;
 
@@ -47,20 +46,20 @@ public class SendStatus(DirectoryResult directoryResult) : ISendStatus
 
 	public void AbortDueToTooManyConnections()
 	{
-		this.AbortedDueToTooManyConnections = true;
+		AbortedDueToTooManyConnections = true;
 	}
 
 	public void ThrowIfRetryIsNeeded()
 	{
-		if (this.AbortedDueToTooManyConnections)
+		if (AbortedDueToTooManyConnections)
 		{
 			return; // send retry will not fix this problem, so throwing the Exception for Retry doesn't make sense
 		}
 
-		if (this.failedSendMessages.Count != 0)
+		if (failedSendMessages.Count != 0)
 		{
 			throw new AggregateException("There was at least one error. Details can be found in the inner exceptions.",
-				this.failedSendMessages.Select(x => x.Value.Exception).ToArray());
+				failedSendMessages.Select(x => x.Value.Exception).ToArray());
 		}
 	}
 
@@ -71,7 +70,7 @@ public class SendStatus(DirectoryResult directoryResult) : ISendStatus
 			logger.LogWarning("A 429 TooManyRequests status code was encountered while sending the messages which caused the sending to end before all messages could be sent.");
 		}
 
-		foreach (var failedMessage in this.failedSendMessages)
+		foreach (var failedMessage in failedSendMessages)
 		{
 			logger.LogWarning(failedMessage.Value.Exception, "Failed to send message for '{FilePath}'", failedMessage.Value.Message.FilePath);
 		}
@@ -89,7 +88,7 @@ public class SendStatus(DirectoryResult directoryResult) : ISendStatus
 
 	public List<FpOutboxMessage> GetUnsentMessagesForRetry()
 	{
-		return this.failedSendMessages.Select(x => x.Value.Message).ToList();
+		return failedSendMessages.Select(x => x.Value.Message).ToList();
 	}
 
 	public IReadOnlyCollection<FpOutboxMessage> SuccessfulMessages => successfulSendMessages.AsReadOnly();
@@ -98,7 +97,7 @@ public class SendStatus(DirectoryResult directoryResult) : ISendStatus
 
 	private IReadOnlyCollection<FailedFpOutboxMessage> BuildAllFailedFpMessages()
 	{
-		return this.failedSendMessages.Values
+		return failedSendMessages.Values
 			.Concat(directoryResult.FailedFiles.Select(x => new FailedFpOutboxMessage(x.Path, x.Exception)))
 			.ToList()
 			.AsReadOnly();

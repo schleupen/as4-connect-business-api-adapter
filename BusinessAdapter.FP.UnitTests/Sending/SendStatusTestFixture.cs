@@ -52,10 +52,10 @@ public partial class SendStatusTest
 
 		public TestData()
 		{
-			this.SuccessfulOutboundMessage = CreateFpOutboundMessage();
-			this.FailedOutboundMessage = CreateFpOutboundMessage();
+			SuccessfulOutboundMessage = CreateFpOutboundMessage();
+			FailedOutboundMessage = CreateFpOutboundMessage();
 
-			this.DirectoryResult = new DirectoryResult(
+			DirectoryResult = new DirectoryResult(
 				"./sendDirectory",
 				new List<FpFile>()
 				{

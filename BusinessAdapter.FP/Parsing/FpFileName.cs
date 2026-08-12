@@ -134,7 +134,7 @@ public record FpFileName
 	{
 		var datePrefix = GetDatePrefix();
 
-		switch (this.MessageType)
+		switch (MessageType)
 		{
 			case FpMessageType.AnomalyReport:
 			case FpMessageType.Acknowledge:

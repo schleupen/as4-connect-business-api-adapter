@@ -47,5 +47,5 @@ public class InboxFpMessage(
     /// <summary>
     /// The file name of the XML file.
     /// </summary>
-    public string FileName { get; }
+    public string? FileName { get; }
 }

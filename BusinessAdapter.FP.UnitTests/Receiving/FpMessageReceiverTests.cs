@@ -138,7 +138,7 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 			Assert.That(test.SuccessfulMessages.Count, Is.EqualTo(0));
 			Assert.That(test.FailedMessages.Count, Is.EqualTo(1));
 			Assert.That(test.TotalMessageCount, Is.EqualTo(1));
-			Assert.That(test.FailedMessages.FirstOrDefault().Exception.Message, Is.EqualTo("File with the name Filename already exist for message messageId"));
+			Assert.That(test.FailedMessages.FirstOrDefault()?.Exception.Message, Is.EqualTo("File with the name Filename already exist for message messageId"));
 		}
 
 		[Test]
@@ -249,13 +249,12 @@ namespace Schleupen.AS4.BusinessAdapter.FP.UnitTests.Receiving
 				.ThrowsAsync(new Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException("TestMarketPartner"));
 
 			// Act
-			var ex = Assert.ThrowsAsync<AggregateException>(async () =>
-				await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None));
+			var ex = Assert.ThrowsAsync<AggregateException>(async () => await fpMessageReceiver.ReceiveMessagesAsync(CancellationToken.None));
 
 			// Assert
-			var innerException = ex.InnerExceptions[0];
+			var innerException = ex?.InnerExceptions[0];
 			Assert.That(innerException, Is.InstanceOf<Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException>());
-			Assert.That(((Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException)innerException).MarketpartnerIdentificationNumber,
+			Assert.That(((Schleupen.AS4.BusinessAdapter.Certificates.MissingCertificateException)innerException!).MarketpartnerIdentificationNumber,
 				Is.EqualTo("TestMarketPartner"));
 		}
 

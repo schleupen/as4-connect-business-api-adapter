@@ -9,12 +9,12 @@ using Schleupen.AS4.BusinessAdapter.FP.Receiving;
 [TestFixture]
 public class FpParsedFileValidatorTests
 {
-	private FpParsedFileValidator validator;
+	private FpParsedFileValidator? validator;
 
 	[SetUp]
 	public void Setup()
 	{
-		validator = new FpParsedFileValidator();
+		validator = new();
 	}
 
 	[Test]
@@ -24,7 +24,7 @@ public class FpParsedFileValidatorTests
 		var fpFile = CreateValidFpFile();
 
 		// Act & Assert
-		Assert.That(() => validator.ValidateParsedFpFile(fpFile), Throws.Nothing);
+		Assert.That(() => validator!.ValidateParsedFpFile(fpFile), Throws.Nothing);
 	}
 
 	[Test]
@@ -34,7 +34,7 @@ public class FpParsedFileValidatorTests
 		var fpFile = CreateValidFpFile("002", "0X1001A1001A264", BDEWDocumentTypes.A16);
 
 		// Act & Assert
-		Assert.That(() => validator.ValidateParsedFpFile(fpFile),
+		Assert.That(() => validator!.ValidateParsedFpFile(fpFile),
 			Throws.TypeOf<ValidationException>()
 				.With.Message.EqualTo("Parsed DocumentType 'A16' does not match filename DocumentType 'ConfirmationReport'"));
 	}
@@ -46,7 +46,7 @@ public class FpParsedFileValidatorTests
 		var fpFile = CreateValidFpFile("1", "InvalidSender", BDEWDocumentTypes.A59);
 
 		// Act & Assert
-		Assert.That(() => validator.ValidateParsedFpFile(fpFile),
+		Assert.That(() => validator!.ValidateParsedFpFile(fpFile),
 			Throws.TypeOf<ValidationException>()
 				.With.Message.EqualTo("Parsed SenderID InvalidSender does not match filename SenderID FINGRID"));
 	}
@@ -58,7 +58,7 @@ public class FpParsedFileValidatorTests
 		var fpFile = CreateValidFpFile("InvalidDocNo");
 
 		// Act & Assert
-		Assert.That(() => validator.ValidateParsedFpFile(fpFile),
+		Assert.That(() => validator!.ValidateParsedFpFile(fpFile),
 			Throws.TypeOf<ValidationException>()
 				.With.Message.EqualTo("Parsed Document Version 'InvalidDocNo' does not match filename Document Version '2'"));
 	}
@@ -70,7 +70,7 @@ public class FpParsedFileValidatorTests
 			return new FpFile(
 				new EIC(senderCode),
 				new EIC("TSO002"),
-				null,
+				null!,
 				Path.Combine(TestContext.CurrentContext.TestDirectory,
 					@"Parsing/20240126_TPS_FINGRID_0X1001A1001A264.xml"),
 				"filePath",
@@ -80,7 +80,7 @@ public class FpParsedFileValidatorTests
 		return new FpFile(
 			new EIC(senderCode),
 			new EIC("TSO002"),
-			null,
+			null!,
 			Path.Combine(TestContext.CurrentContext.TestDirectory,
 				@"Parsing/20240126_TPS_FINGRID_0X1001A1001A264_002_CNF_2024-01-26T08-23-44Z.xml"),
 			"filePath",

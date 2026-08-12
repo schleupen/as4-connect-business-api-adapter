@@ -41,7 +41,7 @@ public partial class FpMessageSenderTest
 		{
 			Func<object, Type, bool> state = (v, _) => v.ToString()!.Contains(expectedMessage, StringComparison.OrdinalIgnoreCase);
 
-			this.Mocks.Logger.Verify(
+			Mocks.Logger.Verify(
 				x => x.Log(
 					It.Is<LogLevel>(l => l == expectedLogLevel),
 					It.IsAny<EventId>(),

@@ -10,7 +10,7 @@ public sealed partial class SendAndReceiveTests : IDisposable
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
 		fixture.AddFileFromValidMarketpartnerToSendDirectory();
 
-		await this.fixture.Send();
+		await fixture.Send();
 
 		fixture.VerifySendDirectoryIsEmpty();
 	}
@@ -20,18 +20,18 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	{
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
 
-		await this.fixture.Receive();
+		await fixture.Receive();
 
 		fixture.VerifyReceiveDirectoryIsNotEmpty();
 	}
 
 	[Test]
-	public async Task Send_MissingCertificate_ShouldThrowException()
+	public void Send_MissingCertificate_ShouldThrowException()
 	{
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
 		fixture.AddFileFromUnkownMarketpartnerToSendDirectory();
 
-		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Send());
+		var exception = Assert.ThrowsAsync<AggregateException>(fixture.Send);
 
 		Assert.That(exception, Is.Not.Null);
 		Assert.That(exception!.InnerExceptions, Is.Not.Empty);
@@ -42,11 +42,11 @@ public sealed partial class SendAndReceiveTests : IDisposable
 
 	[Test]
 	[Ignore("mp logic logs this use case instead of throwing Exception")]
-	public async Task Receive_MissingCertificate_ShouldThrowException()
+	public void Receive_MissingCertificate_ShouldThrowException()
 	{
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithoutCertificate);
 
-		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Receive());
+		var exception = Assert.ThrowsAsync<AggregateException>(fixture.Receive);
 
 		Assert.That(exception, Is.Not.Null);
 		Assert.That(exception!.InnerExceptions, Is.Not.Empty);
@@ -57,6 +57,6 @@ public sealed partial class SendAndReceiveTests : IDisposable
 
 	public void Dispose()
 	{
-		this.fixture?.Dispose();
+		fixture?.Dispose();
 	}
 }
