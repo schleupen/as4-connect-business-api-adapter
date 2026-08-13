@@ -6,7 +6,7 @@
 		<CurrentYear>$([System.DateTime]::Now.Year)</CurrentYear>
 		<Copyright>Copyright © $(CurrentYear) Schleupen SE</Copyright>
 		<Version>3.0.0.0</Version>
-	</PropertyGroup>
+    </PropertyGroup>
     
 	<PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
