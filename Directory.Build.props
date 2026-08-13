@@ -12,7 +12,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>Schleupen.AS4.BusinessAdapter</RootNamespace>
-        <LangVersion>latestmajor</LangVersion>
+        <LangVersion>13</LangVersion>
         <AnalysisLevel>latest</AnalysisLevel>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<SignAssembly>false</SignAssembly>
