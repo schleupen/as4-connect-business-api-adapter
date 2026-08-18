@@ -32,10 +32,10 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 
 		public async Task<BusinessApiResponse<MpOutboxMessage>> SendMessageAsync(MpOutboxMessage message)
 		{
-			using (MemoryStream compressedStream = new MemoryStream())
+			using (MemoryStream compressedStream = new())
 			{
-				using (MemoryStream payloadStream = new MemoryStream(message.Payload))
-				using (GZipStream gZipStream = new GZipStream(compressedStream, CompressionMode.Compress, true))
+				using (MemoryStream payloadStream = new(message.Payload))
+				using (GZipStream gZipStream = new(compressedStream, CompressionMode.Compress, true))
 				{
 					await payloadStream.CopyToAsync(gZipStream);
 				}
@@ -67,9 +67,9 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			IBusinessApiClient businessApiClient = businessApiClientFactory.Create(new Uri(as4BusinessApiEndpoint), httpClient);
 			QueryInboxMessagesResponseDto clientResponse = await businessApiClient.V1MpMessagesInboxGetAsync(limit);
 
-			List<MpMessage> messages = new List<MpMessage>();
+			List<MpMessage> messages = [];
 
-			foreach (InboundMPMessageDto? message in clientResponse.Messages)
+			foreach (InboundMPMessageDto? message in clientResponse.Messages ?? [])
 			{
 				try
 				{
@@ -101,15 +101,15 @@ namespace Schleupen.AS4.BusinessAdapter.MP.API
 			{
 				FileResponse clientResponse = await businessApiClient.V1MpMessagesInboxPayloadAsync(Guid.Parse(mpMessage.MessageId));
 
-				using (MemoryStream ms = new MemoryStream())
+				using (MemoryStream ms = new())
 				{
 					await clientResponse.Stream.CopyToAsync(ms);
 					byte[] zippedContent = ms.ToArray();
 					ms.Position = 0;
 
-					using (GZipStream gZipStream = new GZipStream(ms, CompressionMode.Decompress, true))
+					using (GZipStream gZipStream = new(ms, CompressionMode.Decompress, true))
 					{
-						using (StreamReader decompressedReader = new StreamReader(gZipStream, DefaultEncoding))
+						using (StreamReader decompressedReader = new(gZipStream, DefaultEncoding))
 						{
 							string edifactString = await decompressedReader.ReadToEndAsync();
 

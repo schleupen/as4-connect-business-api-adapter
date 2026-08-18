@@ -15,7 +15,7 @@ public sealed partial class FpFileNameExtractorTests
 	[SetUp]
 	public void Setup()
 	{
-		this.fixture = new Fixture();
+		fixture = new Fixture();
 	}
 
 	[TearDown]

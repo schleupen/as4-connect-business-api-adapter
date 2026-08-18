@@ -10,7 +10,7 @@ public partial class SendOptionsValidatorTest
 	[Test]
 	public void Validate_SendNotConfigured_ReturnsFailed()
 	{
-		var result = ExecuteValidation(null);
+		var result = ExecuteValidation(null!);
 
 		Assert.That(result.Failed, Is.True);
 	}
@@ -18,7 +18,7 @@ public partial class SendOptionsValidatorTest
 	[Test]
 	public void Validate_SendDirectoryNotExists_ReturnsFailed()
 	{
-		var options = this.fixture.Data.CreateValidAdapterOptions();
+		var options = fixture.Data.CreateValidAdapterOptions();
 
 		options = options with { Directory = "NA" };
 
@@ -29,7 +29,7 @@ public partial class SendOptionsValidatorTest
 
 	private static ValidateOptionsResult ExecuteValidation(SendOptions options)
 	{
-		SendOptionsValidator validator = new SendOptionsValidator();
+		SendOptionsValidator validator = new();
 		var result = validator.Validate(null, options);
 		return result;
 	}

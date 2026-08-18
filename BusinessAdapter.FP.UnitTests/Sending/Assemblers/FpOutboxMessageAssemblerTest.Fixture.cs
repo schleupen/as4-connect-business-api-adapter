@@ -35,7 +35,7 @@ public partial class FpOutboxMessageAssemblerTest
 
 		public FpOutboxMessageAssembler CreateTestObjectWithMapping()
 		{
-			this.Mocks.EICMapping.Setup(x => x.Value).Returns(this.Data.Mapping);
+			Mocks.EICMapping.Setup(x => x.Value).Returns(Data.Mapping);
 			return new FpOutboxMessageAssembler(Mocks.EICMapping.Object);
 		}
 	}

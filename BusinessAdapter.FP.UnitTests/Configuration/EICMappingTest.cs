@@ -25,7 +25,7 @@ public partial class EICMappingTest
 	[Test]
 	public void GetPartyOrDefault_EICMappingFromJson_ShouldWork()
 	{
-		var eicMapping = this.fixture.LoadFromAppSettings();
+		var eicMapping = fixture.LoadFromAppSettings();
 
 		Assert.That(eicMapping, Is.Not.Null.Or.Empty);
 		Assert.That(eicMapping.GetPartyOrDefault(new EIC("5790000432752")), Is.EqualTo(new Party("1000000001", "BDEW")));

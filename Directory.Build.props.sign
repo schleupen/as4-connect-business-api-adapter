@@ -11,7 +11,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>Schleupen.AS4.BusinessAdapter</RootNamespace>
-		<AnalysisLevel>latest</AnalysisLevel>
+        <LangVersion>13</LangVersion>
+        <AnalysisLevel>latest</AnalysisLevel>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<DebugType>Embedded</DebugType>
 	</PropertyGroup>

@@ -22,7 +22,7 @@ public class ReceiveStatus : IReceiveStatus
 
     public void AbortDueToTooManyConnections()
     {
-        this.AbortedDueToTooManyConnections = true;
+        AbortedDueToTooManyConnections = true;
     }
 
     public void LogTo(ILogger logger)
@@ -32,7 +32,7 @@ public class ReceiveStatus : IReceiveStatus
             logger.LogWarning("A 429 TooManyRequests status code was encountered while receiving the messages which caused the receiving to end before all messages could be received.");
         }
 
-        foreach (var failedMessage in this.failedMessages)
+        foreach (var failedMessage in failedMessages)
         {
 	        logger.LogWarning("Failed to receive message '{Id}' - {Exception} [{Sender} -> {Receiver}]",
 		        failedMessage.Value.Message?.MessageId,

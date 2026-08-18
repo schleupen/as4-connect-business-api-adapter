@@ -18,6 +18,7 @@ public class FpFile(
 
 	public FpBDEWProperties BDEWProperties { get; } = fpBDEWProperties;
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Eigenschaften dürfen keine Arrays zurückgeben", Justification = "Used as intended.")]
 	public byte[] Content { get; } = content;
 
 	public string FileName { get; } = fileName;

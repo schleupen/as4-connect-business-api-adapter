@@ -2,13 +2,13 @@
 
 using Microsoft.Extensions.Options;
 
-public class SendOptionsValidator : IValidateOptions<Configuration.SendOptions>
+public class SendOptionsValidator : IValidateOptions<SendOptions>
 {
-	public ValidateOptionsResult Validate(string? name, Configuration.SendOptions options)
+	public ValidateOptionsResult Validate(string? name, SendOptions options)
 	{
-		ValidateOptionsResultBuilder builder = new ValidateOptionsResultBuilder();
+		ValidateOptionsResultBuilder builder = new();
 
-		builder.AddResult(this.ValidateSend(options));
+		builder.AddResult(ValidateSend(options));
 
 		return builder.Build();
 	}
@@ -20,11 +20,8 @@ public class SendOptionsValidator : IValidateOptions<Configuration.SendOptions>
 			return ValidateOptionsResult.Fail("The send directory is not configured.");
 		}
 
-		if (!Directory.Exists(sendOptions.Directory))
-		{
-			return ValidateOptionsResult.Fail($"The send directory {sendOptions.Directory} does not exist.");
-		}
-
-		return ValidateOptionsResult.Success;
+		return Directory.Exists(sendOptions!.Directory)
+			? ValidateOptionsResult.Success
+			: ValidateOptionsResult.Fail($"The send directory {sendOptions.Directory} does not exist.");
 	}
 }

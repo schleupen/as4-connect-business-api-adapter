@@ -15,25 +15,32 @@ public class ReceiveCommand : Command
 	public ReceiveCommand() : base("receive", "receives mp messages from as4 connect")
 	{
 		var configFileOption = new ConfigFileOption();
-		this.AddOption(configFileOption);
 
-		this.SetHandler(Receive, configFileOption);
+		Options.Add(configFileOption);
+
+		SetAction((parseResult, cancellationToken) =>
+		{
+			var configFile = parseResult.GetValue(configFileOption);
+
+			return Receive(configFile!, cancellationToken);
+		});
 	}
 
-	private async Task Receive(FileInfo configFile)
+	private Task Receive(FileInfo configFile, CancellationToken cancellationToken)
 	{
 		var serviceProvider = CreateServiceProvider(configFile);
+
 		var startUpValidator = serviceProvider.GetRequiredService<IStartupValidator>();
 		startUpValidator.Validate();
-		var sender = serviceProvider.GetRequiredService<IMpMessageReceiver>();
 
-		await sender.ReceiveMessagesAsync(CancellationToken.None);
+		var sender = serviceProvider.GetRequiredService<IMpMessageReceiver>();
+		return sender.ReceiveMessagesAsync(cancellationToken);
 	}
 
 	private ServiceProvider CreateServiceProvider(FileInfo configFile)
 	{
-		var serviceCollection = new ServiceCollection();
-		serviceCollection.AddLogging((b) => b.AddConsole());
+		var serviceCollection = new ServiceCollection()
+			.AddLogging((b) => b.AddConsole());
 		configurator.ConfigureReceiving(serviceCollection, configurationFromFileProvider.FromFile(configFile));
 
 		return serviceCollection.BuildServiceProvider();

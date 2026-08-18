@@ -9,7 +9,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 	[TestFixture]
 	internal sealed partial class CertificateFieldExtensionsTest : IDisposable
 	{
-		private Fixture fixture;
+		private Fixture? fixture;
 
 		[SetUp]
 		public void Setup()
@@ -27,7 +27,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void IsSubjectDistinguishedNameEqualToAs4_ApiCertificate_ShouldReturnFalse()
 		{
-			X509Certificate2 testObject = fixture.CreateApiCertificate();
+			X509Certificate2 testObject = fixture!.CreateApiCertificate();
 
 			bool result = testObject.IsSubjectDistinguishedNameEqualToAs4();
 
@@ -37,7 +37,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void IsSubjectDistinguishedNameEqualToAs4_UnspecificCertificate_ShouldReturnFalse()
 		{
-			X509Certificate2 testObject = fixture.CreateUnspecificCertificate();
+			X509Certificate2 testObject = fixture!.CreateUnspecificCertificate();
 
 			bool result = testObject.IsSubjectDistinguishedNameEqualToAs4();
 
@@ -47,7 +47,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void IsSubjectDistinguishedNameEqualToAs4_AS4Certificate_ShouldReturnTrue()
 		{
-			X509Certificate2 testObject = fixture.CreateAs4Certificate();
+			X509Certificate2 testObject = fixture!.CreateAs4Certificate();
 
 			bool result = testObject.IsSubjectDistinguishedNameEqualToAs4();
 
@@ -57,7 +57,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void ResolveMarketpartnerIdentificationNumber_UnspecificCertificate_ShouldReturnIdentificationNumber()
 		{
-			X509Certificate2 testObject = fixture.CreateUnspecificCertificate();
+			X509Certificate2 testObject = fixture!.CreateUnspecificCertificate();
 
 			var result = testObject.ResolveMarketpartnerIdentificationNumber();
 
@@ -67,7 +67,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void ResolveMarketpartnerIdentificationNumber_AS4Certificate_ShouldReturnIdentificationNumber()
 		{
-			X509Certificate2 testObject = fixture.CreateAs4Certificate();
+			X509Certificate2 testObject = fixture!.CreateAs4Certificate();
 
 			var result = testObject.ResolveMarketpartnerIdentificationNumber();
 
@@ -77,7 +77,7 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 		[Test]
 		public void ResolveMarketpartnerIdentificationNumber_ApiCertificate_ShouldReturnIdentificationNumber()
 		{
-			X509Certificate2 testObject = fixture.CreateApiCertificate();
+			X509Certificate2 testObject = fixture!.CreateApiCertificate();
 
 			var result = testObject.ResolveMarketpartnerIdentificationNumber();
 

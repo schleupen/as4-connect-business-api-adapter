@@ -7,13 +7,13 @@ public class FailedFpOutboxMessage : FailedFpMessage<FpOutboxMessage>
 
 	public FailedFpOutboxMessage(FpOutboxMessage message, Exception exception) : base(message, exception)
 	{
-		this.FilePath = message.FilePath;
-		this.ErrorCategory = "Sending";
+		FilePath = message.FilePath;
+		ErrorCategory = "Sending";
 	}
 
 	public FailedFpOutboxMessage(string filePath, Exception exception) : base(null, exception)
 	{
-		this.FilePath = filePath;
-		this.ErrorCategory = "Parsing";
+		FilePath = filePath;
+		ErrorCategory = "Parsing";
 	}
 }

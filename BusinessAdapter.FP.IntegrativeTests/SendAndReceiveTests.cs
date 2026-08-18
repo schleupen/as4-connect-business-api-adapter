@@ -10,7 +10,7 @@ public sealed partial class SendAndReceiveTests : IDisposable
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
 		fixture.AddFileToSendDirectory();
 
-		var sendStatus = await this.fixture.Send();
+		var sendStatus = await fixture.Send();
 
 		Assert.That(sendStatus.FailedMessages.Count, Is.Zero);
 		Assert.That(sendStatus.SuccessfulMessages.Count, Is.EqualTo(1));
@@ -23,7 +23,7 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	{
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithCertificate);
 
-		var receiveStatus = await this.fixture.Receive();
+		var receiveStatus = await fixture.Receive();
 
 		Assert.That(receiveStatus.FailedMessages.Count, Is.Zero);
 		Assert.That(receiveStatus.SuccessfulMessages.Count, Is.EqualTo(4));
@@ -36,7 +36,7 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	{
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithoutCertificate);
 
-		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Receive());
+		var exception = Assert.ThrowsAsync<AggregateException>(() => fixture.Receive());
 
 		Assert.That(exception, Is.Not.Null);
 		Assert.That(exception!.InnerExceptions, Is.Not.Empty);
@@ -50,7 +50,7 @@ public sealed partial class SendAndReceiveTests : IDisposable
 	{
 		fixture.SetupWithMarketpartner(TestData.MarketpartnerIdWithoutMapping);
 
-		var exception = Assert.ThrowsAsync<AggregateException>(() => this.fixture.Receive());
+		var exception = Assert.ThrowsAsync<AggregateException>(() => fixture.Receive());
 
 		Assert.That(exception, Is.Not.Null);
 		Assert.That(exception!.InnerExceptions, Is.Not.Empty);

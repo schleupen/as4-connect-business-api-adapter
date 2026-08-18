@@ -2,13 +2,13 @@
 
 using Microsoft.Extensions.Options;
 
-public class ReceiveOptionsValidator : IValidateOptions<Configuration.ReceiveOptions>
+public class ReceiveOptionsValidator : IValidateOptions<ReceiveOptions>
 {
-	public ValidateOptionsResult Validate(string? name, Configuration.ReceiveOptions options)
+	public ValidateOptionsResult Validate(string? name, ReceiveOptions options)
 	{
-		ValidateOptionsResultBuilder builder = new ValidateOptionsResultBuilder();
+		ValidateOptionsResultBuilder builder = new();
 
-		builder.AddResult(this.ValidateReceive(options));
+		builder.AddResult(ValidateReceive(options));
 
 		return builder.Build();
 	}
@@ -20,12 +20,8 @@ public class ReceiveOptionsValidator : IValidateOptions<Configuration.ReceiveOpt
 			return ValidateOptionsResult.Fail("The receive directory is not configured.");
 		}
 
-		if (!Directory.Exists(receiveOptions.Directory))
-		{
-			return ValidateOptionsResult.Fail($"The receive directory {receiveOptions.Directory} does not exist.");
-		}
-
-
-		return ValidateOptionsResult.Success;
+		return Directory.Exists(receiveOptions!.Directory)
+			? ValidateOptionsResult.Success
+			: ValidateOptionsResult.Fail($"The receive directory {receiveOptions.Directory} does not exist.");
 	}
 }

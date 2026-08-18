@@ -11,7 +11,7 @@ public partial class AdapterOptionsValidatorTest
 	[TestCase("")]
 	public void Validate_As4ConnectEndpointInvalid_ReturnsInvalid(string? value)
 	{
-		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
+		AdapterOptions options = fixture.Data.CreateValidAdapterOptions();
 
 		options.As4ConnectEndpoint = value!;
 
@@ -23,7 +23,7 @@ public partial class AdapterOptionsValidatorTest
 	[Test]
 	public void Validate_ValidConfig_ReturnsSuccess()
 	{
-		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
+		AdapterOptions options = fixture.Data.CreateValidAdapterOptions();
 
 		AdapterOptionsValidator validator = new AdapterOptionsValidator();
 		var result = validator.Validate(null, options);
@@ -34,7 +34,7 @@ public partial class AdapterOptionsValidatorTest
 	[Test]
 	public void Validate_MarktpartnerNotConfigured_Empty_ReturnsFailed()
 	{
-		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
+		AdapterOptions options = fixture.Data.CreateValidAdapterOptions();
 
 		options.Marketpartners = Array.Empty<string>();
 
@@ -46,7 +46,7 @@ public partial class AdapterOptionsValidatorTest
 	[Test]
 	public void Validate_MarktpartnerNotConfigured_Null_ReturnsFailed()
 	{
-		AdapterOptions options = this.fixture.Data.CreateValidAdapterOptions();
+		AdapterOptions options = fixture.Data.CreateValidAdapterOptions();
 
 		options.Marketpartners = null;
 

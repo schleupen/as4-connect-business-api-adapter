@@ -25,12 +25,8 @@ namespace Schleupen.AS4.BusinessAdapter.Certificates
 			IClientCertificate? certificate = candidates
 				.Where(z => z.ValidFrom.ToUniversalTime() <= dtNow && z.ValidUntil.ToUniversalTime() >= dtNow)
 				.OrderByDescending(z => z.ValidFrom.ToUniversalTime())
-				.FirstOrDefault();
+				.FirstOrDefault() ?? throw new MissingCertificateException(marketpartnerIdentificationNumber);
 
-			if (certificate == null)
-			{
-				throw new MissingCertificateException(marketpartnerIdentificationNumber);
-			}
 			logger.LogInformation("Das Zertifikat mit dem Gültigkeitsbereich [{ValidFrom} - {ValidUntil}] wird verwendet.", certificate.ValidFrom, certificate.ValidUntil);
 
 			return certificate;

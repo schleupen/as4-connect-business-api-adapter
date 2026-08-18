@@ -9,7 +9,7 @@ public partial class ReceiveOptionsValidatorTest
 	[Test]
 	public void Validate_ReceiveNotConfigured_ReturnsFailed()
 	{
-		var result = ExecuteValidation(null);
+		var result = ExecuteValidation(null!);
 
 		Assert.That(result.Failed, Is.True);
 	}
@@ -17,7 +17,7 @@ public partial class ReceiveOptionsValidatorTest
 	[Test]
 	public void Validate_ReceiveDirectoryNotExists_ReturnsFailed()
 	{
-		ReceiveOptions options = this.fixture.Data.CreateValidAdapterOptions();
+		ReceiveOptions options = fixture.Data.CreateValidAdapterOptions();
 
 		options = options with { Directory = "NA" };
 		var result = ExecuteValidation(options);
@@ -27,7 +27,7 @@ public partial class ReceiveOptionsValidatorTest
 
 	private static ValidateOptionsResult ExecuteValidation(ReceiveOptions options)
 	{
-		ReceiveOptionsValidator validator = new ReceiveOptionsValidator();
+		ReceiveOptionsValidator validator = new();
 		var result = validator.Validate(null, options);
 		return result;
 	}

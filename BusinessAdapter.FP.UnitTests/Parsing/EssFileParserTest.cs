@@ -10,7 +10,7 @@ internal sealed partial class EssFileParserTest
 	[Test]
 	public void Parse_ConfirmationReport_GetsParsedCorrectly()
 	{
-		var outboundFpMessage = this.Parse(fixture.TestData.ExampleEssConfirmationReportPath);
+		var outboundFpMessage = Parse(fixture.TestData.ExampleEssConfirmationReportPath);
 
 		string senderId = "0X1001A1001A264";
 
@@ -28,7 +28,7 @@ internal sealed partial class EssFileParserTest
 	[Test]
 	public void Parse_ScheduleMessage_GetsParsedCorrectly()
 	{
-		var outboundFpMessage = this.Parse(fixture.TestData.ExampleEssScheduleMessagePath);
+		var outboundFpMessage = Parse(fixture.TestData.ExampleEssScheduleMessagePath);
 
 		Assert.That(outboundFpMessage, Is.Not.Null);
 		Assert.That(outboundFpMessage!.Content, Is.Not.Empty);
@@ -44,13 +44,13 @@ internal sealed partial class EssFileParserTest
 	[Test]
 	public void Parse_ScheduleMessage_MissingId_ThrowsException()
 	{
-		Assert.Throws<ValidationException>(() => this.Parse(fixture.TestData.EssScheduleMessagePathOfWrongFile));
+		Assert.Throws<ValidationException>(() => Parse(fixture.TestData.EssScheduleMessagePathOfWrongFile));
 	}
 
 	[Test]
 	public void Parse_AnomalyReport_GetsParsedCorrectly()
 	{
-		var outboundFpMessage = this.Parse(fixture.TestData.AnomalyReportPath);
+		var outboundFpMessage = Parse(fixture.TestData.AnomalyReportPath);
 
 		Assert.That(outboundFpMessage, Is.Not.Null);
 		Assert.That(outboundFpMessage!.Content, Is.Not.Empty);
@@ -66,7 +66,7 @@ internal sealed partial class EssFileParserTest
 	[Test]
 	public void Parse_AcknowledgeMessage_GetsParsedCorrectly()
 	{
-		var outboundFpMessage = this.Parse(fixture.TestData.ExampleEssAcknowledgeMessagePath);
+		var outboundFpMessage = Parse(fixture.TestData.ExampleEssAcknowledgeMessagePath);
 
 		Assert.That(outboundFpMessage, Is.Not.Null);
 		Assert.That(outboundFpMessage!.Content, Is.Not.Empty);
@@ -82,7 +82,7 @@ internal sealed partial class EssFileParserTest
 	[Test]
 	public void Parse_StatusRequest_GetsParsedCorrectly()
 	{
-		var outboundFpMessage = this.Parse(fixture.TestData.ExampleEssStatusRequestPath);
+		var outboundFpMessage = Parse(fixture.TestData.ExampleEssStatusRequestPath);
 
 		Assert.That(outboundFpMessage, Is.Not.Null);
 		Assert.That(outboundFpMessage!.Content, Is.Not.Empty);
@@ -100,9 +100,10 @@ internal sealed partial class EssFileParserTest
 	[TestCase("./Parsing/EssFiles/20241115_SRQ_11XSWSE-DBA-VZRL_10XDE-RWENET---W_CRQ.xml")]
 	public void Parse_StatusRequest_WithCRQPostfix_ShouldBeParsedCorrectly(string path)
 	{
-		var outboundFpMessage = this.Parse(path);
+		var outboundFpMessage = Parse(path);
 
-		Assert.That(outboundFpMessage.BDEWProperties.ToMessageType(), Is.EqualTo(FpMessageType.StatusRequest));
+		Assert.That(outboundFpMessage, Is.Not.Null);
+		Assert.That(outboundFpMessage!.BDEWProperties.ToMessageType(), Is.EqualTo(FpMessageType.StatusRequest));
 	}
 
 	[Test]
